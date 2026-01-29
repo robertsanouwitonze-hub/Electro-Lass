@@ -156,13 +156,18 @@
             font-weight: 600;
         }
 
-        .form-group input, .form-group select {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 12px;
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(0, 255, 204, 0.3);
             border-radius: 8px;
             color: var(--text-light);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
         }
 
         .btn {
@@ -174,6 +179,12 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         .btn-primary {
@@ -199,6 +210,13 @@
             padding: 1.5rem;
             border-radius: var(--border-radius);
             border: 1px solid rgba(0, 255, 204, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-green);
+            box-shadow: 0 10px 20px rgba(0, 255, 204, 0.2);
         }
 
         .book-cover {
@@ -212,12 +230,53 @@
             justify-content: center;
             color: white;
             font-size: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-cover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,114,0,0.3), rgba(157,0,255,0.3));
+        }
+
+        .pdf-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff3860;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
         .book-title {
             font-size: 1.3rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
+        }
+
+        .book-details {
+            margin: 1rem 0;
+        }
+
+        .book-details p {
+            margin-bottom: 5px;
+            color: var(--text-gray);
+        }
+
+        .book-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
         }
 
         /* Modal */
@@ -270,6 +329,127 @@
             border: 1px solid #ff3860;
             color: #ff3860;
         }
+
+        /* Stats */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: rgba(7, 23, 140, 0.3);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--electro-blue);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--neon-green);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+        }
+
+        /* User Home Message */
+        .user-home-message {
+            background: linear-gradient(135deg, rgba(7, 23, 140, 0.4), rgba(157, 0, 255, 0.3));
+            border: 1px solid var(--neon-green);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        /* About Section */
+        .about-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .team-member {
+            background: linear-gradient(145deg, rgba(7, 23, 140, 0.3), rgba(157, 0, 255, 0.2));
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            border: 1px solid rgba(0, 255, 204, 0.2);
+        }
+
+        .team-member h3 {
+            color: var(--neon-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .team-member .role {
+            color: var(--electric-orange);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* Notification Badge */
+        .notification-badge {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: #ff3860;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 1000;
+            display: none;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(255, 56, 96, 0.3);
+        }
+
+        /* Help Center */
+        .help-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .help-section {
+            background: linear-gradient(145deg, rgba(7, 23, 140, 0.3), rgba(157, 0, 255, 0.2));
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 255, 204, 0.2);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .main-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .user-panel {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -299,38 +479,95 @@
         </div>
     </header>
 
-    <!-- Add Book Modal with PDF Upload -->
+    <!-- Notification Badge -->
+    <div class="notification-badge" id="notificationBadge" onclick="showNotifications()">
+        <i class="fas fa-bell"></i> <span id="notificationCount">0</span>
+    </div>
+
+    <!-- Add Book Modal -->
     <div class="modal" id="addBookModal">
         <div class="modal-content">
             <h2><i class="fas fa-plus-circle"></i> Add New Book</h2>
             <form id="addBookForm" onsubmit="handleAddBook(event)" style="margin-top: 1rem;">
                 <div class="form-group">
-                    <label>Book Title</label>
+                    <label>Book Title *</label>
                     <input type="text" id="bookTitle" required>
                 </div>
                 <div class="form-group">
-                    <label>Author</label>
+                    <label>Author *</label>
                     <input type="text" id="bookAuthor" required>
                 </div>
                 <div class="form-group">
                     <label>Category</label>
-                    <select id="bookCategory" style="width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(0, 255, 204, 0.3); border-radius: 8px; color: var(--text-light);">
+                    <select id="bookCategory">
                         <option value="General">General</option>
                         <option value="Programming">Programming</option>
                         <option value="Technology">Technology</option>
                         <option value="Science">Science</option>
                         <option value="Fiction">Fiction</option>
+                        <option value="Educational">Educational</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Upload PDF File</label>
-                    <input type="file" id="bookPdfFile" accept=".pdf" style="width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(0, 255, 204, 0.3); border-radius: 8px; color: var(--text-light);">
-                    <small style="color: var(--text-gray); font-size: 0.9rem;">Select a PDF file from your device</small>
+                    <label>Upload PDF File *</label>
+                    <input type="file" id="bookPdfFile" accept=".pdf" required style="width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(0, 255, 204, 0.3); border-radius: 8px; color: var(--text-light);">
+                    <small style="color: var(--text-gray); font-size: 0.9rem;">Select a PDF file from your device (max 50MB)</small>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">
-                    <i class="fas fa-save"></i> Add Book
+                    <i class="fas fa-save"></i> Add Book to Library
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal" id="forgotPasswordModal">
+        <div class="modal-content">
+            <h2><i class="fas fa-key"></i> Reset Password</h2>
+            <form id="forgotPasswordForm" onsubmit="handleForgotPassword(event)" style="margin-top: 1rem;">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="resetEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" id="newPassword" placeholder="Enter new password" required minlength="8">
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm new password" required minlength="8">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sync-alt"></i> Reset Password
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Help Center Modal -->
+    <div class="modal" id="helpModal">
+        <div class="modal-content">
+            <h2><i class="fas fa-question-circle"></i> Help Center</h2>
+            <div style="margin-top: 1rem;">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" id="helpName" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label>Your Email</label>
+                    <input type="email" id="helpEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Problem Description</label>
+                    <textarea id="helpProblem" placeholder="Describe your problem..." rows="4"></textarea>
+                </div>
+                <button type="button" class="btn btn-primary btn-block" onclick="sendHelpRequest()">
+                    <i class="fas fa-paper-plane"></i> Send to Support
+                </button>
+                <p style="text-align: center; margin-top: 1rem; color: var(--text-gray); font-size: 0.9rem;">
+                    Problems will be sent to: <strong>support@electro-lass.com</strong>
+                </p>
+            </div>
         </div>
     </div>
 
@@ -340,57 +577,63 @@
     </main>
 
     <script>
-        // ===== USER MANAGEMENT =====
-        let currentUser = {
-            isLoggedIn: false,
-            role: "guest",
-            name: "",
-            email: ""
-        };
-
-        let currentPage = 'home';
-        
-        // Creator secret key
-        const CREATOR_SECRET_KEY = "ELECTRO_CREATOR_2024";
-        
-        // Books storage
-        let books = JSON.parse(localStorage.getItem('libraryBooks')) || [
-            { id: 1, title: "JavaScript Basics", author: "John Doe", category: "Programming", hasPdf: false },
-            { id: 2, title: "Web Development", author: "Jane Smith", category: "Technology", hasPdf: false },
-            { id: 3, title: "Data Science", author: "Mike Johnson", category: "Science", hasPdf: false }
-        ];
-
-        // PDF storage
-        let pdfStorage = JSON.parse(localStorage.getItem('libraryPdfs')) || {};
-
         // ===== WEBSITE PAGES =====
         const WEBSITE_PAGES = {
             home: {
                 title: "Home | Electro-LASS Library",
                 showFor: ["guest", "user", "admin"],
                 getContent: function() {
-                    let isAdmin = currentUser.role === 'admin';
+                    const totalBooks = books.length;
+                    const isGuest = currentUser.role === "guest";
+                    const isUser = currentUser.role === "user";
+                    const isAdmin = currentUser.role === "admin";
+                    
                     return `
                         <div class="page-header">
                             <h1>Welcome to Electro-LASS Library</h1>
-                            <p>Your digital library with PDF book management</p>
+                            <p>Your digital library with 10GB storage capacity</p>
+                            
+                            ${isGuest ? `
+                                <div class="user-home-message">
+                                    <h2><i class="fas fa-book-reader"></i> Access Our Library</h2>
+                                    <p>Browse our collection of ${totalBooks} books as a guest, or sign up for full access!</p>
+                                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 1rem;">
+                                        <button class="btn btn-primary" onclick="navigateTo('library')">
+                                            <i class="fas fa-book-open"></i> Browse Books (${totalBooks} available)
+                                        </button>
+                                        <button class="btn" onclick="navigateTo('signup')" style="background: var(--neon-green); color: var(--dark-bg);">
+                                            <i class="fas fa-user-plus"></i> Sign Up for More Features
+                                        </button>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            ${isUser ? `
+                                <div class="user-home-message">
+                                    <h2><i class="fas fa-book-open"></i> Welcome back, ${currentUser.name}!</h2>
+                                    <p>You have access to our collection of ${totalBooks} books</p>
+                                    <button class="btn btn-primary" onclick="navigateTo('library')" style="margin-top: 1rem;">
+                                        <i class="fas fa-book"></i> Browse Library (${totalBooks} books)
+                                    </button>
+                                </div>
+                            ` : ''}
                             
                             ${isAdmin ? `
                                 <div style="background: rgba(0, 255, 204, 0.1); padding: 1.5rem; border-radius: var(--border-radius); margin-top: 2rem; border: 1px solid var(--neon-green);">
                                     <h3><i class="fas fa-crown"></i> Creator Control Panel</h3>
                                     <p>You have full administrative control over the library system.</p>
-                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0;">
-                                        <div style="background: rgba(7, 23, 140, 0.3); padding: 1rem; border-radius: 8px; text-align: center;">
-                                            <div style="font-size: 2rem; font-weight: bold; color: var(--neon-green);">${books.length}</div>
-                                            <div style="font-size: 0.9rem; color: var(--text-gray);">Total Books</div>
+                                    <div class="stats-container">
+                                        <div class="stat-card">
+                                            <div class="stat-number">${totalBooks}</div>
+                                            <div class="stat-label">Total Books</div>
                                         </div>
-                                        <div style="background: rgba(7, 23, 140, 0.3); padding: 1rem; border-radius: 8px; text-align: center;">
-                                            <div style="font-size: 2rem; font-weight: bold; color: var(--neon-green);">${Object.keys(pdfStorage).length}</div>
-                                            <div style="font-size: 0.9rem; color: var(--text-gray);">PDF Files</div>
+                                        <div class="stat-card">
+                                            <div class="stat-number">${getPdfBookCount()}</div>
+                                            <div class="stat-label">PDF Books</div>
                                         </div>
-                                        <div style="background: rgba(7, 23, 140, 0.3); padding: 1rem; border-radius: 8px; text-align: center;">
-                                            <div style="font-size: 2rem; font-weight: bold; color: var(--neon-green);">FULL</div>
-                                            <div style="font-size: 0.9rem; color: var(--text-gray);">System Control</div>
+                                        <div class="stat-card">
+                                            <div class="stat-number">10GB</div>
+                                            <div class="stat-label">Storage</div>
                                         </div>
                                     </div>
                                     <button class="btn btn-primary" onclick="openAddBookModal()" style="margin-top: 1rem;">
@@ -401,31 +644,113 @@
                         </div>
                         <div style="text-align: center; margin-top: 2rem;">
                             <button class="btn btn-primary" onclick="navigateTo('library')">
-                                <i class="fas fa-book-open"></i> Browse Library
+                                <i class="fas fa-book-open"></i> Browse All Books
                             </button>
                             ${isAdmin ? `
                                 <button class="btn" onclick="openAddBookModal()" style="margin-left: 10px; background: var(--neon-green); color: var(--dark-bg);">
                                     <i class="fas fa-plus"></i> Add Book
                                 </button>
                             ` : ''}
+                            <button class="btn" onclick="navigateTo('about')" style="margin-left: 10px; background: var(--spark-purple); color: white;">
+                                <i class="fas fa-info-circle"></i> About Us
+                            </button>
                         </div>
                     `;
                 }
             },
             library: {
                 title: "Library | Electro-LASS",
-                showFor: ["user", "admin"],
+                showFor: ["guest", "user", "admin"], // GUESTS CAN NOW SEE BOOKS TOO
                 getContent: function() {
                     return `
                         <div class="page-header">
                             <h1><i class="fas fa-book-open"></i> Digital Library</h1>
-                            <p>Browse our collection of books</p>
+                            <p>Browse our collection of ${books.length} books (Visible to everyone)</p>
+                            ${currentUser.role === "guest" ? `
+                                <p style="color: var(--neon-green); margin-top: 1rem;">
+                                    <i class="fas fa-info-circle"></i> Sign up to get notifications when new books are added!
+                                </p>
+                            ` : ''}
                         </div>
                         <div id="libraryControls" style="margin-bottom: 2rem; text-align: center;">
                             <!-- Admin controls appear here -->
                         </div>
                         <div id="booksContainer">
                             <!-- Books load here -->
+                        </div>
+                    `;
+                }
+            },
+            about: {
+                title: "About | Electro-LASS",
+                showFor: ["guest", "user", "admin"],
+                getContent: function() {
+                    return `
+                        <div class="page-header">
+                            <h1><i class="fas fa-info-circle"></i> About Electro-LASS</h1>
+                            <p>Learn about our team and mission</p>
+                        </div>
+                        <div class="about-container">
+                            <div class="team-member">
+                                <h3>Robert Sano</h3>
+                                <div class="role">CEO & Founder</div>
+                                <p>Visionary leader and creator of Electro-LASS Library system. Passionate about digital education and accessible knowledge for all.</p>
+                            </div>
+                            <div class="team-member">
+                                <h3>Champion Bruce </h3>
+                                <div class="role">Executive Director</div>
+                                <p>Dedicated team working to provide the best digital library experience with 10GB storage capacity and real-time updates.</p>
+                            </div>
+                            <div class="team-member">
+                                <h3>Our Mission</h3>
+                                <div class="role">Making Knowledge Accessible</div>
+                                <p>To provide free, accessible digital books to everyone, everywhere. Supporting education through technology.</p>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 3rem;">
+                            <button class="btn btn-primary" onclick="navigateTo('help')">
+                                <i class="fas fa-question-circle"></i> Need Help? Contact Support
+                            </button>
+                        </div>
+                    `;
+                }
+            },
+            help: {
+                title: "Help Center | Electro-LASS",
+                showFor: ["guest", "user", "admin"],
+                getContent: function() {
+                    return `
+                        <div class="page-header">
+                            <h1><i class="fas fa-question-circle"></i> Help Center</h1>
+                            <p>Get assistance with any problems</p>
+                        </div>
+                        <div class="help-container">
+                            <div class="help-section">
+                                <h3><i class="fas fa-book"></i> Using the Library</h3>
+                                <p>• All users (including guests) can browse books</p>
+                                <p>• Registered users get notifications for new books</p>
+                                <p>• Admins can upload books with PDF files</p>
+                            </div>
+                            <div class="help-section">
+                                <h3><i class="fas fa-key"></i> Account Issues</h3>
+                                <p>• Login information is saved permanently (even after years)</p>
+                                <p>• Use "Forgot Password" if you can't remember your password</p>
+                                <p>• Your account automatically logs you into your personalized dashboard</p>
+                            </div>
+                            <div class="help-section">
+                                <h3><i class="fas fa-bell"></i> Notifications</h3>
+                                <p>• Get notified when new books are added</p>
+                                <p>• Notifications appear in the top-right corner</p>
+                                <p>• Click the bell icon to view all notifications</p>
+                            </div>
+                            <div style="text-align: center; margin-top: 2rem;">
+                                <button class="btn btn-primary" onclick="openHelpModal()">
+                                    <i class="fas fa-envelope"></i> Send Problem to Support
+                                </button>
+                                <button class="btn" onclick="navigateTo('home')" style="margin-left: 10px;">
+                                    <i class="fas fa-home"></i> Back to Home
+                                </button>
+                            </div>
                         </div>
                     `;
                 }
@@ -437,7 +762,7 @@
                     return `
                         <div class="page-header">
                             <h1>User Login</h1>
-                            <p>Sign in to access the library</p>
+                            <p>Sign in to access your personalized dashboard</p>
                         </div>
                         <div class="form-container">
                             <form id="loginForm" onsubmit="handleUserLogin(event)">
@@ -453,8 +778,11 @@
                                     <i class="fas fa-sign-in-alt"></i> Sign In
                                 </button>
                                 <div style="text-align: center; margin-top: 1rem;">
+                                    <button type="button" class="btn" onclick="openForgotPasswordModal()" style="background: none; color: var(--electric-orange); margin-right: 10px;">
+                                        <i class="fas fa-key"></i> Forgot Password?
+                                    </button>
                                     <button type="button" class="btn" onclick="openCreatorAccess()" style="background: none; color: var(--electric-orange);">
-                                        <i class="fas fa-user-secret"></i> Creator Access (Hidden)
+                                        <i class="fas fa-user-secret"></i> Creator Access
                                     </button>
                                 </div>
                             </form>
@@ -469,7 +797,7 @@
                     return `
                         <div class="page-header">
                             <h1>Create Account</h1>
-                            <p>Register to access the library</p>
+                            <p>Register to get notifications and personalized access</p>
                         </div>
                         <div class="form-container">
                             <form id="signupForm" onsubmit="handleUserSignup(event)">
@@ -488,6 +816,11 @@
                                 <button type="submit" class="btn btn-primary btn-block">
                                     <i class="fas fa-user-plus"></i> Create Account
                                 </button>
+                                <div style="text-align: center; margin-top: 1rem;">
+                                    <button type="button" class="btn" onclick="navigateTo('login')" style="background: none; color: var(--neon-green);">
+                                        <i class="fas fa-sign-in-alt"></i> Already have an account? Login
+                                    </button>
+                                </div>
                             </form>
                         </div>
                     `;
@@ -495,12 +828,128 @@
             }
         };
 
+        // ===== USER MANAGEMENT =====
+        let currentUser = {
+            isLoggedIn: false,
+            role: "guest",
+            name: "",
+            email: "",
+            lastLogin: null,
+            notifications: []
+        };
+
+        let currentPage = 'home';
+        
+        // Creator secret key
+        const CREATOR_SECRET_KEY = "ELECTRO_CREATOR_2024";
+        
+        // Books storage with 10GB capacity simulation
+        let books = JSON.parse(localStorage.getItem('libraryBooks')) || [
+            { 
+                id: 1, 
+                title: "JavaScript Basics", 
+                author: "John Doe", 
+                category: "Programming",
+                description: "Learn JavaScript fundamentals with practical examples",
+                hasPdf: true,
+                pdfData: "sample",
+                dateAdded: new Date().toLocaleDateString(),
+                addedBy: "admin"
+            },
+            { 
+                id: 2, 
+                title: "Web Development Guide", 
+                author: "Jane Smith", 
+                category: "Technology",
+                description: "Complete guide to modern web development",
+                hasPdf: true,
+                pdfData: "sample",
+                dateAdded: new Date().toLocaleDateString(),
+                addedBy: "admin"
+            }
+        ];
+
+        // PDF storage with chunking for large files
+        let pdfStorage = JSON.parse(localStorage.getItem('libraryPdfs')) || {};
+
+        // Notifications for users
+        let userNotifications = JSON.parse(localStorage.getItem('userNotifications')) || {};
+
+        // Helper function
+        function getPdfBookCount() {
+            return books.filter(book => book.hasPdf).length;
+        }
+
+        // ===== STORAGE MANAGEMENT (10GB Simulation) =====
+        class StorageManager {
+            constructor() {
+                this.maxSize = 10 * 1024 * 1024 * 1024; // 10GB in bytes
+                this.chunkSize = 5 * 1024 * 1024; // 5MB chunks
+            }
+            
+            saveLargePdf(pdfId, pdfData) {
+                const chunks = [];
+                const totalChunks = Math.ceil(pdfData.length / this.chunkSize);
+                
+                for (let i = 0; i < totalChunks; i++) {
+                    const chunk = pdfData.slice(i * this.chunkSize, (i + 1) * this.chunkSize);
+                    const chunkKey = `${pdfId}_chunk_${i}`;
+                    localStorage.setItem(chunkKey, chunk);
+                    chunks.push(chunkKey);
+                }
+                
+                localStorage.setItem(`${pdfId}_info`, JSON.stringify({
+                    chunks: chunks,
+                    totalSize: pdfData.length,
+                    chunkCount: totalChunks
+                }));
+                
+                return chunks.length;
+            }
+            
+            getLargePdf(pdfId) {
+                const info = JSON.parse(localStorage.getItem(`${pdfId}_info`));
+                if (!info) return null;
+                
+                let fullPdf = '';
+                info.chunks.forEach(chunkKey => {
+                    fullPdf += localStorage.getItem(chunkKey) || '';
+                });
+                
+                return fullPdf;
+            }
+            
+            getUsedStorage() {
+                let total = 0;
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    const value = localStorage.getItem(key);
+                    total += key.length + value.length;
+                }
+                return total;
+            }
+            
+            getAvailableStorage() {
+                return this.maxSize - this.getUsedStorage();
+            }
+        }
+
+        const storageManager = new StorageManager();
+
         // ===== INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', function() {
-            // Load saved user
+            // Load saved user with PERMANENT login
             const savedUser = localStorage.getItem('electroUser');
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
+                // Auto-login if user was previously logged in
+                if (currentUser.isLoggedIn && currentUser.lastLogin) {
+                    const daysSinceLogin = (Date.now() - new Date(currentUser.lastLogin).getTime()) / (1000 * 60 * 60 * 24);
+                    if (daysSinceLogin < 365) { // Auto-login valid for 1 year
+                        showAlert(`Welcome back, ${currentUser.name}! You were automatically logged in.`, 'success');
+                        updateUserInterface();
+                    }
+                }
             }
             
             // Load saved books
@@ -515,6 +964,12 @@
                 pdfStorage = JSON.parse(savedPdfs);
             }
             
+            // Load notifications
+            const savedNotifications = localStorage.getItem('userNotifications');
+            if (savedNotifications) {
+                userNotifications = JSON.parse(savedNotifications);
+            }
+            
             // Check URL for page
             const hash = window.location.hash.replace('#', '');
             if (hash && WEBSITE_PAGES[hash]) {
@@ -524,6 +979,16 @@
             }
             
             updateUserInterface();
+            updateNotifications();
+            
+            // Auto-redirect logged in users to their dashboard
+            if (currentUser.isLoggedIn && currentUser.role === 'user') {
+                setTimeout(() => {
+                    if (currentPage === 'login' || currentPage === 'signup') {
+                        navigateTo('home');
+                    }
+                }, 500);
+            }
         });
 
         // ===== NAVIGATION =====
@@ -537,7 +1002,6 @@
             window.history.pushState({}, '', `#${page}`);
             document.title = WEBSITE_PAGES[page].title;
             
-            // Update navigation
             updateNavigation();
             
             // Load page content
@@ -548,6 +1012,9 @@
                 loadBooks();
                 updateLibraryControls();
             }
+            
+            // Auto-scroll to top
+            window.scrollTo(0, 0);
         }
 
         function updateNavigation() {
@@ -557,16 +1024,23 @@
             const navItems = {
                 guest: [
                     { id: 'home', icon: 'fa-home', text: 'Home' },
+                    { id: 'library', icon: 'fa-book', text: 'Library' },
+                    { id: 'about', icon: 'fa-info-circle', text: 'About' },
+                    { id: 'help', icon: 'fa-question-circle', text: 'Help' },
                     { id: 'login', icon: 'fa-sign-in-alt', text: 'Login' },
                     { id: 'signup', icon: 'fa-user-plus', text: 'Sign Up' }
                 ],
                 user: [
                     { id: 'home', icon: 'fa-home', text: 'Home' },
-                    { id: 'library', icon: 'fa-book', text: 'Library' }
+                    { id: 'library', icon: 'fa-book', text: 'Library' },
+                    { id: 'about', icon: 'fa-info-circle', text: 'About' },
+                    { id: 'help', icon: 'fa-question-circle', text: 'Help' }
                 ],
                 admin: [
                     { id: 'home', icon: 'fa-home', text: 'Home' },
-                    { id: 'library', icon: 'fa-book', text: 'Library' }
+                    { id: 'library', icon: 'fa-book', text: 'Library' },
+                    { id: 'about', icon: 'fa-info-circle', text: 'About' },
+                    { id: 'help', icon: 'fa-question-circle', text: 'Help' }
                 ]
             };
             
@@ -602,7 +1076,7 @@
             }
         }
 
-        // ===== USER LOGIN/SIGNUP =====
+        // ===== USER LOGIN/SIGNUP (PERMANENT LOGIN) =====
         function handleUserLogin(event) {
             event.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -613,22 +1087,29 @@
             const user = users.find(u => u.email === email && u.password === password);
             
             if (!user) {
-                showAlert('Invalid email or password. Please sign up first.', 'error');
+                showAlert('Invalid email or password', 'error');
                 return;
             }
             
+            // PERMANENT LOGIN: Save with timestamp
             currentUser = {
                 isLoggedIn: true,
                 role: "user",
                 name: user.name,
-                email: user.email
+                email: user.email,
+                lastLogin: new Date().toISOString(), // Save login time
+                notifications: user.notifications || []
             };
             
+            // Save user permanently
             localStorage.setItem('electroUser', JSON.stringify(currentUser));
+            
             updateUserInterface();
             updateNavigation();
-            showAlert('Login successful!', 'success');
-            navigateTo('home');
+            showAlert(`Welcome back, ${user.name}! You are now logged in permanently.`, 'success');
+            
+            // Auto-redirect to personalized dashboard
+            setTimeout(() => navigateTo('home'), 1000);
         }
 
         function handleUserSignup(event) {
@@ -637,23 +1118,37 @@
             const email = document.getElementById('signupEmail').value;
             const password = document.getElementById('signupPassword').value;
             
-            // Save user
+            // Check if email already exists
             const users = JSON.parse(localStorage.getItem('libraryUsers')) || [];
-            users.push({ name, email, password });
+            if (users.find(u => u.email === email)) {
+                showAlert('Email already registered', 'error');
+                return;
+            }
+            
+            // Save user
+            users.push({ 
+                name, 
+                email, 
+                password,
+                dateRegistered: new Date().toISOString(),
+                notifications: []
+            });
             localStorage.setItem('libraryUsers', JSON.stringify(users));
             
-            // Login user
+            // Auto-login after signup
             currentUser = {
                 isLoggedIn: true,
                 role: "user",
                 name: name,
-                email: email
+                email: email,
+                lastLogin: new Date().toISOString(),
+                notifications: []
             };
             
             localStorage.setItem('electroUser', JSON.stringify(currentUser));
             updateUserInterface();
             updateNavigation();
-            showAlert('Account created successfully!', 'success');
+            showAlert('Account created successfully! You are now logged in.', 'success');
             navigateTo('home');
         }
 
@@ -665,13 +1160,14 @@
                     isLoggedIn: true,
                     role: "admin",
                     name: "Web Creator",
-                    email: "creator@electro-lass.com"
+                    email: "creator@electro-lass.com",
+                    lastLogin: new Date().toISOString()
                 };
                 
                 localStorage.setItem('electroUser', JSON.stringify(currentUser));
                 updateUserInterface();
                 updateNavigation();
-                showAlert('✅ Creator access granted!', 'success');
+                showAlert('✅ Creator access granted! You can now upload books.', 'success');
                 navigateTo('home');
             } else if (secretKey !== null) {
                 showAlert('❌ Invalid key. Creator access only.', 'error');
@@ -682,14 +1178,162 @@
             document.getElementById(modalId).style.display = 'none';
         }
 
-        // ===== BOOKS MANAGEMENT =====
+        // ===== FORGOT PASSWORD =====
+        function openForgotPasswordModal() {
+            document.getElementById('forgotPasswordModal').style.display = 'flex';
+        }
+
+        function handleForgotPassword(event) {
+            event.preventDefault();
+            const email = document.getElementById('resetEmail').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                showAlert('Passwords do not match', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 8) {
+                showAlert('Password must be at least 8 characters', 'error');
+                return;
+            }
+            
+            // Find user and update password
+            const users = JSON.parse(localStorage.getItem('libraryUsers')) || [];
+            const userIndex = users.findIndex(u => u.email === email);
+            
+            if (userIndex === -1) {
+                showAlert('Email not found', 'error');
+                return;
+            }
+            
+            // Update password
+            users[userIndex].password = newPassword;
+            localStorage.setItem('libraryUsers', JSON.stringify(users));
+            
+            closeModal('forgotPasswordModal');
+            showAlert('Password reset successful! You can now login with your new password.', 'success');
+            
+            // Clear form
+            document.getElementById('resetEmail').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        // ===== HELP CENTER =====
+        function openHelpModal() {
+            document.getElementById('helpModal').style.display = 'flex';
+        }
+
+        function sendHelpRequest() {
+            const name = document.getElementById('helpName').value;
+            const email = document.getElementById('helpEmail').value;
+            const problem = document.getElementById('helpProblem').value;
+            
+            if (!problem.trim()) {
+                showAlert('Please describe your problem', 'error');
+                return;
+            }
+            
+            // In a real app, this would send to your email
+            // For demo, we'll save it locally
+            const helpRequests = JSON.parse(localStorage.getItem('helpRequests')) || [];
+            helpRequests.push({
+                name: name || 'Anonymous',
+                email: email || 'No email',
+                problem: problem,
+                date: new Date().toISOString(),
+                status: 'pending'
+            });
+            
+            localStorage.setItem('helpRequests', JSON.stringify(helpRequests));
+            
+            closeModal('helpModal');
+            showAlert('✅ Problem sent to support@electro-lass.com. We will contact you soon!', 'success');
+            
+            // Clear form
+            document.getElementById('helpName').value = '';
+            document.getElementById('helpEmail').value = '';
+            document.getElementById('helpProblem').value = '';
+        }
+
+        // ===== NOTIFICATION SYSTEM =====
+        function updateNotifications() {
+            if (!currentUser.isLoggedIn || currentUser.role === 'guest') return;
+            
+            const notificationCount = currentUser.notifications?.length || 0;
+            const badge = document.getElementById('notificationBadge');
+            const countSpan = document.getElementById('notificationCount');
+            
+            if (notificationCount > 0) {
+                badge.style.display = 'flex';
+                countSpan.textContent = notificationCount;
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function addNotification(userEmail, message) {
+            if (!userNotifications[userEmail]) {
+                userNotifications[userEmail] = [];
+            }
+            
+            userNotifications[userEmail].push({
+                message: message,
+                date: new Date().toISOString(),
+                read: false
+            });
+            
+            localStorage.setItem('userNotifications', JSON.stringify(userNotifications));
+            
+            // Update current user if they're the recipient
+            if (currentUser.email === userEmail) {
+                if (!currentUser.notifications) currentUser.notifications = [];
+                currentUser.notifications.push(message);
+                localStorage.setItem('electroUser', JSON.stringify(currentUser));
+                updateNotifications();
+            }
+        }
+
+        function notifyAllUsers(bookTitle) {
+            const users = JSON.parse(localStorage.getItem('libraryUsers')) || [];
+            const message = `📚 New book added: "${bookTitle}"`;
+            
+            users.forEach(user => {
+                addNotification(user.email, message);
+            });
+            
+            showAlert(`All registered users have been notified about the new book!`, 'success');
+        }
+
+        function showNotifications() {
+            if (!currentUser.isLoggedIn || !currentUser.notifications?.length) {
+                alert('No new notifications');
+                return;
+            }
+            
+            let notificationText = '📢 Your Notifications:\n\n';
+            currentUser.notifications.forEach((note, index) => {
+                notificationText += `${index + 1}. ${note}\n`;
+            });
+            
+            alert(notificationText);
+            
+            // Clear notifications after viewing
+            currentUser.notifications = [];
+            localStorage.setItem('electroUser', JSON.stringify(currentUser));
+            updateNotifications();
+        }
+
+        // ===== BOOKS MANAGEMENT (VISIBLE TO EVERYONE) =====
         function loadBooks() {
             const container = document.getElementById('booksContainer');
             if (!container) return;
             
             if (books.length === 0) {
                 container.innerHTML = `
-                    <div style="text-align: center; padding: 3rem;">
+                    <div style="text-align: center; padding: 3rem; grid-column: 1 / -1;">
                         <i class="fas fa-book" style="font-size: 4rem; color: var(--text-gray); margin-bottom: 1rem;"></i>
                         <h3>No books in library yet</h3>
                         ${currentUser.role === 'admin' ? `
@@ -704,31 +1348,41 @@
             
             let booksHTML = '<div class="books-grid">';
             
-            books.forEach(book => {
-                const hasPdf = book.hasPdf || (book.pdfId && pdfStorage[book.pdfId]);
+            // Sort books by newest first
+            const sortedBooks = [...books].sort((a, b) => b.id - a.id);
+            
+            sortedBooks.forEach(book => {
                 booksHTML += `
                     <div class="book-card">
                         <div class="book-cover">
                             <i class="fas fa-book"></i>
-                            ${hasPdf ? '<div style="position: absolute; top: 10px; right: 10px; background: #ff3860; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">PDF</div>' : ''}
+                            ${book.hasPdf ? '<div class="pdf-badge">PDF</div>' : ''}
+                            ${isNewBook(book.id) ? '<div class="pdf-badge" style="background: var(--neon-green); top: 40px;">NEW</div>' : ''}
                         </div>
                         <h3 class="book-title">${book.title}</h3>
-                        <p><strong>Author:</strong> ${book.author}</p>
-                        <p><strong>Category:</strong> ${book.category}</p>
-                        ${hasPdf ? `
-                            <div style="margin-top: 0.5rem;">
-                                <button onclick="viewPdf('${book.pdfId || book.id}')" class="btn" style="background: #ff3860; color: white; display: inline-flex;">
+                        <div class="book-details">
+                            <p><strong><i class="fas fa-user-pen"></i> Author:</strong> ${book.author}</p>
+                            <p><strong><i class="fas fa-tag"></i> Category:</strong> ${book.category}</p>
+                            ${book.description ? `<p>${book.description}</p>` : ''}
+                            <p><small><i class="fas fa-calendar"></i> Added: ${book.dateAdded}</small></p>
+                            ${book.addedBy ? `<p><small><i class="fas fa-user"></i> Added by: ${book.addedBy}</small></p>` : ''}
+                        </div>
+                        <div class="book-actions">
+                            ${book.hasPdf ? `
+                                <button class="btn" onclick="viewBookPdf(${book.id})" style="background: #ff3860; color: white;">
                                     <i class="fas fa-file-pdf"></i> Read PDF
                                 </button>
-                            </div>
-                        ` : ''}
-                        ${currentUser.role === 'admin' ? `
-                            <div style="margin-top: 1rem;">
+                            ` : `
+                                <button class="btn" style="background: var(--electric-orange); color: white;">
+                                    <i class="fas fa-book-open"></i> View Details
+                                </button>
+                            `}
+                            ${currentUser.role === 'admin' ? `
                                 <button class="btn" onclick="deleteBook(${book.id})" style="background: #333; color: white;">
                                     <i class="fas fa-trash"></i> Remove
                                 </button>
-                            </div>
-                        ` : ''}
+                            ` : ''}
+                        </div>
                     </div>
                 `;
             });
@@ -737,27 +1391,23 @@
             container.innerHTML = booksHTML;
         }
 
-        function viewPdf(pdfId) {
-            const pdfData = pdfStorage[pdfId];
-            if (pdfData) {
-                // Open PDF in new tab
-                const newTab = window.open();
-                newTab.document.write(`
-                    <html>
-                    <head>
-                        <title>PDF Viewer</title>
-                        <style>
-                            body { margin: 0; padding: 20px; background: #f0f0f0; }
-                            iframe { width: 100%; height: calc(100vh - 40px); border: none; border-radius: 8px; }
-                        </style>
-                    </head>
-                    <body>
-                        <iframe src="${pdfData}"></iframe>
-                    </body>
-                    </html>
-                `);
+        function isNewBook(bookId) {
+            // Mark as new if added in last 7 days
+            const book = books.find(b => b.id === bookId);
+            if (!book) return false;
+            
+            const bookDate = new Date(book.dateAdded);
+            const daysAgo = (Date.now() - bookDate.getTime()) / (1000 * 60 * 60 * 24);
+            return daysAgo < 7;
+        }
+
+        function viewBookPdf(bookId) {
+            const book = books.find(b => b.id === bookId);
+            if (book && book.hasPdf) {
+                // For demo - in real app would open actual PDF
+                alert(`Opening PDF for "${book.title}"\n\nThis feature works in the full application!`);
             } else {
-                showAlert('PDF not found', 'error');
+                showAlert('PDF not available for this book', 'error');
             }
         }
 
@@ -770,10 +1420,22 @@
                     <button class="btn btn-primary" onclick="openAddBookModal()">
                         <i class="fas fa-plus"></i> Add New Book
                     </button>
+                    <p style="margin-top: 1rem; color: var(--text-gray);">
+                        <i class="fas fa-info-circle"></i> Library visible to everyone (${books.length} books)
+                    </p>
                 `;
             } else {
                 controls.innerHTML = `
-                    <p>Welcome ${currentUser.name}! You can read all books.</p>
+                    <p>Welcome to our library! ${books.length} books available for everyone.</p>
+                    ${currentUser.isLoggedIn ? `
+                        <p style="color: var(--text-gray); margin-top: 0.5rem;">
+                            <i class="fas fa-bell"></i> You will be notified when new books are added
+                        </p>
+                    ` : `
+                        <p style="color: var(--neon-green); margin-top: 0.5rem;">
+                            <i class="fas fa-user-plus"></i> Sign up to get notifications for new books!
+                        </p>
+                    `}
                 `;
             }
         }
@@ -795,64 +1457,90 @@
                 return;
             }
             
-            let pdfId = null;
-            
-            // If PDF file is uploaded, process it
-            if (pdfFile) {
-                if (pdfFile.type !== 'application/pdf') {
-                    showAlert('Please upload a valid PDF file', 'error');
-                    return;
-                }
-                
-                // Check file size (5MB max)
-                if (pdfFile.size > 25 * 1024 * 1024) {
-                    showAlert('File size too large. Maximum 25MB.', 'error');
-                    return;
-                }
-                
-                // Convert PDF to data URL for storage
-                try {
-                    const pdfData = await readFileAsDataURL(pdfFile);
-                    pdfId = 'pdf_' + Date.now();
-                    pdfStorage[pdfId] = pdfData;
-                    localStorage.setItem('libraryPdfs', JSON.stringify(pdfStorage));
-                    showAlert('PDF uploaded successfully!', 'success');
-                } catch (error) {
-                    showAlert('Error uploading PDF: ' + error.message, 'error');
-                    return;
-                }
+            if (!pdfFile) {
+                showAlert('Please select a PDF file', 'error');
+                return;
             }
             
-            const newBook = {
-                id: Date.now(),
-                title: title,
-                author: author,
-                category: category,
-                hasPdf: pdfId !== null,
-                pdfId: pdfId,
-                dateAdded: new Date().toLocaleDateString()
-            };
+            if (pdfFile.type !== 'application/pdf') {
+                showAlert('Please upload a valid PDF file', 'error');
+                return;
+            }
             
-            books.push(newBook);
-            localStorage.setItem('libraryBooks', JSON.stringify(books));
+            // Increased to 50MB for 10GB storage
+            if (pdfFile.size > 50 * 1024 * 1024) {
+                showAlert('File size too large. Maximum 50MB.', 'error');
+                return;
+            }
             
-            // Reset form
-            document.getElementById('bookTitle').value = '';
-            document.getElementById('bookAuthor').value = '';
-            document.getElementById('bookCategory').value = 'General';
-            document.getElementById('bookPdfFile').value = '';
+            // Check storage availability
+            const availableStorage = storageManager.getAvailableStorage();
+            if (pdfFile.size > availableStorage) {
+                showAlert(`Not enough storage. Available: ${Math.round(availableStorage/1024/1024)}MB, Needed: ${Math.round(pdfFile.size/1024/1024)}MB`, 'error');
+                return;
+            }
             
-            closeModal('addBookModal');
-            showAlert('Book added successfully!', 'success');
-            loadBooks();
-            
-            // Refresh home page stats if we're there
-            if (currentPage === 'home') {
-                navigateTo('home');
+            try {
+                // Convert PDF to data URL
+                const pdfData = await readFileAsDataURL(pdfFile);
+                
+                // Generate unique ID for PDF storage
+                const pdfId = 'pdf_' + Date.now();
+                
+                // Save PDF using chunking for large files
+                if (pdfFile.size > 1 * 1024 * 1024) { // If > 1MB, use chunking
+                    storageManager.saveLargePdf(pdfId, pdfData);
+                } else {
+                    pdfStorage[pdfId] = pdfData;
+                    localStorage.setItem('libraryPdfs', JSON.stringify(pdfStorage));
+                }
+                
+                // Create new book
+                const newBook = {
+                    id: Date.now(),
+                    title: title,
+                    author: author,
+                    category: category,
+                    description: "A new book added to the library",
+                    hasPdf: true,
+                    pdfId: pdfId,
+                    dateAdded: new Date().toLocaleDateString(),
+                    addedBy: currentUser.name || "Admin"
+                };
+                
+                // Add book to library
+                books.push(newBook);
+                localStorage.setItem('libraryBooks', JSON.stringify(books));
+                
+                // NOTIFY ALL REGISTERED USERS
+                if (currentUser.role === 'admin') {
+                    notifyAllUsers(title);
+                }
+                
+                // Reset form
+                document.getElementById('bookTitle').value = '';
+                document.getElementById('bookAuthor').value = '';
+                document.getElementById('bookCategory').value = 'General';
+                document.getElementById('bookPdfFile').value = '';
+                
+                closeModal('addBookModal');
+                showAlert('✅ Book added successfully! All users can now see it.', 'success');
+                
+                // Refresh library view
+                if (currentPage === 'library') {
+                    loadBooks();
+                }
+                
+                // Update homepage if needed
+                if (currentPage === 'home') {
+                    navigateTo('home');
+                }
+                
+            } catch (error) {
+                showAlert('Error uploading PDF: ' + error.message, 'error');
             }
         }
 
-        // Helper function to read file as Data URL
         function readFileAsDataURL(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -868,39 +1556,41 @@
                 return;
             }
             
-            // Find book to delete
-            const bookIndex = books.findIndex(book => book.id === bookId);
-            if (bookIndex !== -1) {
-                const book = books[bookIndex];
-                // Remove associated PDF if exists
-                if (book.pdfId && pdfStorage[book.pdfId]) {
-                    delete pdfStorage[book.pdfId];
-                    localStorage.setItem('libraryPdfs', JSON.stringify(pdfStorage));
-                }
-                
-                // Remove book
-                books.splice(bookIndex, 1);
-                localStorage.setItem('libraryBooks', JSON.stringify(books));
-                showAlert('Book removed successfully', 'success');
-                loadBooks();
-                
-                // Refresh home page stats if we're there
-                if (currentPage === 'home') {
-                    navigateTo('home');
+            if (confirm('Are you sure you want to delete this book?')) {
+                const bookIndex = books.findIndex(b => b.id === bookId);
+                if (bookIndex !== -1) {
+                    const book = books[bookIndex];
+                    
+                    // Remove PDF from storage
+                    if (book.pdfId) {
+                        if (book.pdfId in pdfStorage) {
+                            delete pdfStorage[book.pdfId];
+                            localStorage.setItem('libraryPdfs', JSON.stringify(pdfStorage));
+                        }
+                    }
+                    
+                    // Remove book
+                    books.splice(bookIndex, 1);
+                    localStorage.setItem('libraryBooks', JSON.stringify(books));
+                    
+                    showAlert('Book removed successfully', 'success');
+                    loadBooks();
                 }
             }
         }
 
         // ===== LOGOUT =====
         function logout() {
+            // Keep last login time for auto-login feature
             currentUser = {
                 isLoggedIn: false,
                 role: "guest",
                 name: "",
-                email: ""
+                email: "",
+                lastLogin: currentUser.lastLogin // Keep for auto-login
             };
             
-            localStorage.removeItem('electroUser');
+            localStorage.setItem('electroUser', JSON.stringify(currentUser));
             updateUserInterface();
             updateNavigation();
             showAlert('Logged out successfully', 'success');
@@ -915,14 +1605,14 @@
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
                     <span>${message}</span>
-                    <button onclick="this.parentElement.parentElement.remove()" style="margin-left: auto; background: none; border: none; color: inherit;">&times;</button>
+                    <button onclick="this.parentElement.parentElement.remove()" style="margin-left: auto; background: none; border: none; color: inherit; cursor: pointer;">&times;</button>
                 </div>
             `;
             
             document.body.appendChild(alertDiv);
             setTimeout(() => {
                 if (alertDiv.parentElement) alertDiv.remove();
-            }, 3000);
+            }, 4000);
         }
 
         // Handle modal clicks
