@@ -1073,40 +1073,226 @@
         }
 
         // ===== SIMPLE PDF STORAGE =====
-        document.addEventListener('DOMContentLoaded', async function() {
-    // Initialize storage first
-    await initializeStorage();
-    
-    // Then load user and books
-    await loadInitialData();
-    
-    // Rest of your initialization code...
-});
-
-async function loadInitialData() {
-    // Load current user
-    const savedUser = localStorage.getItem('electroUser');
-    if (savedUser) {
-        const userData = JSON.parse(savedUser);
-        if (userData.isLoggedIn && userData.email) {
-            try {
-                const latestUser = await userManager.getUserByEmail(userData.email);
-                if (latestUser) {
-                    currentUser = {
-                        ...userData,
-                        ...latestUser,
-                        isLoggedIn: true
+        class SimplePDFStorage {
+            constructor() {
+                this.MAX_SIZE = 5 * 1024 * 1024; // 5MB max for CodePen
+            }
+            
+            async savePDF(pdfId, pdfFile) {
+                return new Promise((resolve, reject) => {
+                    // Check file size
+                    if (pdfFile.size > this.MAX_SIZE) {
+                        reject(new Error(`File too large. Maximum ${this.MAX_SIZE/(1024*1024)}MB.`));
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        try {
+                            // Save metadata
+                            const pdfsMeta = JSON.parse(localStorage.getItem('pdfs_meta') || '{}');
+                            pdfsMeta[pdfId] = {
+                                id: pdfId,
+                                name: pdfFile.name,
+                                size: pdfFile.size,
+                                type: pdfFile.type,
+                                uploadDate: new Date().toISOString()
+                            };
+                            localStorage.setItem('pdfs_meta', JSON.stringify(pdfsMeta));
+                            
+                            // Save data
+                            const pdfsData = JSON.parse(localStorage.getItem('pdfs_data') || '{}');
+                            pdfsData[pdfId] = reader.result;
+                            localStorage.setItem('pdfs_data', JSON.stringify(pdfsData));
+                            
+                            resolve({ success: true, pdfId: pdfId });
+                        } catch (error) {
+                            reject(error);
+                        }
                     };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(pdfFile);
+                });
+            }
+            
+            async getPDF(pdfId) {
+                return new Promise((resolve, reject) => {
+                    try {
+                        // Get metadata
+                        const pdfsMeta = JSON.parse(localStorage.getItem('pdfs_meta') || '{}');
+                        const metadata = pdfsMeta[pdfId];
+                        
+                        if (!metadata) {
+                            resolve(null);
+                            return;
+                        }
+                        
+                        // Get data
+                        const pdfsData = JSON.parse(localStorage.getItem('pdfs_data') || '{}');
+                        const base64Data = pdfsData[pdfId];
+                        
+                        if (!base64Data) {
+                            resolve(null);
+                            return;
+                        }
+                        
+                        // Convert to blob
+                        const byteString = atob(base64Data.split(',')[1]);
+                        const mimeString = base64Data.split(',')[0].split(':')[1].split(';')[0];
+                        const ab = new ArrayBuffer(byteString.length);
+                        const ia = new Uint8Array(ab);
+                        
+                        for (let i = 0; i < byteString.length; i++) {
+                            ia[i] = byteString.charCodeAt(i);
+                        }
+                        
+                        const blob = new Blob([ab], { type: mimeString });
+                        const url = URL.createObjectURL(blob);
+                        
+                        resolve({
+                            url: url,
+                            name: metadata.name,
+                            size: metadata.size,
+                            blob: blob,
+                            metadata: metadata
+                        });
+                        
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+            }
+            
+            async deletePDF(pdfId) {
+                try {
+                    // Remove metadata
+                    const pdfsMeta = JSON.parse(localStorage.getItem('pdfs_meta') || '{}');
+                    delete pdfsMeta[pdfId];
+                    localStorage.setItem('pdfs_meta', JSON.stringify(pdfsMeta));
+                    
+                    // Remove data
+                    const pdfsData = JSON.parse(localStorage.getItem('pdfs_data') || '{}');
+                    delete pdfsData[pdfId];
+                    localStorage.setItem('pdfs_data', JSON.stringify(pdfsData));
+                    
+                    return true;
+                } catch (error) {
+                    return false;
                 }
-            } catch (error) {
-                console.error('Error loading user:', error);
+            }
+            
+            async getStorageUsage() {
+                try {
+                    const pdfsMeta = JSON.parse(localStorage.getItem('pdfs_meta') || '{}');
+                    let totalSize = 0;
+                    
+                    Object.values(pdfsMeta).forEach(pdf => {
+                        totalSize += pdf.size || 0;
+                    });
+                    
+                    return totalSize;
+                } catch (error) {
+                    return 0;
+                }
+            }
+            
+            formatBytes(bytes, decimals = 2) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const dm = decimals < 0 ? 0 : decimals;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
             }
         }
-    }
-    
-    // Load books for display
-    await loadBooks();
-}
+
+        // Initialize managers
+        const userManager = new UserManager();
+        const pdfStorage = new SimplePDFStorage();
+
+        // ===== BOOKS MANAGEMENT =====
+        let books = JSON.parse(localStorage.getItem('libraryBooks')) || [
+            { 
+                id: 1, 
+                title: "JavaScript Basics", 
+                author: "John Doe", 
+                category: "Programming",
+                description: "Learn JavaScript fundamentals with practical examples",
+                hasPdf: true,
+                pdfId: "sample_js_book",
+                dateAdded: new Date().toLocaleDateString(),
+                addedBy: "admin",
+                uploadDate: new Date().toISOString()
+            },
+            { 
+                id: 2, 
+                title: "Web Development Guide", 
+                author: "Jane Smith", 
+                category: "Technology",
+                description: "Complete guide to modern web development",
+                hasPdf: true,
+                pdfId: "sample_web_book",
+                dateAdded: new Date().toLocaleDateString(),
+                addedBy: "admin",
+                uploadDate: new Date().toISOString()
+            }
+        ];
+
+        function getBooks() {
+            return books;
+        }
+
+        function saveBooks() {
+            localStorage.setItem('libraryBooks', JSON.stringify(books));
+        }
+
+        function addBook(book) {
+            book.id = Date.now();
+            book.dateAdded = new Date().toLocaleDateString();
+            book.uploadDate = new Date().toISOString();
+            book.addedBy = currentUser.name || "Admin";
+            
+            books.push(book);
+            saveBooks();
+            
+            // Notify all users about new book
+            notifyAllUsers(book);
+            
+            return book;
+        }
+
+        function getPdfBookCount() {
+            return books.filter(book => book.hasPdf).length;
+        }
+
+        // ===== ENHANCED NOTIFICATION SYSTEM =====
+        function notifyAllUsers(newBook) {
+            const users = userManager.getAllUsers();
+            const message = `📚 New Book Added: "${newBook.title}" by ${newBook.author}`;
+            
+            users.forEach(user => {
+                // Skip if user is the uploader
+                if (user.email === currentUser.email) return;
+                
+                // Add notification
+                const notification = {
+                    type: 'new_book',
+                    message: message,
+                    date: new Date().toISOString(),
+                    read: false,
+                    bookId: newBook.id
+                };
+                
+                if (!user.notifications) user.notifications = [];
+                user.notifications.push(notification);
+                
+                // Update user
+                userManager.updateUser(user.email, { notifications: user.notifications });
+            });
+            
+            // Show success message
+            showAlert(`✅ "${newBook.title}" added successfully! All users will be notified.`, 'success');
+        }
 
         // ===== CURRENT USER STATE =====
         let currentUser = {
