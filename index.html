@@ -49,6 +49,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .logo {
@@ -69,6 +71,7 @@
         .main-nav {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .nav-link {
@@ -81,6 +84,7 @@
             align-items: center;
             gap: 8px;
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .nav-link:hover {
@@ -97,6 +101,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-wrap: wrap;
         }
 
         .user-info {
@@ -107,6 +112,17 @@
             background: rgba(0, 255, 204, 0.1);
             border-radius: 50px;
             border: 1px solid rgba(0, 255, 204, 0.3);
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #ff3860, var(--electric-orange));
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .btn-logout {
@@ -535,8 +551,8 @@
             font-size: 0.8rem;
         }
 
-        /* Compression Controls */
-        .compression-controls {
+        /* Storage Controls */
+        .storage-controls {
             background: rgba(157, 0, 255, 0.1);
             border: 1px solid var(--spark-purple);
             border-radius: var(--border-radius);
@@ -544,32 +560,27 @@
             margin: 1rem 0;
         }
 
-        .compression-slider {
-            width: 100%;
-            margin: 1rem 0;
-            -webkit-appearance: none;
+        .storage-info {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: rgba(0, 255, 204, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            font-size: 0.9rem;
+        }
+
+        .storage-meter {
             height: 8px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
-            outline: none;
-        }
-
-        .compression-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            background: var(--neon-green);
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid var(--dark-bg);
-        }
-
-        .compression-info {
-            display: flex;
-            justify-content: space-between;
             margin-top: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--text-gray);
+            overflow: hidden;
+        }
+
+        .storage-used {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-green), var(--electric-orange));
+            transition: width 0.3s ease;
         }
 
         /* Modal */
@@ -663,30 +674,6 @@
             transition: width 0.3s ease;
         }
 
-        /* Storage Info */
-        .storage-info {
-            margin-top: 1rem;
-            padding: 0.75rem;
-            background: rgba(0, 255, 204, 0.1);
-            border-radius: 8px;
-            border: 1px solid rgba(0, 255, 204, 0.3);
-            font-size: 0.9rem;
-        }
-
-        .storage-meter {
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            margin-top: 0.5rem;
-            overflow: hidden;
-        }
-
-        .storage-used {
-            height: 100%;
-            background: linear-gradient(90deg, var(--neon-green), var(--electric-orange));
-            transition: width 0.3s ease;
-        }
-
         /* Alert */
         .alert {
             position: fixed;
@@ -729,51 +716,6 @@
             background: rgba(255, 193, 7, 0.15);
             border: 1px solid #ffc107;
             color: #ffc107;
-        }
-
-        /* Notification Badge */
-        .notification-badge {
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            background: linear-gradient(135deg, #ff3860, var(--electric-orange));
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 5px 15px rgba(255, 56, 96, 0.4);
-            transition: all 0.3s ease;
-            display: none;
-        }
-
-        .notification-badge:hover {
-            transform: scale(1.1);
-        }
-
-        .notification-badge i {
-            font-size: 1.2rem;
-        }
-
-        .notification-badge span {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--neon-green);
-            color: var(--dark-bg);
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            font-size: 0.7rem;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
         /* Loading Overlay */
@@ -947,12 +889,6 @@
         }
 
         /* Responsive Design */
-        @media (max-width: 1024px) {
-            .books-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            }
-        }
-
         @media (max-width: 768px) {
             .nav-container {
                 flex-direction: column;
@@ -960,77 +896,20 @@
             }
             
             .main-nav {
-                flex-wrap: wrap;
                 justify-content: center;
             }
             
             .user-panel {
-                width: 100%;
                 justify-content: center;
+                width: 100%;
             }
             
             .books-grid {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-                gap: 1.5rem;
             }
             
             .page-header h1 {
                 font-size: 2rem;
-            }
-            
-            .search-filters {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .filter-group {
-                width: 100%;
-            }
-            
-            .filter-group select {
-                width: 100%;
-            }
-            
-            .book-actions {
-                flex-direction: column;
-            }
-            
-            .action-btn {
-                width: 100%;
-            }
-            
-            .notification-badge {
-                top: auto;
-                bottom: 20px;
-                right: 20px;
-            }
-            
-            .alert {
-                left: 1rem;
-                right: 1rem;
-                max-width: calc(100% - 2rem);
-            }
-        }
-
-        @media (max-width: 480px) {
-            #pageContainer {
-                padding: 1rem;
-            }
-            
-            .page-header {
-                padding: 1.5rem;
-            }
-            
-            .form-container {
-                padding: 1.5rem;
-            }
-            
-            .modal-content {
-                padding: 1.5rem;
-            }
-            
-            .books-grid {
-                grid-template-columns: 1fr;
             }
         }
 
@@ -1043,6 +922,32 @@
 
         .highlight-new {
             animation: highlight 1.5s ease;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            background: rgba(255, 56, 96, 0.1);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+            border: 1px solid rgba(255, 56, 96, 0.3);
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .file-size-indicator {
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border-radius: 4px;
+            background: rgba(0, 255, 204, 0.1);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            margin-top: 5px;
+            display: inline-block;
         }
     </style>
 </head>
@@ -1063,6 +968,9 @@
                 <div class="user-info" id="userInfo">
                     <i class="fas fa-user-circle"></i>
                     <span id="userStatus">Guest</span>
+                    <div id="adminBadge" class="admin-badge" style="display: none;">
+                        <i class="fas fa-user-shield"></i> Admin
+                    </div>
                 </div>
                 <div id="logoutBtn" style="display: none;">
                     <button class="btn-logout" onclick="logout()">
@@ -1072,12 +980,6 @@
             </div>
         </div>
     </header>
-
-    <!-- Notification Badge -->
-    <div class="notification-badge" id="notificationBadge" onclick="showNotifications()">
-        <i class="fas fa-bell"></i>
-        <span id="notificationCount">0</span>
-    </div>
 
     <!-- Main Content -->
     <main id="pageContainer">
@@ -1103,7 +1005,7 @@
                 <div id="uploadStatus" style="margin-top: 0.5rem; font-size: 0.9rem;"></div>
             </div>
             
-            <div class="storage-info" id="storageInfo">
+            <div class="storage-info">
                 <div style="display: flex; justify-content: space-between;">
                     <span>Storage: <span id="storageUsed">0 MB</span> / 500 GB</span>
                     <span id="storagePercent">0%</span>
@@ -1111,6 +1013,9 @@
                 <div class="storage-meter">
                     <div class="storage-used" id="storageMeter"></div>
                 </div>
+                <small style="color: var(--text-gray); margin-top: 5px; display: block;">
+                    <i class="fas fa-info-circle"></i> Supports books up to 500MB (220MB+ recommended)
+                </small>
             </div>
             
             <form id="addBookForm" onsubmit="handleAddBook(event)" style="margin-top: 1rem;">
@@ -1124,12 +1029,14 @@
                 </div>
                 <div class="form-group">
                     <label>Category</label>
-                    <select id="bookCategory">
+                    <select id="bookCategory" required>
+                        <option value="">Select Category</option>
                         <option value="General">General</option>
                         <option value="Programming">Programming</option>
                         <option value="Technology">Technology</option>
                         <option value="Science">Science</option>
                         <option value="Fiction">Fiction</option>
+                        <option value="Novel">Novel</option>
                         <option value="Educational">Educational</option>
                         <option value="Mathematics">Mathematics</option>
                         <option value="Engineering">Engineering</option>
@@ -1142,27 +1049,16 @@
                     <textarea id="bookDescription" placeholder="Brief description of the book..." rows="3"></textarea>
                 </div>
                 
-                <div class="compression-controls">
-                    <label style="display: block; margin-bottom: 0.5rem;">
-                        <i class="fas fa-compress-arrows-alt"></i> PDF Compression Level
-                    </label>
-                    <input type="range" min="0" max="100" value="50" class="compression-slider" id="compressionLevel">
-                    <div class="compression-info">
-                        <span>Fast (Low Compression)</span>
-                        <span id="compressionValue">50%</span>
-                        <span>Small (High Compression)</span>
+                <div class="storage-controls">
+                    <div class="form-group">
+                        <label>Upload PDF File *</label>
+                        <input type="file" id="bookPdfFile" accept=".pdf" required 
+                               style="width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(0, 255, 204, 0.3); border-radius: 8px; color: var(--text-light);">
+                        <div id="fileSizeInfo" class="file-size-indicator"></div>
+                        <small style="color: var(--text-gray); font-size: 0.9rem; display: block; margin-top: 5px;">
+                            <i class="fas fa-info-circle"></i> Maximum file size: 500MB (220MB+ books supported)
+                        </small>
                     </div>
-                    <div class="compression-preview" id="compressionPreview">
-                        Estimated savings: <span id="estimatedSavings">0%</span>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Upload PDF File *</label>
-                    <input type="file" id="bookPdfFile" accept=".pdf" required 
-                           style="width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(0, 255, 204, 0.3); border-radius: 8px; color: var(--text-light);">
-                    <small style="color: var(--text-gray); font-size: 0.9rem;">Maximum file size: 500MB (Supports large files up to 220MB+)</small>
-                    <div id="fileSizeInfo" style="margin-top: 5px; color: var(--neon-green); font-size: 0.9rem;"></div>
                 </div>
                 
                 <button type="submit" class="btn btn-primary btn-block" id="submitBookBtn">
@@ -1173,7 +1069,7 @@
     </div>
 
     <!-- Advanced Search Modal -->
-    <div class="modal advanced-search-modal" id="advancedSearchModal">
+    <div class="modal" id="advancedSearchModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('advancedSearchModal')">&times;</button>
             <h2><i class="fas fa-search-plus"></i> Advanced Search</h2>
@@ -1195,30 +1091,12 @@
                         <option value="Technology">Technology</option>
                         <option value="Science">Science</option>
                         <option value="Fiction">Fiction</option>
+                        <option value="Novel">Novel</option>
                         <option value="Educational">Educational</option>
                         <option value="Mathematics">Mathematics</option>
                         <option value="Engineering">Engineering</option>
                         <option value="Business">Business</option>
                         <option value="Arts">Arts</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-sort-amount-down"></i> Sort By</label>
-                    <select id="searchSortBy">
-                        <option value="relevance">Relevance</option>
-                        <option value="newest">Newest First</option>
-                        <option value="oldest">Oldest First</option>
-                        <option value="title_asc">Title (A-Z)</option>
-                        <option value="title_desc">Title (Z-A)</option>
-                        <option value="popularity">Most Popular</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-file-pdf"></i> Has PDF</label>
-                    <select id="searchHasPDF">
-                        <option value="">Any</option>
-                        <option value="yes">With PDF</option>
-                        <option value="no">Without PDF</option>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">
@@ -1233,6 +1111,11 @@
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
             <h2><i class="fas fa-sign-in-alt"></i> User Login</h2>
+            
+            <div style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(255, 114, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 114, 0, 0.3);">
+                <small><i class="fas fa-user-shield"></i> <strong>Admin Access:</strong> Use email: admin@electrolass.com, Password: Admin123!</small>
+            </div>
+            
             <form id="loginForm" onsubmit="handleUserLogin(event)">
                 <div class="form-group">
                     <label>Email Address</label>
@@ -1245,11 +1128,6 @@
                 <button type="submit" class="btn btn-primary btn-block">
                     <i class="fas fa-sign-in-alt"></i> Sign In
                 </button>
-                <div style="text-align: center; margin-top: 1rem;">
-                    <button type="button" class="btn" onclick="openForgotPasswordModal()" style="background: none; color: var(--electric-orange);">
-                        <i class="fas fa-key"></i> Forgot Password?
-                    </button>
-                </div>
                 <div style="text-align: center; margin-top: 1rem;">
                     <span style="color: var(--text-gray);">Don't have an account? </span>
                     <button type="button" class="btn" onclick="openSignupModal()" style="background: none; color: var(--neon-green); padding: 5px;">
@@ -1295,97 +1173,6 @@
         </div>
     </div>
 
-    <!-- Forgot Password Modal -->
-    <div class="modal" id="forgotPasswordModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('forgotPasswordModal')">&times;</button>
-            <h2><i class="fas fa-key"></i> Reset Password</h2>
-            <form id="forgotPasswordForm" onsubmit="handleForgotPassword(event)">
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" id="resetEmail" placeholder="Enter your email" required>
-                </div>
-                <div class="form-group">
-                    <label>New Password</label>
-                    <input type="password" id="newPassword" placeholder="Enter new password" required minlength="8">
-                </div>
-                <div class="form-group">
-                    <label>Confirm New Password</label>
-                    <input type="password" id="confirmPassword" placeholder="Confirm new password" required minlength="8">
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">
-                    <i class="fas fa-sync-alt"></i> Reset Password
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- PDF Viewer Modal -->
-    <div class="modal pdf-viewer-modal" id="pdfViewerModal">
-        <div class="modal-content" style="max-width: 95%; max-height: 95vh; padding: 0; width: 95%;">
-            <div class="pdf-viewer-header">
-                <h2 id="pdfViewerTitle" style="margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
-                    <i class="fas fa-file-pdf"></i> <span id="pdfTitleText">PDF Viewer</span>
-                </h2>
-                <button onclick="closePDFViewer()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 5px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="pdf-viewer-body">
-                <div class="pdf-toolbar">
-                    <button class="btn" onclick="downloadCurrentPDF()" style="padding: 6px 12px; font-size: 0.9rem;">
-                        <i class="fas fa-download"></i> Download
-                    </button>
-                    <button class="btn" onclick="printCurrentPDF()" style="padding: 6px 12px; font-size: 0.9rem;">
-                        <i class="fas fa-print"></i> Print
-                    </button>
-                    <button class="btn" onclick="openPDFFullscreen()" style="padding: 6px 12px; font-size: 0.9rem;">
-                        <i class="fas fa-expand"></i> Fullscreen
-                    </button>
-                    <div class="zoom-controls">
-                        <button class="btn" onclick="zoomPDF(0.8)" style="padding: 6px 10px; font-size: 0.9rem;">
-                            <i class="fas fa-search-minus"></i>
-                        </button>
-                        <span id="pdfZoomLevel" style="padding: 0 10px; min-width: 50px; text-align: center;">100%</span>
-                        <button class="btn" onclick="zoomPDF(1.2)" style="padding: 6px 10px; font-size: 0.9rem;">
-                            <i class="fas fa-search-plus"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="pdf-container">
-                    <div id="pdfLoading" class="pdf-loading">
-                        <i class="fas fa-spinner fa-spin fa-2x"></i>
-                        <p>Loading PDF...</p>
-                        <div class="pdf-progress">
-                            <div class="pdf-progress-bar" id="pdfProgressBar"></div>
-                        </div>
-                        <p id="pdfLoadingText" style="margin-top: 1rem; font-size: 0.9rem;">Preparing document...</p>
-                    </div>
-                    <iframe id="pdfFrame" class="pdf-frame" sandbox="allow-scripts allow-same-origin"></iframe>
-                    <div id="pdfFallback" style="padding: 2rem; text-align: center; display: none; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                        <i class="fas fa-exclamation-triangle fa-3x" style="color: var(--electric-orange); margin-bottom: 1rem;"></i>
-                        <h3>PDF Viewer Not Available</h3>
-                        <p>Your browser doesn't support embedded PDF viewing.</p>
-                        <button class="btn btn-primary" onclick="downloadCurrentPDF()" style="margin-top: 1rem;">
-                            <i class="fas fa-download"></i> Download PDF Instead
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- User Profile Modal -->
-    <div class="modal" id="profileModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('profileModal')">&times;</button>
-            <h2><i class="fas fa-user-circle"></i> My Profile</h2>
-            <div id="profileContent">
-                <!-- Profile content loaded dynamically -->
-            </div>
-        </div>
-    </div>
-
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
@@ -1398,18 +1185,18 @@
             constructor() {
                 this.STORAGE_LIMIT = 500 * 1024 * 1024 * 1024; // 500GB
                 this.MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB per file
+                this.db = null;
                 this.init();
             }
             
-            init() {
-                // Initialize databases
-                this.initIndexedDB();
-                this.loadSampleBooks();
+            async init() {
+                await this.initDatabase();
+                await this.loadSampleBooks();
             }
             
-            initIndexedDB() {
+            initDatabase() {
                 return new Promise((resolve, reject) => {
-                    const request = indexedDB.open('DigitalLibraryDB', 5);
+                    const request = indexedDB.open('DigitalLibraryDB', 6);
                     
                     request.onerror = (event) => {
                         console.error('IndexedDB error:', event.target.error);
@@ -1459,10 +1246,38 @@
                 });
             }
             
+            async setupAdminUser() {
+                try {
+                    const adminEmail = 'admin@electrolass.com';
+                    const adminExists = await this.getUserByEmail(adminEmail);
+                    
+                    if (!adminExists) {
+                        const adminUser = {
+                            name: "System Administrator",
+                            email: adminEmail,
+                            password: "Admin123!",
+                            role: "admin",
+                            registrationDate: new Date().toISOString(),
+                            lastLogin: new Date().toISOString(),
+                            likedBooks: [],
+                            downloadedBooks: []
+                        };
+                        
+                        const transaction = this.db.transaction(['users'], 'readwrite');
+                        const store = transaction.objectStore('users');
+                        store.put(adminUser);
+                        
+                        console.log('Admin user created');
+                    }
+                } catch (error) {
+                    console.error('Error setting up admin:', error);
+                }
+            }
+            
             async loadSampleBooks() {
                 const books = await this.getAllBooks();
                 if (books.length === 0) {
-                    // Add sample books
+                    // Add sample books including Novels
                     const sampleBooks = [
                         {
                             id: 1,
@@ -1494,17 +1309,31 @@
                         },
                         {
                             id: 3,
-                            title: "The Pragmatic Programmer",
-                            author: "Andrew Hunt & David Thomas",
-                            category: "Programming",
-                            description: "Your journey to mastery",
+                            title: "The Great Gatsby",
+                            author: "F. Scott Fitzgerald",
+                            category: "Novel",
+                            description: "Classic American novel about the Jazz Age",
                             hasPdf: true,
-                            pdfId: "sample_pragmatic",
+                            pdfId: "sample_gatsby",
                             dateAdded: new Date().toISOString(),
                             addedBy: "system",
                             likesCount: 51,
                             downloadsCount: 203,
-                            fileSize: "2.8 MB"
+                            fileSize: "1.8 MB"
+                        },
+                        {
+                            id: 4,
+                            title: "1984",
+                            author: "George Orwell",
+                            category: "Novel",
+                            description: "Dystopian social science fiction novel",
+                            hasPdf: true,
+                            pdfId: "sample_1984",
+                            dateAdded: new Date().toISOString(),
+                            addedBy: "system",
+                            likesCount: 67,
+                            downloadsCount: 312,
+                            fileSize: "2.2 MB"
                         }
                     ];
                     
@@ -1587,13 +1416,11 @@
                 }).filter(book => {
                     // Apply filters
                     if (filters.category && book.category !== filters.category) return false;
-                    if (filters.hasPDF === 'yes' && !book.hasPdf) return false;
-                    if (filters.hasPDF === 'no' && book.hasPdf) return false;
                     return true;
                 });
                 
                 // Apply sorting
-                const sortBy = filters.sortBy || 'relevance';
+                const sortBy = filters.sortBy || 'newest';
                 filtered.sort((a, b) => {
                     switch (sortBy) {
                         case 'newest':
@@ -1656,7 +1483,7 @@
                         const user = event.target.result;
                         
                         if (!user || user.password !== password) {
-                            reject(new Error('Invalid credentials'));
+                            reject(new Error('Invalid email or password'));
                             return;
                         }
                         
@@ -1679,25 +1506,6 @@
                     const request = store.get(email);
                     
                     request.onsuccess = (event) => resolve(event.target.result);
-                    request.onerror = (event) => reject(event.target.error);
-                });
-            }
-            
-            async updateUser(email, updates) {
-                return new Promise(async (resolve, reject) => {
-                    const user = await this.getUserByEmail(email);
-                    if (!user) {
-                        reject(new Error('User not found'));
-                        return;
-                    }
-                    
-                    const updatedUser = { ...user, ...updates };
-                    
-                    const transaction = this.db.transaction(['users'], 'readwrite');
-                    const store = transaction.objectStore('users');
-                    const request = store.put(updatedUser);
-                    
-                    request.onsuccess = () => resolve(updatedUser);
                     request.onerror = (event) => reject(event.target.error);
                 });
             }
@@ -1825,9 +1633,17 @@
             
             // ===== PDF STORAGE =====
             async savePDF(pdfId, file) {
-                return new Promise((resolve, reject) => {
+                return new Promise(async (resolve, reject) => {
+                    // Check file size
                     if (file.size > this.MAX_FILE_SIZE) {
                         reject(new Error(`File too large. Maximum ${this.MAX_FILE_SIZE / (1024 * 1024)}MB.`));
+                        return;
+                    }
+                    
+                    // Check storage limit
+                    const usedStorage = await this.getStorageUsage();
+                    if (usedStorage + file.size > this.STORAGE_LIMIT) {
+                        reject(new Error('Storage limit exceeded! 500GB limit reached.'));
                         return;
                     }
                     
@@ -1931,19 +1747,22 @@
                 
                 let totalLikes = 0;
                 let totalDownloads = 0;
+                let novelsCount = 0;
                 
                 books.forEach(book => {
                     totalLikes += book.likesCount || 0;
                     totalDownloads += book.downloadsCount || 0;
+                    if (book.category === 'Novel') novelsCount++;
                 });
                 
                 return {
                     totalBooks: books.length,
+                    novelsCount: novelsCount,
                     totalLikes: totalLikes,
                     totalDownloads: totalDownloads,
                     storageUsed: storageUsed,
                     storageLimit: this.STORAGE_LIMIT,
-                    storagePercent: (storageUsed / this.STORAGE_LIMIT * 100).toFixed(2)
+                    storagePercent: ((storageUsed / this.STORAGE_LIMIT) * 100).toFixed(2)
                 };
             }
         }
@@ -1961,7 +1780,6 @@
         };
         
         let currentPage = 'home';
-        let currentSearchResults = [];
         let searchTimeout = null;
 
         // ===== PAGE DEFINITIONS =====
@@ -1971,40 +1789,43 @@
                 showFor: ["guest", "user", "admin"],
                 getContent: async function() {
                     const stats = await library.getLibraryStats();
-                    const recentBooks = await library.searchBooks('', { sortBy: 'newest' });
-                    const recentBooksSlice = recentBooks.slice(0, 6);
                     
                     return `
                         <div class="page-header">
                             <h1>Welcome to Electro-LASS Digital Library</h1>
-                            <p class="page-subtitle">Your gateway to ${stats.totalBooks} books and growing collection. 500GB storage available for large files.</p>
+                            <p class="page-subtitle">Your gateway to ${stats.totalBooks} books with 500GB storage. ${stats.novelsCount} Novels available.</p>
                         </div>
                         
                         ${!currentUser.isLoggedIn ? `
-                            <div class="user-home-message">
+                            <div class="dashboard-section">
                                 <h2><i class="fas fa-book-reader"></i> Access Our Digital Library</h2>
-                                <p>Browse ${stats.totalBooks} books as a guest, or sign up to unlock advanced features!</p>
-                                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
+                                <p>Browse ${stats.totalBooks} books as a guest, or sign up to unlock likes, downloads, and more!</p>
+                                <div class="admin-actions">
                                     <button class="btn btn-primary" onclick="navigateTo('library')">
                                         <i class="fas fa-book-open"></i> Browse Library (${stats.totalBooks} books)
                                     </button>
                                     <button class="btn" onclick="openLoginModal()" style="background: var(--neon-green); color: var(--dark-bg);">
                                         <i class="fas fa-sign-in-alt"></i> Login to Access More
                                     </button>
+                                    <button class="btn" onclick="openSignupModal()" style="background: var(--spark-purple); color: white;">
+                                        <i class="fas fa-user-plus"></i> Sign Up Free
+                                    </button>
                                 </div>
                             </div>
                         ` : `
-                            <div class="user-home-message">
+                            <div class="dashboard-section">
                                 <h2><i class="fas fa-book-open"></i> Welcome back, ${currentUser.name}!</h2>
-                                <p>You have full access to our digital library with ${stats.totalBooks} books</p>
-                                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
+                                <p>You have ${currentUser.role === 'admin' ? 'admin' : 'full'} access to our digital library with ${stats.totalBooks} books</p>
+                                <div class="admin-actions">
                                     <button class="btn btn-primary" onclick="navigateTo('library')">
                                         <i class="fas fa-book"></i> Browse All Books
                                     </button>
-                                    <button class="btn" onclick="openAddBookModal()" style="background: var(--neon-green); color: var(--dark-bg);">
-                                        <i class="fas fa-plus"></i> Add New Book
-                                    </button>
-                                    <button class="btn" onclick="openProfileModal()" style="background: var(--spark-purple); color: white;">
+                                    ${currentUser.role === 'admin' ? `
+                                        <button class="btn" onclick="openAddBookModal()" style="background: var(--neon-green); color: var(--dark-bg);">
+                                            <i class="fas fa-plus"></i> Add New Book
+                                        </button>
+                                    ` : ''}
+                                    <button class="btn" onclick="showUserProfile()" style="background: var(--spark-purple); color: white;">
                                         <i class="fas fa-user"></i> My Profile
                                     </button>
                                 </div>
@@ -2017,8 +1838,8 @@
                                 <div class="stat-label">Total Books</div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-number">${stats.totalLikes}</div>
-                                <div class="stat-label">Total Likes</div>
+                                <div class="stat-number">${stats.novelsCount}</div>
+                                <div class="stat-label">Novels</div>
                             </div>
                             <div class="stat-card">
                                 <div class="stat-number">${stats.totalDownloads}</div>
@@ -2026,30 +1847,24 @@
                             </div>
                             <div class="stat-card">
                                 <div class="stat-number">${library.formatBytes(stats.storageUsed)}</div>
-                                <div class="stat-label">Storage Used</div>
+                                <div class="stat-label">Storage Used / 500GB</div>
                             </div>
                         </div>
                         
-                        ${recentBooksSlice.length > 0 ? `
-                            <div class="recent-books">
-                                <h2><i class="fas fa-bolt"></i> Recently Added Books</h2>
-                                <p>Check out our latest additions to the library:</p>
-                                <div class="recent-books-grid">
-                                    ${recentBooksSlice.map(book => `
-                                        <div class="recent-book-card">
-                                            <h4>${book.title}</h4>
-                                            <div class="recent-book-meta">
-                                                <div><i class="fas fa-user-pen"></i> ${book.author}</div>
-                                                <div><i class="fas fa-tag"></i> ${book.category}</div>
-                                                <div><i class="fas fa-heart"></i> ${book.likesCount || 0} likes</div>
-                                            </div>
-                                            ${book.hasPdf ? `
-                                                <button onclick="openPDFViewer(${book.id})" class="btn" style="padding: 6px 12px; font-size: 0.9rem; background: var(--electric-orange); color: white; width: 100%; margin-top: 0.5rem;">
-                                                    <i class="fas fa-file-pdf"></i> Read Now
-                                                </button>
-                                            ` : ''}
-                                        </div>
-                                    `).join('')}
+                        ${currentUser.role === 'admin' ? `
+                            <div class="admin-panel">
+                                <h3><i class="fas fa-user-shield"></i> Admin Panel</h3>
+                                <p>Manage library, users, and storage (500GB total capacity)</p>
+                                <div class="admin-actions">
+                                    <button class="btn" onclick="openAddBookModal()">
+                                        <i class="fas fa-plus"></i> Add Book
+                                    </button>
+                                    <button class="btn" onclick="showStorageStats()">
+                                        <i class="fas fa-chart-pie"></i> Storage Stats
+                                    </button>
+                                    <button class="btn" onclick="showUserManagement()">
+                                        <i class="fas fa-users"></i> Manage Users
+                                    </button>
                                 </div>
                             </div>
                         ` : ''}
@@ -2066,7 +1881,7 @@
                     return `
                         <div class="page-header">
                             <h1><i class="fas fa-book-open"></i> Digital Library</h1>
-                            <p class="page-subtitle">Browse ${stats.totalBooks} books in our collection</p>
+                            <p class="page-subtitle">Browse ${stats.totalBooks} books including ${stats.novelsCount} Novels. 500GB storage available.</p>
                         </div>
                         
                         <div class="search-section">
@@ -2089,6 +1904,7 @@
                                         <option value="Technology">Technology</option>
                                         <option value="Science">Science</option>
                                         <option value="Fiction">Fiction</option>
+                                        <option value="Novel">Novel</option>
                                         <option value="Educational">Educational</option>
                                         <option value="Mathematics">Mathematics</option>
                                         <option value="Engineering">Engineering</option>
@@ -2115,14 +1931,14 @@
                                 <button class="quick-action-btn" onclick="searchByCategory('Programming')">
                                     <i class="fas fa-code"></i> Programming
                                 </button>
-                                <button class="quick-action-btn" onclick="searchByCategory('Technology')">
-                                    <i class="fas fa-microchip"></i> Technology
+                                <button class="quick-action-btn" onclick="searchByCategory('Novel')">
+                                    <i class="fas fa-book"></i> Novels
                                 </button>
                                 <button class="quick-action-btn" onclick="searchByCategory('Science')">
                                     <i class="fas fa-flask"></i> Science
                                 </button>
-                                <button class="quick-action-btn" onclick="searchByCategory('Educational')">
-                                    <i class="fas fa-graduation-cap"></i> Educational
+                                <button class="quick-action-btn" onclick="searchByCategory('Technology')">
+                                    <i class="fas fa-microchip"></i> Technology
                                 </button>
                             </div>
                             
@@ -2136,55 +1952,22 @@
                             </div>
                         </div>
                         
-                        <div id="libraryControls" style="margin-bottom: 2rem; text-align: center;">
-                            ${currentUser.role === 'admin' ? `
-                                <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                        ${currentUser.role === 'admin' ? `
+                            <div class="admin-panel">
+                                <h3><i class="fas fa-user-shield"></i> Admin Controls</h3>
+                                <div class="admin-actions">
                                     <button class="btn btn-primary" onclick="openAddBookModal()">
                                         <i class="fas fa-plus"></i> Add New Book
                                     </button>
-                                    <button class="btn" onclick="showStorageStats()" style="background: var(--neon-green); color: var(--dark-bg);">
-                                        <i class="fas fa-chart-pie"></i> Storage Stats
+                                    <button class="btn" onclick="showStorageStats()">
+                                        <i class="fas fa-hdd"></i> Storage Info (500GB)
                                     </button>
                                 </div>
-                            ` : ''}
-                        </div>
+                            </div>
+                        ` : ''}
                         
                         <div id="booksContainer">
                             <!-- Books load here -->
-                        </div>
-                    `;
-                }
-            },
-            
-            about: {
-                title: "About | Electro-LASS",
-                showFor: ["guest", "user", "admin"],
-                getContent: function() {
-                    return `
-                        <div class="page-header">
-                            <h1><i class="fas fa-info-circle"></i> About Electro-LASS</h1>
-                            <p class="page-subtitle">Learn about our mission and team</p>
-                        </div>
-                        
-                        <div class="dashboard-section">
-                            <h2><i class="fas fa-rocket"></i> Our Mission</h2>
-                            <p>To provide free, accessible digital books to everyone, everywhere. Supporting education through technology with 500GB storage capacity for large academic materials.</p>
-                        </div>
-                        
-                        <div class="dashboard-section">
-                            <h2><i class="fas fa-users"></i> Our Team</h2>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 1rem;">
-                                <div class="stat-card">
-                                    <h3 style="color: var(--neon-green); margin-bottom: 0.5rem;">Robert Sano</h3>
-                                    <div style="color: var(--electric-orange); font-weight: 600; margin-bottom: 1rem;">CEO & Founder</div>
-                                    <p>Visionary leader and creator of Electro-LASS Library system.</p>
-                                </div>
-                                <div class="stat-card">
-                                    <h3 style="color: var(--neon-green); margin-bottom: 0.5rem;">Development Team</h3>
-                                    <div style="color: var(--electric-orange); font-weight: 600; margin-bottom: 1rem;">Technical Experts</div>
-                                    <p>Dedicated team working to provide the best digital library experience.</p>
-                                </div>
-                            </div>
                         </div>
                     `;
                 }
@@ -2196,20 +1979,25 @@
             showLoading('Initializing Digital Library...');
             
             try {
-                await library.initIndexedDB();
+                await library.init;
+                await library.setupAdminUser();
                 
                 // Load current user from localStorage
                 const savedUser = localStorage.getItem('electroUser');
                 if (savedUser) {
                     const userData = JSON.parse(savedUser);
                     if (userData.isLoggedIn && userData.email) {
-                        const dbUser = await library.getUserByEmail(userData.email);
-                        if (dbUser) {
-                            currentUser = {
-                                ...userData,
-                                ...dbUser,
-                                isLoggedIn: true
-                            };
+                        try {
+                            const dbUser = await library.getUserByEmail(userData.email);
+                            if (dbUser) {
+                                currentUser = {
+                                    ...userData,
+                                    ...dbUser,
+                                    isLoggedIn: true
+                                };
+                            }
+                        } catch (error) {
+                            console.log('User not found in database');
                         }
                     }
                 }
@@ -2230,31 +2018,12 @@
             } finally {
                 hideLoading();
             }
-            
-            // Setup modal clicks
-            window.addEventListener('click', function(event) {
-                if (event.target.classList.contains('modal')) {
-                    event.target.style.display = 'none';
-                }
-            });
-            
-            // Handle escape key
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape') {
-                    const modals = document.querySelectorAll('.modal');
-                    modals.forEach(modal => {
-                        if (modal.style.display === 'flex') {
-                            modal.style.display = 'none';
-                        }
-                    });
-                }
-            });
         });
 
         // ===== NAVIGATION =====
         function navigateTo(page) {
-            if (!WEBSITE_PAGES[page] || !WEBSITE_PAGES[page].showFor.includes(currentUser.role)) {
-                showAlert('Access denied', 'error');
+            if (!WEBSITE_PAGES[page]) {
+                showAlert('Page not found', 'error');
                 return;
             }
             
@@ -2263,8 +2032,6 @@
             document.title = WEBSITE_PAGES[page].title;
             
             updateNavigation();
-            
-            // Load page content
             loadPageContent(page);
         }
 
@@ -2290,55 +2057,57 @@
                     await loadBooks();
                 }
             }
-            
-            window.scrollTo(0, 0);
         }
 
         function updateNavigation() {
             const nav = document.getElementById('mainNav');
             let navHTML = '';
             
-            const navItems = {
-                guest: [
-                    { id: 'home', icon: 'fa-home', text: 'Home' },
-                    { id: 'library', icon: 'fa-book', text: 'Library' },
-                    { id: 'about', icon: 'fa-info-circle', text: 'About' }
-                ],
-                user: [
-                    { id: 'home', icon: 'fa-home', text: 'Home' },
-                    { id: 'library', icon: 'fa-book', text: 'Library' },
-                    { id: 'about', icon: 'fa-info-circle', text: 'About' }
-                ],
-                admin: [
-                    { id: 'home', icon: 'fa-home', text: 'Home' },
-                    { id: 'library', icon: 'fa-book', text: 'Library' },
-                    { id: 'about', icon: 'fa-info-circle', text: 'About' }
-                ]
-            };
+            navHTML += `
+                <a href="#" class="nav-link ${currentPage === 'home' ? 'active' : ''}" onclick="navigateTo('home'); return false;">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="#" class="nav-link ${currentPage === 'library' ? 'active' : ''}" onclick="navigateTo('library'); return false;">
+                    <i class="fas fa-book"></i> Library
+                </a>
+            `;
             
-            const items = navItems[currentUser.role] || [];
-            items.forEach(item => {
-                const isActive = currentPage === item.id ? 'active' : '';
-                navHTML += `
-                    <a href="#" class="nav-link ${isActive}" onclick="navigateTo('${item.id}'); return false;">
-                        <i class="fas ${item.icon}"></i> ${item.text}
-                    </a>
-                `;
-            });
-            
-            // Add login/signup for guests, profile for logged in users
             if (!currentUser.isLoggedIn) {
                 navHTML += `
                     <a href="#" class="nav-link" onclick="openLoginModal(); return false;">
                         <i class="fas fa-sign-in-alt"></i> Login
                     </a>
-                    <a href="#" class="nav-link" onclick="openSignupModal(); return false;">
-                        <i class="fas fa-user-plus"></i> Sign Up
-                    </a>
                 `;
             }
             
             nav.innerHTML = navHTML;
+            updateUserInterface();
+        }
+
+        function updateUserInterface() {
+            const userInfo = document.getElementById('userInfo');
+            const userStatus = document.getElementById('userStatus');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const adminBadge = document.getElementById('adminBadge');
+            
+            if (currentUser.isLoggedIn) {
+                userStatus.textContent = currentUser.name.split(' ')[0] || currentUser.email.split('@')[0];
+                
+                if (currentUser.role === 'admin') {
+                    adminBadge.style.display = 'flex';
+                    userInfo.querySelector('i').className = 'fas fa-user-shield';
+                } else {
+                    adminBadge.style.display = 'none';
+                    userInfo.querySelector('i').className = 'fas fa-user-check';
+                }
+                
+                logoutBtn.style.display = 'block';
+            } else {
+                userStatus.textContent = 'Guest';
+                adminBadge.style.display = 'none';
+                userInfo.querySelector('i').className = 'fas fa-user-circle';
+                logoutBtn.style.display = 'none';
+            }
         }
 
         // ===== BOOK MANAGEMENT =====
@@ -2349,14 +2118,16 @@
             showLoading('Loading books...');
             
             try {
-                const books = await library.getAllBooks();
+                const searchQuery = document.getElementById('mainSearch')?.value || '';
+                const filters = getCurrentFilters();
+                const books = await library.searchBooks(searchQuery, filters);
                 
                 if (books.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-book"></i>
-                            <h3>No books in library yet</h3>
-                            <p>Be the first to add a book to our digital library!</p>
+                            <h3>No books found</h3>
+                            <p>Try different search terms or filters</p>
                             ${currentUser.role === 'admin' ? `
                                 <button class="btn btn-primary" onclick="openAddBookModal()" style="margin-top: 1rem;">
                                     <i class="fas fa-plus"></i> Add First Book
@@ -2403,11 +2174,11 @@
                             </div>
                             <div class="book-actions">
                                 ${book.hasPdf ? `
-                                    <button class="action-btn read-btn" onclick="openPDFViewer(${book.id})">
+                                    <button class="action-btn read-btn" onclick="openBookDetails(${book.id})">
                                         <i class="fas fa-file-pdf"></i> Read
                                     </button>
                                 ` : `
-                                    <button class="action-btn read-btn" style="background: var(--electric-orange);">
+                                    <button class="action-btn read-btn" style="background: var(--electric-orange);" onclick="openBookDetails(${book.id})">
                                         <i class="fas fa-book-open"></i> Details
                                     </button>
                                 `}
@@ -2467,12 +2238,16 @@
         }
 
         function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric' 
-            });
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+            } catch (e) {
+                return 'Unknown date';
+            }
         }
 
         // ===== SEARCH FUNCTIONALITY =====
@@ -2484,20 +2259,28 @@
                 
                 try {
                     const filters = getCurrentFilters();
-                    currentSearchResults = await library.searchBooks(query, filters);
-                    
-                    displaySearchResults(currentSearchResults);
+                    await loadBooks();
                     
                     // Update results info
                     const resultsInfo = document.getElementById('searchResultsInfo');
                     const resultsCount = document.getElementById('resultsCount');
                     
                     if (resultsInfo && resultsCount) {
-                        resultsInfo.style.display = 'block';
-                        resultsCount.textContent = `${currentSearchResults.length} result${currentSearchResults.length !== 1 ? 's' : ''} found`;
+                        const container = document.getElementById('booksContainer');
+                        const booksCount = container.querySelectorAll('.book-card').length;
                         
-                        if (query) {
-                            resultsCount.innerHTML += ` for "<strong>${query}</strong>"`;
+                        if (query || filters.category) {
+                            resultsInfo.style.display = 'block';
+                            resultsCount.textContent = `${booksCount} result${booksCount !== 1 ? 's' : ''} found`;
+                            
+                            if (query) {
+                                resultsCount.innerHTML += ` for "<strong>${query}</strong>"`;
+                            }
+                            if (filters.category) {
+                                resultsCount.innerHTML += ` in <strong>${filters.category}</strong>`;
+                            }
+                        } else {
+                            resultsInfo.style.display = 'none';
                         }
                     }
                 } catch (error) {
@@ -2526,102 +2309,14 @@
             handleSearchInput(query);
         }
 
-        async function displaySearchResults(results) {
-            const container = document.getElementById('booksContainer');
-            if (!container) return;
+        function searchByCategory(category) {
+            const searchInput = document.getElementById('mainSearch');
+            const categoryFilter = document.getElementById('filterCategory');
             
-            if (results.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-search"></i>
-                        <h3>No books found</h3>
-                        <p>Try different search terms or filters</p>
-                        <button class="btn" onclick="clearSearch()" style="margin-top: 1rem;">
-                            <i class="fas fa-redo"></i> Clear Search
-                        </button>
-                    </div>
-                `;
-                return;
-            }
+            if (searchInput) searchInput.value = '';
+            if (categoryFilter) categoryFilter.value = category;
             
-            let booksHTML = '<div class="books-grid">';
-            
-            for (const book of results) {
-                const isLiked = currentUser.isLoggedIn ? 
-                    await library.hasUserLikedBook(book.id, currentUser.email) : false;
-                
-                booksHTML += `
-                    <div class="book-card">
-                        <div class="book-cover">
-                            <i class="fas fa-book"></i>
-                            ${book.hasPdf ? '<div class="pdf-badge">PDF</div>' : ''}
-                            ${isNewBook(book.dateAdded) ? '<div class="new-badge">NEW</div>' : ''}
-                        </div>
-                        <h3 class="book-title">${book.title}</h3>
-                        <div class="book-author">
-                            <i class="fas fa-user-pen"></i> ${book.author}
-                        </div>
-                        <div class="book-category">
-                            <i class="fas fa-tag"></i> ${book.category}
-                        </div>
-                        <div class="book-description">
-                            ${book.description || 'No description available.'}
-                        </div>
-                        <div class="book-meta">
-                            <div class="likes-count">
-                                <i class="fas fa-heart"></i> ${book.likesCount || 0}
-                                <span style="margin-left: 10px;">
-                                    <i class="fas fa-download"></i> ${book.downloadsCount || 0}
-                                </span>
-                            </div>
-                            <div>
-                                <i class="fas fa-calendar"></i> ${formatDate(book.dateAdded)}
-                            </div>
-                        </div>
-                        <div class="book-actions">
-                            ${book.hasPdf ? `
-                                <button class="action-btn read-btn" onclick="openPDFViewer(${book.id})">
-                                    <i class="fas fa-file-pdf"></i> Read
-                                </button>
-                            ` : `
-                                <button class="action-btn read-btn" style="background: var(--electric-orange);">
-                                    <i class="fas fa-book-open"></i> Details
-                                </button>
-                            `}
-                            
-                            ${currentUser.isLoggedIn ? `
-                                <button class="action-btn like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(${book.id})">
-                                    <i class="fas fa-heart"></i> ${isLiked ? 'Liked' : 'Like'}
-                                </button>
-                                
-                                ${book.hasPdf ? `
-                                    <button class="action-btn download-btn" onclick="downloadBook(${book.id})">
-                                        <i class="fas fa-download"></i> Download
-                                    </button>
-                                ` : ''}
-                            ` : `
-                                <button class="action-btn like-btn" onclick="showLoginRequired()">
-                                    <i class="fas fa-heart"></i> Like
-                                </button>
-                                ${book.hasPdf ? `
-                                    <button class="action-btn download-btn" onclick="showLoginRequired()">
-                                        <i class="fas fa-download"></i> Download
-                                    </button>
-                                ` : ''}
-                            `}
-                            
-                            ${currentUser.role === 'admin' ? `
-                                <button class="action-btn delete-btn" onclick="deleteBook(${book.id})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            booksHTML += '</div>';
-            container.innerHTML = booksHTML;
+            handleSearchInput('');
         }
 
         function clearSearch() {
@@ -2638,18 +2333,7 @@
             if (category) category.value = '';
             if (sort) sort.value = 'newest';
             
-            // Load all books
             loadBooks();
-        }
-
-        function searchByCategory(category) {
-            const searchInput = document.getElementById('mainSearch');
-            const categoryFilter = document.getElementById('filterCategory');
-            
-            if (searchInput) searchInput.value = '';
-            if (categoryFilter) categoryFilter.value = category;
-            
-            handleSearchInput('');
         }
 
         // ===== LIKE SYSTEM =====
@@ -2663,7 +2347,7 @@
                 const liked = await library.likeBook(bookId, currentUser.email);
                 
                 // Update UI
-                const likeBtn = document.querySelector(`#likeBtn-${bookId}`);
+                const likeBtn = document.getElementById(`likeBtn-${bookId}`);
                 if (likeBtn) {
                     if (liked) {
                         likeBtn.classList.add('liked');
@@ -2736,7 +2420,9 @@
                 document.body.removeChild(link);
                 
                 // Clean up
-                URL.revokeObjectURL(pdf.url);
+                setTimeout(() => {
+                    URL.revokeObjectURL(pdf.url);
+                }, 100);
                 
                 showAlert(`"${book.title}" downloaded successfully!`, 'success');
                 
@@ -2759,7 +2445,7 @@
             const pdfFile = document.getElementById('bookPdfFile').files[0];
             
             // Validate
-            if (!title || !author || !pdfFile) {
+            if (!title || !author || !category || !pdfFile) {
                 showAlert('Please fill all required fields', 'error');
                 return;
             }
@@ -2769,28 +2455,22 @@
                 return;
             }
             
-            // Check file size
-            if (pdfFile.size > library.MAX_FILE_SIZE) {
-                showAlert(`File too large. Maximum ${library.MAX_FILE_SIZE / (1024 * 1024)}MB.`, 'error');
-                return;
-            }
-            
             try {
-                // Show loading
-                showLoading('Uploading book...', 'This may take a moment for large files');
+                showLoading('Uploading book...');
                 
                 const submitBtn = document.getElementById('submitBookBtn');
                 if (submitBtn) submitBtn.disabled = true;
                 
                 // Show progress
-                document.getElementById('uploadProgress').classList.add('active');
+                const progressBar = document.getElementById('uploadProgress');
+                if (progressBar) progressBar.classList.add('active');
                 
                 // Generate IDs
                 const bookId = Date.now();
-                const pdfId = `pdf_${bookId}_${Math.random().toString(36).substr(2, 9)}`;
+                const pdfId = `pdf_${bookId}`;
                 
-                // Simulate compression progress
-                updateUploadProgress(0, 'Starting upload...');
+                // Update progress
+                updateUploadProgress(50, 'Processing file...');
                 
                 // Save PDF to storage
                 await library.savePDF(pdfId, pdfFile);
@@ -2802,7 +2482,7 @@
                     title: title,
                     author: author,
                     category: category,
-                    description: description || `A book about ${title}`,
+                    description: description || `A ${category.toLowerCase()} book about ${title}`,
                     hasPdf: true,
                     pdfId: pdfId,
                     dateAdded: new Date().toISOString(),
@@ -2826,7 +2506,7 @@
                 closeModal('addBookModal');
                 
                 // Show success
-                showAlert(`✅ "${title}" added successfully to the digital library!`, 'success');
+                showAlert(`✅ "${title}" added successfully to the library!`, 'success');
                 
                 // Refresh if on library page
                 if (currentPage === 'library') {
@@ -2842,7 +2522,8 @@
                 if (submitBtn) submitBtn.disabled = false;
                 
                 // Hide progress
-                document.getElementById('uploadProgress').classList.remove('active');
+                const progressBar = document.getElementById('uploadProgress');
+                if (progressBar) progressBar.classList.remove('active');
                 updateUploadProgress(0, '');
                 
                 hideLoading();
@@ -2850,13 +2531,13 @@
         }
 
         function updateUploadProgress(percent, message) {
-            document.getElementById('uploadPercentage').textContent = `${percent}%`;
-            document.getElementById('uploadProgressBar').style.width = `${percent}%`;
-            
+            const percentage = document.getElementById('uploadPercentage');
+            const progressBar = document.getElementById('uploadProgressBar');
             const status = document.getElementById('uploadStatus');
-            if (status) {
-                status.textContent = message;
-            }
+            
+            if (percentage) percentage.textContent = `${percent}%`;
+            if (progressBar) progressBar.style.width = `${percent}%`;
+            if (status) status.textContent = message;
         }
 
         // ===== DELETE BOOK =====
@@ -2888,103 +2569,6 @@
                 showAlert('Error deleting book: ' + error.message, 'error');
             } finally {
                 hideLoading();
-            }
-        }
-
-        // ===== PDF VIEWER =====
-        async function openPDFViewer(bookId) {
-            try {
-                const book = await library.getBook(bookId);
-                if (!book || !book.hasPdf || !book.pdfId) {
-                    showAlert('PDF not available for this book', 'error');
-                    return;
-                }
-                
-                // Set loading state
-                document.getElementById('pdfLoading').style.display = 'block';
-                document.getElementById('pdfFrame').style.display = 'none';
-                document.getElementById('pdfFallback').style.display = 'none';
-                document.getElementById('pdfTitleText').textContent = book.title;
-                
-                // Open modal
-                document.getElementById('pdfViewerModal').style.display = 'flex';
-                
-                // Get PDF
-                const pdf = await library.getPDF(book.pdfId);
-                if (!pdf) {
-                    throw new Error('PDF not found');
-                }
-                
-                // Load in iframe
-                const pdfFrame = document.getElementById('pdfFrame');
-                pdfFrame.src = pdf.url;
-                
-                pdfFrame.onload = () => {
-                    setTimeout(() => {
-                        document.getElementById('pdfLoading').style.display = 'none';
-                        pdfFrame.style.display = 'block';
-                    }, 500);
-                };
-                
-                pdfFrame.onerror = () => {
-                    document.getElementById('pdfLoading').style.display = 'none';
-                    document.getElementById('pdfFallback').style.display = 'flex';
-                };
-                
-                // Store current PDF for download
-                window.currentPDF = pdf;
-                window.currentBook = book;
-                
-            } catch (error) {
-                console.error('PDF viewer error:', error);
-                document.getElementById('pdfLoading').style.display = 'none';
-                document.getElementById('pdfFallback').style.display = 'flex';
-                showAlert('Error loading PDF: ' + error.message, 'error');
-            }
-        }
-
-        function closePDFViewer() {
-            document.getElementById('pdfViewerModal').style.display = 'none';
-            
-            // Clean up
-            if (window.currentPDF && window.currentPDF.url) {
-                URL.revokeObjectURL(window.currentPDF.url);
-                window.currentPDF = null;
-                window.currentBook = null;
-            }
-            
-            // Reset iframe
-            const pdfFrame = document.getElementById('pdfFrame');
-            pdfFrame.src = '';
-            pdfFrame.style.display = 'none';
-            document.getElementById('pdfFallback').style.display = 'none';
-        }
-
-        async function downloadCurrentPDF() {
-            if (!window.currentPDF || !window.currentBook) {
-                showAlert('No PDF to download', 'error');
-                return;
-            }
-            
-            try {
-                // Record download if user is logged in
-                if (currentUser.isLoggedIn) {
-                    await library.recordDownload(window.currentBook.id, currentUser.email);
-                }
-                
-                // Trigger download
-                const link = document.createElement('a');
-                link.href = window.currentPDF.url;
-                link.download = `${window.currentBook.title.replace(/[^a-z0-9]/gi, '_')}.pdf`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                showAlert('PDF download started', 'success');
-                
-            } catch (error) {
-                console.error('Download error:', error);
-                showAlert('Download failed: ' + error.message, 'error');
             }
         }
 
@@ -3045,7 +2629,7 @@
                 updateNavigation();
                 
                 closeModal('signupModal');
-                showAlert(`🎉 Welcome ${name}! Your account has been created successfully.`, 'success');
+                showAlert(`🎉 Welcome ${name}! Your account has been created.`, 'success');
                 
                 // Navigate to home
                 navigateTo('home');
@@ -3118,24 +2702,14 @@
 
         // ===== MODAL FUNCTIONS =====
         function openAddBookModal() {
-            if (!currentUser.isLoggedIn) {
-                openLoginModal();
+            if (!currentUser.isLoggedIn || currentUser.role !== 'admin') {
+                showAlert('Admin access required to add books', 'error');
                 return;
             }
             
             document.getElementById('addBookModal').style.display = 'flex';
             document.getElementById('fileSizeInfo').textContent = '';
             updateStorageInfo();
-            
-            // Setup compression slider
-            const slider = document.getElementById('compressionLevel');
-            const valueDisplay = document.getElementById('compressionValue');
-            
-            if (slider && valueDisplay) {
-                slider.oninput = function() {
-                    valueDisplay.textContent = `${this.value}%`;
-                };
-            }
             
             // Setup file size display
             const fileInput = document.getElementById('bookPdfFile');
@@ -3145,6 +2719,12 @@
                     if (file) {
                         const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
                         document.getElementById('fileSizeInfo').textContent = `File size: ${sizeMB} MB`;
+                        
+                        // Check if file is 220MB+
+                        if (file.size > 220 * 1024 * 1024) {
+                            document.getElementById('fileSizeInfo').innerHTML += 
+                                ' <span style="color: var(--neon-green);"><i class="fas fa-check-circle"></i> Large file supported</span>';
+                        }
                     }
                 };
             }
@@ -3168,80 +2748,28 @@
             const title = document.getElementById('searchTitle').value;
             const author = document.getElementById('searchAuthor').value;
             const category = document.getElementById('searchCategory').value;
-            const sortBy = document.getElementById('searchSortBy').value;
-            const hasPDF = document.getElementById('searchHasPDF').value;
             
             // Build query
             let query = '';
             if (title) query += ` ${title}`;
             if (author) query += ` ${author}`;
             
-            // Build filters
-            const filters = {};
-            if (category) filters.category = category;
-            if (hasPDF) filters.hasPDF = hasPDF;
-            if (sortBy) filters.sortBy = sortBy;
-            
             closeModal('advancedSearchModal');
             
             // Update main search
             const mainSearch = document.getElementById('mainSearch');
-            if (mainSearch) {
-                if (title || author) {
-                    mainSearch.value = `${title} ${author}`.trim();
-                }
+            if (mainSearch && (title || author)) {
+                mainSearch.value = `${title} ${author}`.trim();
             }
             
-            // Update filters
+            // Update category filter
             const catFilter = document.getElementById('filterCategory');
-            const sortFilter = document.getElementById('filterSort');
-            
-            if (catFilter && category) catFilter.value = category;
-            if (sortFilter && sortBy) sortFilter.value = sortBy;
+            if (catFilter && category) {
+                catFilter.value = category;
+            }
             
             // Perform search
             handleSearchInput(query.trim());
-        }
-
-        async function openProfileModal() {
-            if (!currentUser.isLoggedIn) {
-                openLoginModal();
-                return;
-            }
-            
-            // Get user's liked books
-            const allBooks = await library.getAllBooks();
-            const likedBooks = allBooks.filter(book => 
-                currentUser.likedBooks && currentUser.likedBooks.includes(book.id)
-            );
-            
-            document.getElementById('profileContent').innerHTML = `
-                <div style="margin-bottom: 1.5rem;">
-                    <h3 style="color: var(--neon-green); margin-bottom: 0.5rem;">${currentUser.name}</h3>
-                    <p><i class="fas fa-envelope"></i> ${currentUser.email}</p>
-                    <p><i class="fas fa-calendar"></i> Member since: ${formatDate(currentUser.registrationDate || new Date().toISOString())}</p>
-                </div>
-                
-                ${likedBooks.length > 0 ? `
-                    <div style="margin-bottom: 1.5rem;">
-                        <h4><i class="fas fa-heart"></i> Favorite Books (${likedBooks.length})</h4>
-                        <div style="margin-top: 0.5rem;">
-                            ${likedBooks.slice(0, 5).map(book => `
-                                <div style="background: rgba(255, 255, 255, 0.05); padding: 0.5rem; border-radius: 6px; margin-bottom: 0.5rem;">
-                                    <strong>${book.title}</strong> by ${book.author}
-                                </div>
-                            `).join('')}
-                            ${likedBooks.length > 5 ? `<p>...and ${likedBooks.length - 5} more</p>` : ''}
-                        </div>
-                    </div>
-                ` : ''}
-                
-                <button class="btn btn-block" onclick="logout()" style="background: #ff3860; color: white; margin-top: 1rem;">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
-            `;
-            
-            document.getElementById('profileModal').style.display = 'flex';
         }
 
         function closeModal(modalId) {
@@ -3249,24 +2777,6 @@
         }
 
         // ===== HELPER FUNCTIONS =====
-        function updateUserInterface() {
-            const userInfo = document.getElementById('userInfo');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const userStatus = document.getElementById('userStatus');
-            
-            if (currentUser.isLoggedIn) {
-                userStatus.textContent = currentUser.name;
-                userInfo.querySelector('i').className = currentUser.role === 'admin' 
-                    ? 'fas fa-user-shield' 
-                    : 'fas fa-user-check';
-                logoutBtn.style.display = 'block';
-            } else {
-                userStatus.textContent = 'Guest';
-                userInfo.querySelector('i').className = 'fas fa-user-circle';
-                logoutBtn.style.display = 'none';
-            }
-        }
-
         async function updateStorageInfo() {
             try {
                 const used = await library.getStorageUsage();
@@ -3289,15 +2799,15 @@
                 const limit = library.formatBytes(stats.storageLimit);
                 
                 const message = `
-                    <strong>Library Statistics:</strong><br><br>
-                    • Total Books: ${stats.totalBooks}<br>
-                    • Total Likes: ${stats.totalLikes}<br>
-                    • Total Downloads: ${stats.totalDownloads}<br>
-                    • Storage Used: ${used} of ${limit}<br>
-                    • Storage Available: ${stats.storagePercent}% used<br><br>
+                    <strong>Library Storage Statistics:</strong><br><br>
+                    • Total Storage: 500GB<br>
+                    • Used: ${used}<br>
+                    • Available: ${library.formatBytes(stats.storageLimit - stats.storageUsed)}<br>
+                    • Usage: ${stats.storagePercent}%<br>
+                    • Supports files up to 500MB each<br><br>
                     <small style="color: var(--text-gray);">
                         <i class="fas fa-info-circle"></i> 
-                        500GB total storage available for large files up to 500MB each
+                        Perfect for large academic books (220MB+)
                     </small>
                 `;
                 
@@ -3310,25 +2820,95 @@
             }
         }
 
+        async function showUserManagement() {
+            if (currentUser.role !== 'admin') {
+                showAlert('Admin access required', 'error');
+                return;
+            }
+            
+            try {
+                showLoading('Loading user data...');
+                
+                // Get all users from database
+                const transaction = library.db.transaction(['users'], 'readonly');
+                const store = transaction.objectStore('users');
+                const request = store.getAll();
+                
+                const users = await new Promise((resolve, reject) => {
+                    request.onsuccess = (event) => resolve(event.target.result || []);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+                
+                const userList = users.map(user => 
+                    `• ${user.name} (${user.email}) - ${user.role}<br>`
+                ).join('');
+                
+                const message = `
+                    <strong>User Management (${users.length} users):</strong><br><br>
+                    ${userList || 'No users found.'}<br><br>
+                    <small style="color: var(--text-gray);">
+                        <i class="fas fa-info-circle"></i> 
+                        Default admin: admin@electrolass.com / Admin123!
+                    </small>
+                `;
+                
+                showAlert(message, 'info');
+                
+            } catch (error) {
+                showAlert('Error loading users: ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function showUserProfile() {
+            if (!currentUser.isLoggedIn) {
+                openLoginModal();
+                return;
+            }
+            
+            const profileHTML = `
+                <div style="padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: 8px;">
+                    <h3 style="color: var(--neon-green); margin-bottom: 1rem;">Your Profile</h3>
+                    <p><strong>Name:</strong> ${currentUser.name}</p>
+                    <p><strong>Email:</strong> ${currentUser.email}</p>
+                    <p><strong>Role:</strong> ${currentUser.role}</p>
+                    <p><strong>Account Type:</strong> ${currentUser.role === 'admin' ? 'Administrator' : 'Regular User'}</p>
+                    <p><strong>Last Login:</strong> ${formatDate(currentUser.lastLogin)}</p>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <h4 style="color: var(--electric-orange); margin-bottom: 0.5rem;">Permissions:</h4>
+                        <ul style="padding-left: 1.5rem;">
+                            <li>Browse all books</li>
+                            <li>Like books</li>
+                            <li>Download PDFs</li>
+                            ${currentUser.role === 'admin' ? '<li>Add/Delete books</li><li>Manage storage</li>' : ''}
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            showAlert(profileHTML, 'info');
+        }
+
         function showAlert(message, type) {
+            // Remove existing alerts
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => alert.remove());
+            
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type}`;
             alertDiv.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
-                    <span>${message}</span>
-                    <button onclick="this.parentElement.parentElement.remove()" style="margin-left: auto; background: none; border: none; color: inherit; cursor: pointer; font-size: 1.2rem;">&times;</button>
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}" style="margin-top: 2px;"></i>
+                    <div style="flex: 1;">${message}</div>
+                    <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: inherit; cursor: pointer; font-size: 1.2rem;">&times;</button>
                 </div>
             `;
             
             document.body.appendChild(alertDiv);
             
-            // Remove previous alerts
-            const alerts = document.querySelectorAll('.alert');
-            if (alerts.length > 3) {
-                alerts[0].remove();
-            }
-            
+            // Auto-remove after 5 seconds
             setTimeout(() => {
                 if (alertDiv.parentElement) {
                     alertDiv.remove();
@@ -3354,9 +2934,45 @@
         }
 
         function showLoginRequired() {
-            showAlert('Please login to use this feature', 'warning');
+            showAlert('Please login to like or download books', 'warning');
             openLoginModal();
         }
+
+        function openBookDetails(bookId) {
+            showAlert('Book details feature coming soon!', 'info');
+        }
+
+        // Handle window hash changes
+        window.addEventListener('hashchange', function() {
+            const hash = window.location.hash.replace('#', '');
+            if (hash && WEBSITE_PAGES[hash]) {
+                navigateTo(hash);
+            }
+        });
+
+        // Handle modal clicks
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        });
+
+        // Handle escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => {
+                    if (modal.style.display === 'flex') {
+                        modal.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // Initial storage info update
+        setTimeout(() => {
+            updateStorageInfo();
+        }, 1000);
     </script>
 </body>
 </html>
