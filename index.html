@@ -1033,6 +1033,20 @@
             gap: 5px;
             margin-top: 0.5rem;
         }
+        
+        /* Test User Section */
+        .test-user-section {
+            background: rgba(157, 0, 255, 0.1);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+            border: 1px solid var(--spark-purple);
+        }
+        
+        .test-user-section h4 {
+            color: var(--neon-green);
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -1196,15 +1210,22 @@
             <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
             <h2><i class="fas fa-sign-in-alt"></i> User Login</h2>
             
+            <div class="test-user-section">
+                <h4><i class="fas fa-vial"></i> Test User Credentials:</h4>
+                <p><strong>Email:</strong> test@user.com</p>
+                <p><strong>Password:</strong> Test123!</p>
+                <p><small>Use these to test the login system</small></p>
+            </div>
+            
             <form id="loginForm" onsubmit="handleUserLogin(event)">
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                    <input type="email" id="loginEmail" placeholder="test@user.com" required>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
                     <div style="position: relative;">
-                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                        <input type="password" id="loginPassword" placeholder="Test123!" required>
                         <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)">
                             <i class="fas fa-eye"></i>
                         </button>
@@ -1221,7 +1242,7 @@
                             </button>
                         </div>
                         <small style="color: var(--text-gray); font-size: 0.8rem;">
-                            <i class="fas fa-shield-alt"></i> Admin code required for administrator access
+                            <i class="fas fa-shield-alt"></i> Admin code: ELECTRO_LASS_ADMIN_2024
                         </small>
                     </div>
                 </div>
@@ -1325,17 +1346,17 @@
                 this.MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB per file
                 this.ADMIN_SECRET_CODE = "ELECTRO_LASS_ADMIN_2024"; // Hidden admin code
                 this.db = null;
-                this.init();
             }
             
             async init() {
                 await this.initDatabase();
+                await this.setupAdminUser();
                 await this.loadSampleBooks();
             }
             
             initDatabase() {
                 return new Promise((resolve, reject) => {
-                    const request = indexedDB.open('DigitalLibraryDB', 7);
+                    const request = indexedDB.open('DigitalLibraryDB', 8);
                     
                     request.onerror = (event) => {
                         console.error('IndexedDB error:', event.target.error);
@@ -1344,11 +1365,13 @@
                     
                     request.onsuccess = (event) => {
                         this.db = event.target.result;
+                        console.log('Database initialized successfully');
                         resolve(this.db);
                     };
                     
                     request.onupgradeneeded = (event) => {
                         const db = event.target.result;
+                        console.log('Database upgrade needed, version:', event.oldVersion, '->', event.newVersion);
                         
                         // Create object stores
                         const stores = [
@@ -1362,6 +1385,7 @@
                         
                         stores.forEach(store => {
                             if (!db.objectStoreNames.contains(store.name)) {
+                                console.log('Creating object store:', store.name);
                                 const objectStore = db.createObjectStore(store.name, { keyPath: store.keyPath });
                                 
                                 if (store.name === 'books') {
@@ -1385,50 +1409,33 @@
             
             async setupAdminUser() {
                 try {
-                    // Create a hidden admin user with encrypted password
-                    const adminEmail = this.generateAdminEmail();
-                    const adminPassword = this.generateSecurePassword();
+                    // Create test user for easy testing
+                    const testUser = {
+                        name: "Test User",
+                        email: "test@user.com",
+                        password: "Test123!",
+                        role: "user",
+                        registrationDate: new Date().toISOString(),
+                        lastLogin: new Date().toISOString(),
+                        likedBooks: [],
+                        downloadedBooks: [],
+                        isSystemAdmin: false
+                    };
                     
-                    const adminExists = await this.getUserByEmail(adminEmail);
-                    
-                    if (!adminExists) {
-                        const adminUser = {
-                            name: "System Administrator",
-                            email: adminEmail,
-                            password: adminPassword, // Securely generated
-                            role: "admin",
-                            registrationDate: new Date().toISOString(),
-                            lastLogin: new Date().toISOString(),
-                            likedBooks: [],
-                            downloadedBooks: [],
-                            isSystemAdmin: true
-                        };
-                        
+                    // Check if test user exists
+                    const existingUser = await this.getUserByEmail(testUser.email);
+                    if (!existingUser) {
                         const transaction = this.db.transaction(['users'], 'readwrite');
                         const store = transaction.objectStore('users');
-                        store.put(adminUser);
-                        
-                        console.log('Admin user setup completed');
+                        await store.put(testUser);
+                        console.log('Test user created:', testUser.email);
+                    } else {
+                        console.log('Test user already exists');
                     }
+                    
                 } catch (error) {
-                    console.error('Error setting up admin:', error);
+                    console.error('Error setting up test user:', error);
                 }
-            }
-            
-            generateAdminEmail() {
-                // Generate a random admin email that's not visible to users
-                const randomId = Math.random().toString(36).substr(2, 8);
-                return `admin_${randomId}@system.local`;
-            }
-            
-            generateSecurePassword() {
-                // Generate secure random password
-                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-                let password = '';
-                for (let i = 0; i < 16; i++) {
-                    password += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
-                return password;
             }
             
             verifyAdminCode(code) {
@@ -1437,101 +1444,99 @@
             }
             
             async loadSampleBooks() {
-                const books = await this.getAllBooks();
-                if (books.length === 0) {
-                    const sampleBooks = [
-                        {
-                            id: 1,
-                            title: "JavaScript: The Definitive Guide",
-                            author: "David Flanagan",
-                            category: "Programming",
-                            description: "Master JavaScript programming with this comprehensive guide",
-                            hasPdf: true,
-                            pdfId: "sample_js_book",
-                            dateAdded: new Date().toISOString(),
-                            addedBy: "system",
-                            likesCount: 42,
-                            downloadsCount: 156,
-                            fileSize: "2.5 MB"
-                        },
-                        {
-                            id: 2,
-                            title: "Clean Code: A Handbook of Agile Software Craftsmanship",
-                            author: "Robert C. Martin",
-                            category: "Programming",
-                            description: "Learn to write clean, maintainable code",
-                            hasPdf: true,
-                            pdfId: "sample_clean_code",
-                            dateAdded: new Date().toISOString(),
-                            addedBy: "system",
-                            likesCount: 38,
-                            downloadsCount: 89,
-                            fileSize: "3.1 MB"
-                        },
-                        {
-                            id: 3,
-                            title: "The Great Gatsby",
-                            author: "F. Scott Fitzgerald",
-                            category: "Novel",
-                            description: "Classic American novel about the Jazz Age",
-                            hasPdf: true,
-                            pdfId: "sample_gatsby",
-                            dateAdded: new Date().toISOString(),
-                            addedBy: "system",
-                            likesCount: 51,
-                            downloadsCount: 203,
-                            fileSize: "1.8 MB"
-                        },
-                        {
-                            id: 4,
-                            title: "1984",
-                            author: "George Orwell",
-                            category: "Novel",
-                            description: "Dystopian social science fiction novel",
-                            hasPdf: true,
-                            pdfId: "sample_1984",
-                            dateAdded: new Date().toISOString(),
-                            addedBy: "system",
-                            likesCount: 67,
-                            downloadsCount: 312,
-                            fileSize: "2.2 MB"
-                        },
-                        {
-                            id: 5,
-                            title: "To Kill a Mockingbird",
-                            author: "Harper Lee",
-                            category: "Novel",
-                            description: "Classic novel about racial injustice",
-                            hasPdf: true,
-                            pdfId: "sample_mockingbird",
-                            dateAdded: new Date().toISOString(),
-                            addedBy: "system",
-                            likesCount: 89,
-                            downloadsCount: 415,
-                            fileSize: "2.1 MB"
+                try {
+                    const books = await this.getAllBooks();
+                    if (books.length === 0) {
+                        console.log('Loading sample books...');
+                        const sampleBooks = [
+                            {
+                                id: 1,
+                                title: "JavaScript: The Definitive Guide",
+                                author: "David Flanagan",
+                                category: "Programming",
+                                description: "Master JavaScript programming with this comprehensive guide",
+                                hasPdf: true,
+                                pdfId: "sample_js_book",
+                                dateAdded: new Date().toISOString(),
+                                addedBy: "system",
+                                likesCount: 42,
+                                downloadsCount: 156,
+                                fileSize: "2.5 MB"
+                            },
+                            {
+                                id: 2,
+                                title: "Clean Code: A Handbook of Agile Software Craftsmanship",
+                                author: "Robert C. Martin",
+                                category: "Programming",
+                                description: "Learn to write clean, maintainable code",
+                                hasPdf: true,
+                                pdfId: "sample_clean_code",
+                                dateAdded: new Date().toISOString(),
+                                addedBy: "system",
+                                likesCount: 38,
+                                downloadsCount: 89,
+                                fileSize: "3.1 MB"
+                            },
+                            {
+                                id: 3,
+                                title: "The Great Gatsby",
+                                author: "F. Scott Fitzgerald",
+                                category: "Novel",
+                                description: "Classic American novel about the Jazz Age",
+                                hasPdf: true,
+                                pdfId: "sample_gatsby",
+                                dateAdded: new Date().toISOString(),
+                                addedBy: "system",
+                                likesCount: 51,
+                                downloadsCount: 203,
+                                fileSize: "1.8 MB"
+                            },
+                            {
+                                id: 4,
+                                title: "1984",
+                                author: "George Orwell",
+                                category: "Novel",
+                                description: "Dystopian social science fiction novel",
+                                hasPdf: true,
+                                pdfId: "sample_1984",
+                                dateAdded: new Date().toISOString(),
+                                addedBy: "system",
+                                likesCount: 67,
+                                downloadsCount: 312,
+                                fileSize: "2.2 MB"
+                            }
+                        ];
+                        
+                        for (const book of sampleBooks) {
+                            await this.saveBook(book);
                         }
-                    ];
-                    
-                    for (const book of sampleBooks) {
-                        await this.saveBook(book);
+                        console.log('Sample books loaded successfully');
                     }
+                } catch (error) {
+                    console.error('Error loading sample books:', error);
                 }
             }
             
             // ===== BOOK OPERATIONS =====
             async getAllBooks() {
                 return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['books'], 'readonly');
-                    const store = transaction.objectStore('books');
-                    const request = store.getAll();
-                    
-                    request.onsuccess = (event) => {
-                        resolve(event.target.result || []);
-                    };
-                    
-                    request.onerror = (event) => {
-                        reject(event.target.error);
-                    };
+                    try {
+                        const transaction = this.db.transaction(['books'], 'readonly');
+                        const store = transaction.objectStore('books');
+                        const request = store.getAll();
+                        
+                        request.onsuccess = (event) => {
+                            resolve(event.target.result || []);
+                        };
+                        
+                        request.onerror = (event) => {
+                            console.error('Error getting books:', event.target.error);
+                            reject(event.target.error);
+                        };
+                    } catch (error) {
+                        console.error('Transaction error:', error);
+                        reject(error);
+                    }
                 });
             }
             
@@ -1644,11 +1649,20 @@
                         
                         const addRequest = store.add(userData);
                         
-                        addRequest.onsuccess = () => resolve(userData);
-                        addRequest.onerror = (addEvent) => reject(addEvent.target.error);
+                        addRequest.onsuccess = () => {
+                            console.log('User registered successfully:', userData.email);
+                            resolve(userData);
+                        };
+                        addRequest.onerror = (addEvent) => {
+                            console.error('Error registering user:', addEvent.target.error);
+                            reject(addEvent.target.error);
+                        };
                     };
                     
-                    checkRequest.onerror = (event) => reject(event.target.error);
+                    checkRequest.onerror = (event) => {
+                        console.error('Error checking user existence:', event.target.error);
+                        reject(event.target.error);
+                    };
                 });
             }
             
@@ -1668,6 +1682,8 @@
             
             async loginUser(email, password, adminCode = null) {
                 return new Promise((resolve, reject) => {
+                    console.log('Attempting login for:', email);
+                    
                     const transaction = this.db.transaction(['users'], 'readwrite');
                     const store = transaction.objectStore('users');
                     const request = store.get(email);
@@ -1676,20 +1692,29 @@
                         const user = event.target.result;
                         
                         if (!user) {
+                            console.log('User not found:', email);
                             reject(new Error('Account not found. Please check your email or sign up.'));
                             return;
                         }
                         
+                        console.log('User found, checking password...');
+                        
                         if (user.password !== password) {
+                            console.log('Password incorrect for:', email);
                             reject(new Error('Incorrect password. Please try again.'));
                             return;
                         }
                         
+                        console.log('Password correct for:', email);
+                        
                         // Check for admin access
                         if (adminCode) {
+                            console.log('Checking admin code...');
                             if (this.verifyAdminCode(adminCode)) {
+                                console.log('Admin code verified, granting admin access');
                                 user.role = 'admin';
                             } else {
+                                console.log('Invalid admin code');
                                 reject(new Error('Invalid admin code.'));
                                 return;
                             }
@@ -1699,11 +1724,20 @@
                         user.lastLogin = new Date().toISOString();
                         const updateRequest = store.put(user);
                         
-                        updateRequest.onsuccess = () => resolve(user);
-                        updateRequest.onerror = (updateEvent) => reject(updateEvent.target.error);
+                        updateRequest.onsuccess = () => {
+                            console.log('Login successful for:', email, 'Role:', user.role);
+                            resolve(user);
+                        };
+                        updateRequest.onerror = (updateEvent) => {
+                            console.error('Error updating last login:', updateEvent.target.error);
+                            reject(updateEvent.target.error);
+                        };
                     };
                     
-                    request.onerror = (event) => reject(event.target.error);
+                    request.onerror = (event) => {
+                        console.error('Error fetching user:', event.target.error);
+                        reject(event.target.error);
+                    };
                 });
             }
             
@@ -2228,7 +2262,9 @@
             showLoading('Initializing Digital Library...');
             
             try {
-                await library.init;
+                console.log('Starting library initialization...');
+                await library.init();
+                console.log('Library initialized successfully');
                 
                 // Load current user from localStorage
                 const savedUser = localStorage.getItem('electroUser');
@@ -2236,6 +2272,7 @@
                     const userData = JSON.parse(savedUser);
                     if (userData.isLoggedIn && userData.email) {
                         try {
+                            console.log('Attempting to load saved user:', userData.email);
                             const dbUser = await library.getUserByEmail(userData.email);
                             if (dbUser) {
                                 currentUser = {
@@ -2243,9 +2280,14 @@
                                     ...dbUser,
                                     isLoggedIn: true
                                 };
+                                console.log('User loaded from localStorage:', currentUser.email);
+                            } else {
+                                console.log('User not found in database, clearing localStorage');
+                                localStorage.removeItem('electroUser');
                             }
                         } catch (error) {
-                            console.log('User session expired');
+                            console.log('Error loading user from database:', error);
+                            localStorage.removeItem('electroUser');
                         }
                     }
                 }
@@ -2899,7 +2941,8 @@
                 navigateTo('home');
                 
             } catch (error) {
-                showAlert('Error: ' + error.message, 'error');
+                console.error('Login error details:', error);
+                showAlert('Login failed: ' + error.message, 'error');
             } finally {
                 hideLoading();
             }
