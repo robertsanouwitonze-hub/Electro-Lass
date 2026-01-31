@@ -1339,101 +1339,58 @@
     </div>
 
     <script>
-        // ===== CORE LIBRARY SYSTEM =====
-        class DigitalLibrary {
-            constructor() {
-                this.STORAGE_LIMIT = 500 * 1024 * 1024 * 1024; // 500GB
-                this.MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB per file
-                this.ADMIN_SECRET_CODE = "ELECTRO_LASS_ADMIN_2024";
-                this.db = null;
-            }
-            
-            async init() {
+        // ===== SIMPLE DATA STORAGE SYSTEM =====
+        var DigitalLibrary = {
+            // Initialize the library
+            init: function() {
                 console.log('Initializing Digital Library...');
-                await this.initDatabase();
-                await this.setupDefaultUsers();
-                await this.loadSampleBooks();
+                
+                // Initialize all data stores
+                this.initStorage();
+                this.setupDefaultData();
+                
                 console.log('Digital Library initialized successfully');
-            }
+            },
             
-            initDatabase() {
-                return new Promise((resolve, reject) => {
-                    console.log('Opening IndexedDB...');
-                    const request = indexedDB.open('DigitalLibraryDB', 3);
-                    
-                    request.onerror = (event) => {
-                        console.error('IndexedDB error:', event.target.error);
-                        reject(event.target.error);
-                    };
-                    
-                    request.onsuccess = (event) => {
-                        this.db = event.target.result;
-                        console.log('Database opened successfully');
-                        resolve(this.db);
-                    };
-                    
-                    request.onupgradeneeded = (event) => {
-                        console.log('Database upgrade needed. Old version:', event.oldVersion, 'New version:', event.newVersion);
-                        const db = event.target.result;
-                        
-                        // Delete old object stores if they exist
-                        if (event.oldVersion < 1) {
-                            const storeNames = ['books', 'users', 'pdfs', 'likes', 'downloads', 'settings'];
-                            storeNames.forEach(name => {
-                                if (db.objectStoreNames.contains(name)) {
-                                    db.deleteObjectStore(name);
-                                }
-                            });
-                        }
-                        
-                        // Create books store
-                        if (!db.objectStoreNames.contains('books')) {
-                            console.log('Creating books store');
-                            const booksStore = db.createObjectStore('books', { keyPath: 'id' });
-                            booksStore.createIndex('title', 'title', { unique: false });
-                            booksStore.createIndex('author', 'author', { unique: false });
-                            booksStore.createIndex('category', 'category', { unique: false });
-                            booksStore.createIndex('dateAdded', 'dateAdded', { unique: false });
-                        }
-                        
-                        // Create users store
-                        if (!db.objectStoreNames.contains('users')) {
-                            console.log('Creating users store');
-                            const usersStore = db.createObjectStore('users', { keyPath: 'email' });
-                            usersStore.createIndex('name', 'name', { unique: false });
-                            usersStore.createIndex('role', 'role', { unique: false });
-                        }
-                        
-                        // Create likes store
-                        if (!db.objectStoreNames.contains('likes')) {
-                            console.log('Creating likes store');
-                            const likesStore = db.createObjectStore('likes', { keyPath: 'id' });
-                            likesStore.createIndex('bookId', 'bookId', { unique: false });
-                            likesStore.createIndex('userId', 'userId', { unique: false });
-                            likesStore.createIndex('bookId_userId', ['bookId', 'userId'], { unique: true });
-                        }
-                        
-                        // Create downloads store
-                        if (!db.objectStoreNames.contains('downloads')) {
-                            console.log('Creating downloads store');
-                            const downloadsStore = db.createObjectStore('downloads', { keyPath: 'id' });
-                            downloadsStore.createIndex('bookId', 'bookId', { unique: false });
-                            downloadsStore.createIndex('userId', 'userId', { unique: false });
-                        }
-                        
-                        // Create pdfs store
-                        if (!db.objectStoreNames.contains('pdfs')) {
-                            console.log('Creating pdfs store');
-                            db.createObjectStore('pdfs', { keyPath: 'id' });
-                        }
-                    };
-                });
-            }
+            // Initialize localStorage with default data
+            initStorage: function() {
+                // Initialize books if not exists
+                if (!localStorage.getItem('library_books')) {
+                    localStorage.setItem('library_books', JSON.stringify([]));
+                }
+                
+                // Initialize users if not exists
+                if (!localStorage.getItem('library_users')) {
+                    localStorage.setItem('library_users', JSON.stringify([]));
+                }
+                
+                // Initialize likes if not exists
+                if (!localStorage.getItem('library_likes')) {
+                    localStorage.setItem('library_likes', JSON.stringify([]));
+                }
+                
+                // Initialize downloads if not exists
+                if (!localStorage.getItem('library_downloads')) {
+                    localStorage.setItem('library_downloads', JSON.stringify([]));
+                }
+            },
             
-            async setupDefaultUsers() {
-                try {
-                    console.log('Setting up default users...');
-                    const testUser = {
+            // Setup default test data
+            setupDefaultData: function() {
+                var users = this.getUsers();
+                var books = this.getBooks();
+                
+                // Add test user if not exists
+                var testUserExists = false;
+                for (var i = 0; i < users.length; i++) {
+                    if (users[i].email === 'test@user.com') {
+                        testUserExists = true;
+                        break;
+                    }
+                }
+                
+                if (!testUserExists) {
+                    var testUser = {
                         name: "Test User",
                         email: "test@user.com",
                         password: "Test123!",
@@ -1444,275 +1401,282 @@
                         downloadedBooks: []
                     };
                     
-                    await this.saveUser(testUser);
-                    console.log('Test user created:', testUser.email);
-                    
-                } catch (error) {
-                    console.error('Error setting up default users:', error);
+                    users.push(testUser);
+                    localStorage.setItem('library_users', JSON.stringify(users));
+                    console.log('Test user created');
                 }
-            }
-            
-            async loadSampleBooks() {
-                try {
-                    const books = await this.getAllBooks();
-                    if (books.length === 0) {
-                        console.log('Loading sample books...');
-                        const sampleBooks = [
-                            {
-                                id: 1,
-                                title: "JavaScript: The Definitive Guide",
-                                author: "David Flanagan",
-                                category: "Programming",
-                                description: "Master JavaScript programming with this comprehensive guide",
-                                hasPdf: true,
-                                pdfId: "sample_js_book",
-                                dateAdded: new Date().toISOString(),
-                                addedBy: "system",
-                                likesCount: 42,
-                                downloadsCount: 156,
-                                fileSize: "2.5 MB"
-                            },
-                            {
-                                id: 2,
-                                title: "Clean Code: A Handbook of Agile Software Craftsmanship",
-                                author: "Robert C. Martin",
-                                category: "Programming",
-                                description: "Learn to write clean, maintainable code",
-                                hasPdf: true,
-                                pdfId: "sample_clean_code",
-                                dateAdded: new Date().toISOString(),
-                                addedBy: "system",
-                                likesCount: 38,
-                                downloadsCount: 89,
-                                fileSize: "3.1 MB"
-                            },
-                            {
-                                id: 3,
-                                title: "The Great Gatsby",
-                                author: "F. Scott Fitzgerald",
-                                category: "Novel",
-                                description: "Classic American novel about the Jazz Age",
-                                hasPdf: true,
-                                pdfId: "sample_gatsby",
-                                dateAdded: new Date().toISOString(),
-                                addedBy: "system",
-                                likesCount: 51,
-                                downloadsCount: 203,
-                                fileSize: "1.8 MB"
-                            },
-                            {
-                                id: 4,
-                                title: "1984",
-                                author: "George Orwell",
-                                category: "Novel",
-                                description: "Dystopian social science fiction novel",
-                                hasPdf: true,
-                                pdfId: "sample_1984",
-                                dateAdded: new Date().toISOString(),
-                                addedBy: "system",
-                                likesCount: 67,
-                                downloadsCount: 312,
-                                fileSize: "2.2 MB"
-                            }
-                        ];
-                        
-                        for (const book of sampleBooks) {
-                            await this.saveBook(book);
+                
+                // Add sample books if no books exist
+                if (books.length === 0) {
+                    var sampleBooks = [
+                        {
+                            id: 1,
+                            title: "JavaScript: The Definitive Guide",
+                            author: "David Flanagan",
+                            category: "Programming",
+                            description: "Master JavaScript programming with this comprehensive guide",
+                            hasPdf: false,
+                            dateAdded: new Date().toISOString(),
+                            addedBy: "system",
+                            likesCount: 42,
+                            downloadsCount: 156,
+                            fileSize: "2.5 MB"
+                        },
+                        {
+                            id: 2,
+                            title: "Clean Code: A Handbook of Agile Software Craftsmanship",
+                            author: "Robert C. Martin",
+                            category: "Programming",
+                            description: "Learn to write clean, maintainable code",
+                            hasPdf: false,
+                            dateAdded: new Date().toISOString(),
+                            addedBy: "system",
+                            likesCount: 38,
+                            downloadsCount: 89,
+                            fileSize: "3.1 MB"
+                        },
+                        {
+                            id: 3,
+                            title: "The Great Gatsby",
+                            author: "F. Scott Fitzgerald",
+                            category: "Novel",
+                            description: "Classic American novel about the Jazz Age",
+                            hasPdf: false,
+                            dateAdded: new Date().toISOString(),
+                            addedBy: "system",
+                            likesCount: 51,
+                            downloadsCount: 203,
+                            fileSize: "1.8 MB"
+                        },
+                        {
+                            id: 4,
+                            title: "1984",
+                            author: "George Orwell",
+                            category: "Novel",
+                            description: "Dystopian social science fiction novel",
+                            hasPdf: false,
+                            dateAdded: new Date().toISOString(),
+                            addedBy: "system",
+                            likesCount: 67,
+                            downloadsCount: 312,
+                            fileSize: "2.2 MB"
                         }
-                        console.log('Sample books loaded successfully');
-                    }
-                } catch (error) {
-                    console.error('Error loading sample books:', error);
+                    ];
+                    
+                    localStorage.setItem('library_books', JSON.stringify(sampleBooks));
+                    console.log('Sample books loaded');
                 }
-            }
+            },
             
             // ===== USER OPERATIONS =====
-            async saveUser(user) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['users'], 'readwrite');
-                    const store = transaction.objectStore('users');
-                    const request = store.put(user);
-                    
-                    request.onsuccess = () => resolve(true);
-                    request.onerror = (event) => reject(event.target.error);
-                });
-            }
+            getUsers: function() {
+                var users = localStorage.getItem('library_users');
+                return users ? JSON.parse(users) : [];
+            },
             
-            async getUserByEmail(email) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['users'], 'readonly');
-                    const store = transaction.objectStore('users');
-                    const request = store.get(email);
-                    
-                    request.onsuccess = (event) => resolve(event.target.result);
-                    request.onerror = (event) => reject(event.target.error);
-                });
-            }
-            
-            async registerUser(userData) {
-                try {
-                    const existingUser = await this.getUserByEmail(userData.email);
-                    if (existingUser) {
-                        throw new Error('Email already registered. Please use a different email or login.');
+            getUserByEmail: function(email) {
+                var users = this.getUsers();
+                for (var i = 0; i < users.length; i++) {
+                    if (users[i].email === email) {
+                        return users[i];
                     }
-                    
-                    if (!this.validatePasswordStrength(userData.password)) {
-                        throw new Error('Password must be at least 8 characters with uppercase, lowercase, numbers, and special characters.');
-                    }
-                    
-                    const user = {
-                        ...userData,
-                        role: 'user',
-                        registrationDate: new Date().toISOString(),
-                        lastLogin: new Date().toISOString(),
-                        likedBooks: [],
-                        downloadedBooks: []
-                    };
-                    
-                    await this.saveUser(user);
-                    console.log('User registered successfully:', user.email);
-                    return user;
-                    
-                } catch (error) {
-                    console.error('Error registering user:', error);
-                    throw error;
                 }
-            }
+                return null;
+            },
             
-            validatePasswordStrength(password) {
-                const minLength = 8;
-                const hasUpperCase = /[A-Z]/.test(password);
-                const hasLowerCase = /[a-z]/.test(password);
-                const hasNumbers = /\d/.test(password);
-                const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+            saveUser: function(user) {
+                var users = this.getUsers();
+                var found = false;
+                
+                // Update existing user or add new
+                for (var i = 0; i < users.length; i++) {
+                    if (users[i].email === user.email) {
+                        users[i] = user;
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (!found) {
+                    users.push(user);
+                }
+                
+                localStorage.setItem('library_users', JSON.stringify(users));
+                return true;
+            },
+            
+            registerUser: function(userData) {
+                var existingUser = this.getUserByEmail(userData.email);
+                if (existingUser) {
+                    throw new Error('Email already registered. Please use a different email or login.');
+                }
+                
+                if (!this.validatePasswordStrength(userData.password)) {
+                    throw new Error('Password must be at least 8 characters with uppercase, lowercase, numbers, and special characters.');
+                }
+                
+                var user = {
+                    name: userData.name,
+                    email: userData.email,
+                    password: userData.password,
+                    role: 'user',
+                    registrationDate: new Date().toISOString(),
+                    lastLogin: new Date().toISOString(),
+                    likedBooks: [],
+                    downloadedBooks: []
+                };
+                
+                this.saveUser(user);
+                console.log('User registered successfully:', user.email);
+                return user;
+            },
+            
+            validatePasswordStrength: function(password) {
+                var minLength = 8;
+                var hasUpperCase = /[A-Z]/.test(password);
+                var hasLowerCase = /[a-z]/.test(password);
+                var hasNumbers = /\d/.test(password);
+                var hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
                 
                 return password.length >= minLength && 
                        hasUpperCase && 
                        hasLowerCase && 
                        hasNumbers && 
                        hasSpecialChar;
-            }
+            },
             
-            async loginUser(email, password, adminCode = null) {
-                try {
-                    console.log('Attempting login for:', email);
-                    const user = await this.getUserByEmail(email);
-                    
-                    if (!user) {
-                        throw new Error('Account not found. Please check your email or sign up.');
-                    }
-                    
-                    if (user.password !== password) {
-                        throw new Error('Incorrect password. Please try again.');
-                    }
-                    
-                    // Check for admin access
-                    if (adminCode) {
-                        if (adminCode === this.ADMIN_SECRET_CODE) {
-                            user.role = 'admin';
-                            console.log('Admin access granted for:', email);
-                        } else {
-                            throw new Error('Invalid admin code.');
-                        }
-                    }
-                    
-                    // Update last login
-                    user.lastLogin = new Date().toISOString();
-                    await this.saveUser(user);
-                    
-                    console.log('Login successful for:', email, 'Role:', user.role);
-                    return user;
-                    
-                } catch (error) {
-                    console.error('Login error:', error);
-                    throw error;
+            loginUser: function(email, password, adminCode) {
+                console.log('Attempting login for:', email);
+                var user = this.getUserByEmail(email);
+                
+                if (!user) {
+                    throw new Error('Account not found. Please check your email or sign up.');
                 }
-            }
+                
+                if (user.password !== password) {
+                    throw new Error('Incorrect password. Please try again.');
+                }
+                
+                // Check for admin access
+                if (adminCode) {
+                    if (adminCode === "ELECTRO_LASS_ADMIN_2024") {
+                        user.role = 'admin';
+                        console.log('Admin access granted for:', email);
+                    } else {
+                        throw new Error('Invalid admin code.');
+                    }
+                }
+                
+                // Update last login
+                user.lastLogin = new Date().toISOString();
+                this.saveUser(user);
+                
+                console.log('Login successful for:', email, 'Role:', user.role);
+                return user;
+            },
             
-            verifyAdminCode(code) {
-                return code === this.ADMIN_SECRET_CODE;
-            }
+            verifyAdminCode: function(code) {
+                return code === "ELECTRO_LASS_ADMIN_2024";
+            },
             
             // ===== BOOK OPERATIONS =====
-            async getAllBooks() {
-                return new Promise((resolve, reject) => {
-                    try {
-                        const transaction = this.db.transaction(['books'], 'readonly');
-                        const store = transaction.objectStore('books');
-                        const request = store.getAll();
-                        
-                        request.onsuccess = (event) => {
-                            resolve(event.target.result || []);
-                        };
-                        
-                        request.onerror = (event) => {
-                            reject(event.target.error);
-                        };
-                    } catch (error) {
-                        reject(error);
+            getBooks: function() {
+                var books = localStorage.getItem('library_books');
+                return books ? JSON.parse(books) : [];
+            },
+            
+            getBook: function(id) {
+                var books = this.getBooks();
+                for (var i = 0; i < books.length; i++) {
+                    if (books[i].id == id) {
+                        return books[i];
                     }
-                });
-            }
+                }
+                return null;
+            },
             
-            async getBook(id) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['books'], 'readonly');
-                    const store = transaction.objectStore('books');
-                    const request = store.get(id);
-                    
-                    request.onsuccess = (event) => {
-                        resolve(event.target.result);
-                    };
-                    
-                    request.onerror = (event) => {
-                        reject(event.target.error);
-                    };
-                });
-            }
-            
-            async saveBook(book) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['books'], 'readwrite');
-                    const store = transaction.objectStore('books');
-                    const request = store.put(book);
-                    
-                    request.onsuccess = () => resolve(true);
-                    request.onerror = (event) => reject(event.target.error);
-                });
-            }
-            
-            async deleteBook(id) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['books'], 'readwrite');
-                    const store = transaction.objectStore('books');
-                    const request = store.delete(id);
-                    
-                    request.onsuccess = () => resolve(true);
-                    request.onerror = (event) => reject(event.target.error);
-                });
-            }
-            
-            async searchBooks(query, filters = {}) {
-                const books = await this.getAllBooks();
+            saveBook: function(book) {
+                var books = this.getBooks();
+                var found = false;
                 
-                if (!query && Object.keys(filters).length === 0) {
+                // Update existing book or add new
+                for (var i = 0; i < books.length; i++) {
+                    if (books[i].id == book.id) {
+                        books[i] = book;
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (!found) {
+                    books.push(book);
+                }
+                
+                localStorage.setItem('library_books', JSON.stringify(books));
+                return true;
+            },
+            
+            deleteBook: function(id) {
+                var books = this.getBooks();
+                var newBooks = [];
+                
+                for (var i = 0; i < books.length; i++) {
+                    if (books[i].id != id) {
+                        newBooks.push(books[i]);
+                    }
+                }
+                
+                localStorage.setItem('library_books', JSON.stringify(newBooks));
+                return true;
+            },
+            
+            searchBooks: function(query, filters) {
+                var books = this.getBooks();
+                
+                if (!query && (!filters || Object.keys(filters).length === 0)) {
                     return books;
                 }
                 
-                const searchTerms = query ? query.toLowerCase().split(/\s+/) : [];
-                const filtered = books.filter(book => {
-                    if (searchTerms.length > 0) {
-                        const searchText = `${book.title || ''} ${book.author || ''} ${book.category || ''} ${book.description || ''}`.toLowerCase();
-                        return searchTerms.some(term => searchText.includes(term));
-                    }
-                    return true;
-                }).filter(book => {
-                    if (filters.category && book.category !== filters.category) return false;
-                    return true;
-                });
+                var searchTerms = query ? query.toLowerCase().split(/\s+/) : [];
+                var filtered = [];
                 
-                const sortBy = filters.sortBy || 'newest';
-                filtered.sort((a, b) => {
+                // Filter by search terms
+                for (var i = 0; i < books.length; i++) {
+                    var book = books[i];
+                    var include = true;
+                    
+                    // Search in text
+                    if (searchTerms.length > 0) {
+                        var searchText = (book.title || '') + ' ' + (book.author || '') + ' ' + 
+                                       (book.category || '') + ' ' + (book.description || '');
+                        searchText = searchText.toLowerCase();
+                        
+                        var hasAllTerms = true;
+                        for (var j = 0; j < searchTerms.length; j++) {
+                            if (searchText.indexOf(searchTerms[j]) === -1) {
+                                hasAllTerms = false;
+                                break;
+                            }
+                        }
+                        
+                        if (!hasAllTerms) {
+                            include = false;
+                        }
+                    }
+                    
+                    // Filter by category
+                    if (include && filters && filters.category && book.category !== filters.category) {
+                        include = false;
+                    }
+                    
+                    if (include) {
+                        filtered.push(book);
+                    }
+                }
+                
+                // Sort results
+                var sortBy = (filters && filters.sortBy) || 'newest';
+                filtered.sort(function(a, b) {
                     switch (sortBy) {
                         case 'newest':
                             return new Date(b.dateAdded) - new Date(a.dateAdded);
@@ -1730,258 +1694,139 @@
                 });
                 
                 return filtered;
-            }
+            },
             
             // ===== LIKE SYSTEM =====
-            async likeBook(bookId, userId) {
-                const likeId = `${bookId}_${userId}`;
+            getLikes: function() {
+                var likes = localStorage.getItem('library_likes');
+                return likes ? JSON.parse(likes) : [];
+            },
+            
+            likeBook: function(bookId, userId) {
+                var likes = this.getLikes();
+                var likeId = bookId + '_' + userId;
+                var alreadyLiked = false;
                 
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['likes', 'books'], 'readwrite');
-                    const likeStore = transaction.objectStore('likes');
-                    const bookStore = transaction.objectStore('books');
-                    
-                    const checkRequest = likeStore.get(likeId);
-                    
-                    checkRequest.onsuccess = async (event) => {
-                        if (event.target.result) {
-                            await this.unlikeBook(bookId, userId);
-                            resolve(false);
-                            return;
+                // Check if already liked
+                for (var i = 0; i < likes.length; i++) {
+                    if (likes[i].id === likeId) {
+                        // Unlike if already liked
+                        likes.splice(i, 1);
+                        localStorage.setItem('library_likes', JSON.stringify(likes));
+                        
+                        // Update book likes count
+                        var book = this.getBook(bookId);
+                        if (book) {
+                            book.likesCount = Math.max(0, (book.likesCount || 0) - 1);
+                            this.saveBook(book);
                         }
                         
-                        const like = {
-                            id: likeId,
-                            bookId: bookId,
-                            userId: userId,
-                            timestamp: new Date().toISOString()
-                        };
-                        
-                        likeStore.add(like);
-                        
-                        const bookRequest = bookStore.get(bookId);
-                        bookRequest.onsuccess = (bookEvent) => {
-                            const book = bookEvent.target.result;
-                            if (book) {
-                                book.likesCount = (book.likesCount || 0) + 1;
-                                bookStore.put(book);
-                            }
-                        };
-                        
-                        transaction.oncomplete = () => resolve(true);
-                        transaction.onerror = (transEvent) => reject(transEvent.target.error);
-                    };
-                    
-                    checkRequest.onerror = (event) => reject(event.target.error);
-                });
-            }
-            
-            async unlikeBook(bookId, userId) {
-                const likeId = `${bookId}_${userId}`;
+                        return false;
+                    }
+                }
                 
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['likes', 'books'], 'readwrite');
-                    const likeStore = transaction.objectStore('likes');
-                    const bookStore = transaction.objectStore('books');
-                    
-                    likeStore.delete(likeId);
-                    
-                    const bookRequest = bookStore.get(bookId);
-                    bookRequest.onsuccess = (bookEvent) => {
-                        const book = bookEvent.target.result;
-                        if (book && book.likesCount > 0) {
-                            book.likesCount = book.likesCount - 1;
-                            bookStore.put(book);
-                        }
-                    };
-                    
-                    transaction.oncomplete = () => resolve(true);
-                    transaction.onerror = (transEvent) => reject(transEvent.target.error);
+                // Add like
+                likes.push({
+                    id: likeId,
+                    bookId: bookId,
+                    userId: userId,
+                    timestamp: new Date().toISOString()
                 });
-            }
-            
-            async hasUserLikedBook(bookId, userId) {
-                const likeId = `${bookId}_${userId}`;
                 
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['likes'], 'readonly');
-                    const store = transaction.objectStore('likes');
-                    const request = store.get(likeId);
-                    
-                    request.onsuccess = (event) => resolve(!!event.target.result);
-                    request.onerror = (event) => reject(event.target.error);
-                });
-            }
+                localStorage.setItem('library_likes', JSON.stringify(likes));
+                
+                // Update book likes count
+                var book = this.getBook(bookId);
+                if (book) {
+                    book.likesCount = (book.likesCount || 0) + 1;
+                    this.saveBook(book);
+                }
+                
+                return true;
+            },
+            
+            hasUserLikedBook: function(bookId, userId) {
+                var likes = this.getLikes();
+                var likeId = bookId + '_' + userId;
+                
+                for (var i = 0; i < likes.length; i++) {
+                    if (likes[i].id === likeId) {
+                        return true;
+                    }
+                }
+                return false;
+            },
             
             // ===== DOWNLOAD SYSTEM =====
-            async recordDownload(bookId, userId) {
-                const downloadId = `${bookId}_${userId}_${Date.now()}`;
+            recordDownload: function(bookId, userId) {
+                var downloads = this.getDownloads();
+                var downloadId = bookId + '_' + userId + '_' + Date.now();
                 
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['downloads', 'books'], 'readwrite');
-                    const downloadStore = transaction.objectStore('downloads');
-                    const bookStore = transaction.objectStore('books');
-                    
-                    const download = {
-                        id: downloadId,
-                        bookId: bookId,
-                        userId: userId,
-                        timestamp: new Date().toISOString()
-                    };
-                    
-                    downloadStore.add(download);
-                    
-                    const bookRequest = bookStore.get(bookId);
-                    bookRequest.onsuccess = (bookEvent) => {
-                        const book = bookEvent.target.result;
-                        if (book) {
-                            book.downloadsCount = (book.downloadsCount || 0) + 1;
-                            bookStore.put(book);
-                        }
-                    };
-                    
-                    transaction.oncomplete = () => resolve(true);
-                    transaction.onerror = (transEvent) => reject(transEvent.target.error);
+                downloads.push({
+                    id: downloadId,
+                    bookId: bookId,
+                    userId: userId,
+                    timestamp: new Date().toISOString()
                 });
-            }
+                
+                localStorage.setItem('library_downloads', JSON.stringify(downloads));
+                
+                // Update book downloads count
+                var book = this.getBook(bookId);
+                if (book) {
+                    book.downloadsCount = (book.downloadsCount || 0) + 1;
+                    this.saveBook(book);
+                }
+                
+                return true;
+            },
             
-            // ===== PDF STORAGE =====
-            async savePDF(pdfId, file) {
-                return new Promise(async (resolve, reject) => {
-                    if (file.size > this.MAX_FILE_SIZE) {
-                        reject(new Error(`File too large. Maximum ${this.MAX_FILE_SIZE / (1024 * 1024)}MB.`));
-                        return;
-                    }
-                    
-                    const usedStorage = await this.getStorageUsage();
-                    if (usedStorage + file.size > this.STORAGE_LIMIT) {
-                        reject(new Error('Storage limit exceeded! 500GB limit reached.'));
-                        return;
-                    }
-                    
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        const transaction = this.db.transaction(['pdfs'], 'readwrite');
-                        const store = transaction.objectStore('pdfs');
-                        
-                        const pdfData = {
-                            id: pdfId,
-                            data: event.target.result,
-                            name: file.name,
-                            size: file.size,
-                            type: file.type,
-                            uploadDate: new Date().toISOString()
-                        };
-                        
-                        const request = store.put(pdfData);
-                        
-                        request.onsuccess = () => resolve({ success: true, pdfId: pdfId });
-                        request.onerror = (reqEvent) => reject(reqEvent.target.error);
-                    };
-                    
-                    reader.onerror = reject;
-                    reader.readAsArrayBuffer(file);
-                });
-            }
-            
-            async getPDF(pdfId) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['pdfs'], 'readonly');
-                    const store = transaction.objectStore('pdfs');
-                    const request = store.get(pdfId);
-                    
-                    request.onsuccess = (event) => {
-                        const result = event.target.result;
-                        if (!result) {
-                            resolve(null);
-                            return;
-                        }
-                        
-                        const blob = new Blob([result.data], { type: result.type });
-                        const url = URL.createObjectURL(blob);
-                        
-                        resolve({
-                            url: url,
-                            name: result.name,
-                            size: result.size,
-                            blob: blob,
-                            metadata: result
-                        });
-                    };
-                    
-                    request.onerror = (event) => reject(event.target.error);
-                });
-            }
-            
-            async deletePDF(pdfId) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['pdfs'], 'readwrite');
-                    const store = transaction.objectStore('pdfs');
-                    const request = store.delete(pdfId);
-                    
-                    request.onsuccess = () => resolve(true);
-                    request.onerror = (event) => reject(event.target.error);
-                });
-            }
-            
-            async getStorageUsage() {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['pdfs'], 'readonly');
-                    const store = transaction.objectStore('pdfs');
-                    const request = store.getAll();
-                    
-                    request.onsuccess = (event) => {
-                        const pdfs = event.target.result || [];
-                        let totalSize = 0;
-                        pdfs.forEach(pdf => {
-                            totalSize += pdf.size || 0;
-                        });
-                        resolve(totalSize);
-                    };
-                    
-                    request.onerror = (event) => reject(event.target.error);
-                });
-            }
-            
-            formatBytes(bytes, decimals = 2) {
-                if (bytes === 0) return '0 Bytes';
-                const k = 1024;
-                const dm = decimals < 0 ? 0 : decimals;
-                const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-                const i = Math.floor(Math.log(bytes) / Math.log(k));
-                return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-            }
+            getDownloads: function() {
+                var downloads = localStorage.getItem('library_downloads');
+                return downloads ? JSON.parse(downloads) : [];
+            },
             
             // ===== STATISTICS =====
-            async getLibraryStats() {
-                const books = await this.getAllBooks();
-                const storageUsed = await this.getStorageUsage();
-                
-                let totalLikes = 0;
-                let totalDownloads = 0;
-                let novelsCount = 0;
-                
-                books.forEach(book => {
-                    totalLikes += book.likesCount || 0;
-                    totalDownloads += book.downloadsCount || 0;
-                    if (book.category === 'Novel') novelsCount++;
-                });
-                
-                return {
+            getLibraryStats: function() {
+                var books = this.getBooks();
+                var stats = {
                     totalBooks: books.length,
-                    novelsCount: novelsCount,
-                    totalLikes: totalLikes,
-                    totalDownloads: totalDownloads,
-                    storageUsed: storageUsed,
-                    storageLimit: this.STORAGE_LIMIT,
-                    storagePercent: ((storageUsed / this.STORAGE_LIMIT) * 100).toFixed(2)
+                    novelsCount: 0,
+                    totalLikes: 0,
+                    totalDownloads: 0,
+                    storageUsed: 0,
+                    storageLimit: 500 * 1024 * 1024 * 1024, // 500GB
+                    storagePercent: "0.00"
                 };
+                
+                for (var i = 0; i < books.length; i++) {
+                    var book = books[i];
+                    stats.totalLikes += book.likesCount || 0;
+                    stats.totalDownloads += book.downloadsCount || 0;
+                    if (book.category === 'Novel') {
+                        stats.novelsCount++;
+                    }
+                }
+                
+                stats.storagePercent = (stats.storageUsed / stats.storageLimit * 100).toFixed(2);
+                return stats;
+            },
+            
+            formatBytes: function(bytes, decimals) {
+                if (bytes === 0) return '0 Bytes';
+                if (!decimals) decimals = 2;
+                
+                var k = 1024;
+                var dm = decimals < 0 ? 0 : decimals;
+                var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+                var i = Math.floor(Math.log(bytes) / Math.log(k));
+                
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
             }
-        }
+        };
 
         // ===== GLOBAL VARIABLES =====
-        let library = new DigitalLibrary();
-        let currentUser = {
+        var currentUser = {
             isLoggedIn: false,
             role: "guest",
             name: "",
@@ -1991,24 +1836,26 @@
             downloadedBooks: []
         };
         
-        let currentPage = 'home';
-        let searchTimeout = null;
+        var currentPage = 'home';
+        var searchTimeout = null;
 
         // ===== PAGE DEFINITIONS =====
-        const WEBSITE_PAGES = {
+        var WEBSITE_PAGES = {
             home: {
                 title: "Home | Electro-LASS Digital Library",
                 showFor: ["guest", "user", "admin"],
-                getContent: async function() {
-                    const stats = await library.getLibraryStats();
+                getContent: function() {
+                    var stats = DigitalLibrary.getLibraryStats();
                     
-                    return `
+                    var content = `
                         <div class="page-header">
                             <h1>Welcome to Electro-LASS Digital Library</h1>
                             <p class="page-subtitle">Your gateway to ${stats.totalBooks} books with 500GB storage. ${stats.novelsCount} Novels available.</p>
                         </div>
-                        
-                        ${!currentUser.isLoggedIn ? `
+                    `;
+                    
+                    if (!currentUser.isLoggedIn) {
+                        content += `
                             <div class="dashboard-section">
                                 <h2><i class="fas fa-book-reader"></i> Access Our Digital Library</h2>
                                 <p>Browse ${stats.totalBooks} books as a guest, or sign up to unlock likes, downloads, and more!</p>
@@ -2024,7 +1871,9 @@
                                     </button>
                                 </div>
                             </div>
-                        ` : `
+                        `;
+                    } else {
+                        content += `
                             <div class="dashboard-section">
                                 <h2><i class="fas fa-book-open"></i> Welcome back, ${currentUser.name}!</h2>
                                 <p>You have ${currentUser.role === 'admin' ? 'admin' : 'full'} access to our digital library with ${stats.totalBooks} books</p>
@@ -2042,8 +1891,10 @@
                                     </button>
                                 </div>
                             </div>
-                        `}
-                        
+                        `;
+                    }
+                    
+                    content += `
                         <div class="stats-container">
                             <div class="stat-card">
                                 <div class="stat-number">${stats.totalBooks}</div>
@@ -2058,12 +1909,14 @@
                                 <div class="stat-label">Total Downloads</div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-number">${library.formatBytes(stats.storageUsed)}</div>
+                                <div class="stat-number">${DigitalLibrary.formatBytes(stats.storageUsed)}</div>
                                 <div class="stat-label">Storage Used / 500GB</div>
                             </div>
                         </div>
-                        
-                        ${currentUser.role === 'admin' ? `
+                    `;
+                    
+                    if (currentUser.role === 'admin') {
+                        content += `
                             <div class="admin-panel">
                                 <h3><i class="fas fa-user-shield"></i> Admin Panel</h3>
                                 <p>Manage library, users, and storage (500GB total capacity)</p>
@@ -2079,16 +1932,18 @@
                                     </button>
                                 </div>
                             </div>
-                        ` : ''}
-                    `;
+                        `;
+                    }
+                    
+                    return content;
                 }
             },
             
             library: {
                 title: "Library | Electro-LASS",
                 showFor: ["guest", "user", "admin"],
-                getContent: async function() {
-                    const stats = await library.getLibraryStats();
+                getContent: function() {
+                    var stats = DigitalLibrary.getLibraryStats();
                     
                     return `
                         <div class="page-header">
@@ -2188,10 +2043,10 @@
 
         // ===== HELPER FUNCTIONS =====
         function checkPasswordStrength(password) {
-            const strengthBar = document.getElementById('passwordStrength');
+            var strengthBar = document.getElementById('passwordStrength');
             if (!strengthBar) return;
             
-            let strength = 0;
+            var strength = 0;
             
             if (password.length >= 8) strength += 1;
             if (password.length >= 12) strength += 1;
@@ -2211,8 +2066,8 @@
         }
         
         function togglePassword(inputId, button) {
-            const input = document.getElementById(inputId);
-            const icon = button.querySelector('i');
+            var input = document.getElementById(inputId);
+            var icon = button.querySelector('i');
             
             if (input.type === 'password') {
                 input.type = 'text';
@@ -2224,7 +2079,7 @@
         }
         
         function toggleAdminLoginSection() {
-            const section = document.getElementById('adminLoginSection');
+            var section = document.getElementById('adminLoginSection');
             if (section.style.display === 'none' || !section.style.display) {
                 section.style.display = 'block';
                 showAlert('Enter admin code for administrator access', 'info');
@@ -2234,22 +2089,22 @@
         }
 
         // ===== INITIALIZATION =====
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM loaded, initializing app...');
             showLoading('Initializing Digital Library...');
             
             try {
-                await library.init();
+                DigitalLibrary.init();
                 console.log('Library initialized successfully');
                 
                 // Load saved user from localStorage
-                await loadSavedUser();
+                loadSavedUser();
                 
                 updateUserInterface();
                 updateNavigation();
                 
                 // Load initial page
-                const hash = window.location.hash.replace('#', '');
+                var hash = window.location.hash.replace('#', '');
                 if (hash && WEBSITE_PAGES[hash]) {
                     navigateTo(hash);
                 } else {
@@ -2264,14 +2119,14 @@
             }
         });
 
-        async function loadSavedUser() {
+        function loadSavedUser() {
             try {
-                const savedUser = localStorage.getItem('electroUser');
+                var savedUser = localStorage.getItem('currentUser');
                 if (savedUser) {
-                    const userData = JSON.parse(savedUser);
+                    var userData = JSON.parse(savedUser);
                     if (userData.email) {
                         console.log('Loading saved user:', userData.email);
-                        const dbUser = await library.getUserByEmail(userData.email);
+                        var dbUser = DigitalLibrary.getUserByEmail(userData.email);
                         if (dbUser) {
                             currentUser = {
                                 isLoggedIn: true,
@@ -2285,19 +2140,19 @@
                             console.log('User loaded successfully:', currentUser.email);
                         } else {
                             console.log('User not found in database, clearing localStorage');
-                            localStorage.removeItem('electroUser');
+                            localStorage.removeItem('currentUser');
                         }
                     }
                 }
             } catch (error) {
                 console.error('Error loading saved user:', error);
-                localStorage.removeItem('electroUser');
+                localStorage.removeItem('currentUser');
             }
         }
 
         function saveUserToStorage(user) {
             try {
-                localStorage.setItem('electroUser', JSON.stringify({
+                localStorage.setItem('currentUser', JSON.stringify({
                     email: user.email,
                     name: user.name,
                     role: user.role,
@@ -2317,40 +2172,36 @@
             }
             
             currentPage = page;
-            window.history.pushState({}, '', `#${page}`);
+            window.location.hash = page;
             document.title = WEBSITE_PAGES[page].title;
             
             updateNavigation();
             loadPageContent(page);
         }
 
-        async function loadPageContent(page) {
-            const container = document.getElementById('pageContainer');
+        function loadPageContent(page) {
+            var container = document.getElementById('pageContainer');
             
-            if (WEBSITE_PAGES[page].getContent.constructor.name === 'AsyncFunction') {
-                showLoading(`Loading ${page}...`);
+            showLoading('Loading page...');
+            
+            setTimeout(function() {
                 try {
-                    container.innerHTML = await WEBSITE_PAGES[page].getContent();
+                    container.innerHTML = WEBSITE_PAGES[page].getContent();
                     if (page === 'library') {
-                        await loadBooks();
+                        loadBooks();
                     }
                 } catch (error) {
                     console.error('Error loading page:', error);
-                    container.innerHTML = `<div class="alert-error">Error loading page: ${error.message}</div>`;
+                    container.innerHTML = '<div class="alert-error">Error loading page: ' + error.message + '</div>';
                 } finally {
                     hideLoading();
                 }
-            } else {
-                container.innerHTML = WEBSITE_PAGES[page].getContent();
-                if (page === 'library') {
-                    await loadBooks();
-                }
-            }
+            }, 100);
         }
 
         function updateNavigation() {
-            const nav = document.getElementById('mainNav');
-            let navHTML = '';
+            var nav = document.getElementById('mainNav');
+            var navHTML = '';
             
             navHTML += `
                 <a href="#" class="nav-link ${currentPage === 'home' ? 'active' : ''}" onclick="navigateTo('home'); return false;">
@@ -2374,13 +2225,14 @@
         }
 
         function updateUserInterface() {
-            const userInfo = document.getElementById('userInfo');
-            const userStatus = document.getElementById('userStatus');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const adminBadge = document.getElementById('adminBadge');
+            var userInfo = document.getElementById('userInfo');
+            var userStatus = document.getElementById('userStatus');
+            var logoutBtn = document.getElementById('logoutBtn');
+            var adminBadge = document.getElementById('adminBadge');
             
             if (currentUser.isLoggedIn) {
-                userStatus.textContent = currentUser.name.split(' ')[0] || currentUser.email.split('@')[0];
+                var firstName = currentUser.name.split(' ')[0] || currentUser.email.split('@')[0];
+                userStatus.textContent = firstName;
                 
                 if (currentUser.role === 'admin') {
                     adminBadge.style.display = 'flex';
@@ -2400,135 +2252,135 @@
         }
 
         // ===== BOOK MANAGEMENT =====
-        async function loadBooks() {
-            const container = document.getElementById('booksContainer');
+        function loadBooks() {
+            var container = document.getElementById('booksContainer');
             if (!container) return;
             
             showLoading('Loading books...');
             
-            try {
-                const searchQuery = document.getElementById('mainSearch')?.value || '';
-                const filters = getCurrentFilters();
-                const books = await library.searchBooks(searchQuery, filters);
-                
-                if (books.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-book"></i>
-                            <h3>No books found</h3>
-                            <p>Try different search terms or filters</p>
-                            ${currentUser.role === 'admin' ? `
-                                <button class="btn btn-primary" onclick="openAddBookModal()" style="margin-top: 1rem;">
-                                    <i class="fas fa-plus"></i> Add First Book
-                                </button>
-                            ` : ''}
-                        </div>
-                    `;
-                    return;
-                }
-                
-                let booksHTML = '<div class="books-grid">';
-                
-                for (const book of books) {
-                    const isLiked = currentUser.isLoggedIn ? 
-                        await library.hasUserLikedBook(book.id, currentUser.email) : false;
+            setTimeout(function() {
+                try {
+                    var searchInput = document.getElementById('mainSearch');
+                    var searchQuery = searchInput ? searchInput.value || '' : '';
+                    var filters = getCurrentFilters();
+                    var books = DigitalLibrary.searchBooks(searchQuery, filters);
                     
-                    booksHTML += `
-                        <div class="book-card" id="book-${book.id}">
-                            <div class="book-cover">
+                    if (books.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty-state">
                                 <i class="fas fa-book"></i>
-                                ${book.hasPdf ? '<div class="pdf-badge">PDF</div>' : ''}
-                                ${isNewBook(book.dateAdded) ? '<div class="new-badge">NEW</div>' : ''}
-                            </div>
-                            <h3 class="book-title">${book.title}</h3>
-                            <div class="book-author">
-                                <i class="fas fa-user-pen"></i> ${book.author}
-                            </div>
-                            <div class="book-category">
-                                <i class="fas fa-tag"></i> ${book.category}
-                            </div>
-                            <div class="book-description">
-                                ${book.description || 'No description available.'}
-                            </div>
-                            <div class="book-meta">
-                                <div class="likes-count">
-                                    <i class="fas fa-heart"></i> ${book.likesCount || 0}
-                                    <span style="margin-left: 10px;">
-                                        <i class="fas fa-download"></i> ${book.downloadsCount || 0}
-                                    </span>
-                                </div>
-                                <div>
-                                    <i class="fas fa-calendar"></i> ${formatDate(book.dateAdded)}
-                                </div>
-                            </div>
-                            <div class="book-actions">
-                                ${book.hasPdf ? `
-                                    <button class="action-btn read-btn" onclick="openBookDetails(${book.id})">
-                                        <i class="fas fa-file-pdf"></i> Read
-                                    </button>
-                                ` : `
-                                    <button class="action-btn read-btn" style="background: var(--electric-orange);" onclick="openBookDetails(${book.id})">
-                                        <i class="fas fa-book-open"></i> Details
-                                    </button>
-                                `}
-                                
-                                ${currentUser.isLoggedIn ? `
-                                    <button class="action-btn like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(${book.id})" id="likeBtn-${book.id}">
-                                        <i class="fas fa-heart"></i> ${isLiked ? 'Liked' : 'Like'}
-                                    </button>
-                                    
-                                    ${book.hasPdf ? `
-                                        <button class="action-btn download-btn" onclick="downloadBook(${book.id})">
-                                            <i class="fas fa-download"></i> Download
-                                        </button>
-                                    ` : ''}
-                                ` : `
-                                    <button class="action-btn like-btn" onclick="showLoginRequired()">
-                                        <i class="fas fa-heart"></i> Like
-                                    </button>
-                                    ${book.hasPdf ? `
-                                        <button class="action-btn download-btn" onclick="showLoginRequired()">
-                                            <i class="fas fa-download"></i> Download
-                                        </button>
-                                    ` : ''}
-                                `}
-                                
+                                <h3>No books found</h3>
+                                <p>Try different search terms or filters</p>
                                 ${currentUser.role === 'admin' ? `
-                                    <button class="action-btn delete-btn" onclick="deleteBook(${book.id})">
-                                        <i class="fas fa-trash"></i>
+                                    <button class="btn btn-primary" onclick="openAddBookModal()" style="margin-top: 1rem;">
+                                        <i class="fas fa-plus"></i> Add First Book
                                     </button>
                                 ` : ''}
                             </div>
+                        `;
+                        hideLoading();
+                        return;
+                    }
+                    
+                    var booksHTML = '<div class="books-grid">';
+                    
+                    // Load each book's like status
+                    for (var i = 0; i < books.length; i++) {
+                        var book = books[i];
+                        var isLiked = currentUser.isLoggedIn ? 
+                            DigitalLibrary.hasUserLikedBook(book.id, currentUser.email) : false;
+                        
+                        booksHTML += `
+                            <div class="book-card" id="book-${book.id}">
+                                <div class="book-cover">
+                                    <i class="fas fa-book"></i>
+                                    ${book.hasPdf ? '<div class="pdf-badge">PDF</div>' : ''}
+                                    ${isNewBook(book.dateAdded) ? '<div class="new-badge">NEW</div>' : ''}
+                                </div>
+                                <h3 class="book-title">${book.title}</h3>
+                                <div class="book-author">
+                                    <i class="fas fa-user-pen"></i> ${book.author}
+                                </div>
+                                <div class="book-category">
+                                    <i class="fas fa-tag"></i> ${book.category}
+                                </div>
+                                <div class="book-description">
+                                    ${book.description || 'No description available.'}
+                                </div>
+                                <div class="book-meta">
+                                    <div class="likes-count">
+                                        <i class="fas fa-heart"></i> ${book.likesCount || 0}
+                                        <span style="margin-left: 10px;">
+                                            <i class="fas fa-download"></i> ${book.downloadsCount || 0}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <i class="fas fa-calendar"></i> ${formatDate(book.dateAdded)}
+                                    </div>
+                                </div>
+                                <div class="book-actions">
+                                    <button class="action-btn read-btn" onclick="openBookDetails(${book.id})">
+                                        <i class="fas fa-book-open"></i> Details
+                                    </button>
+                                    
+                                    ${currentUser.isLoggedIn ? `
+                                        <button class="action-btn like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(${book.id})" id="likeBtn-${book.id}">
+                                            <i class="fas fa-heart"></i> ${isLiked ? 'Liked' : 'Like'}
+                                        </button>
+                                        
+                                        <button class="action-btn download-btn" onclick="downloadBook(${book.id})">
+                                            <i class="fas fa-download"></i> Download
+                                        </button>
+                                    ` : `
+                                        <button class="action-btn like-btn" onclick="showLoginRequired()">
+                                            <i class="fas fa-heart"></i> Like
+                                        </button>
+                                        <button class="action-btn download-btn" onclick="showLoginRequired()">
+                                            <i class="fas fa-download"></i> Download
+                                        </button>
+                                    `}
+                                    
+                                    ${currentUser.role === 'admin' ? `
+                                        <button class="action-btn delete-btn" onclick="deleteBook(${book.id})">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    booksHTML += '</div>';
+                    container.innerHTML = booksHTML;
+                    
+                } catch (error) {
+                    console.error('Error loading books:', error);
+                    container.innerHTML = `
+                        <div class="alert-error" style="padding: 2rem; text-align: center;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>Error loading books</h3>
+                            <p>${error.message}</p>
                         </div>
                     `;
+                } finally {
+                    hideLoading();
                 }
-                
-                booksHTML += '</div>';
-                container.innerHTML = booksHTML;
-                
-            } catch (error) {
-                console.error('Error loading books:', error);
-                container.innerHTML = `
-                    <div class="alert-error" style="padding: 2rem; text-align: center;">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Error loading books</h3>
-                        <p>${error.message}</p>
-                    </div>
-                `;
-            } finally {
-                hideLoading();
-            }
+            }, 300);
         }
 
         function isNewBook(dateString) {
-            const bookDate = new Date(dateString);
-            const daysAgo = (Date.now() - bookDate.getTime()) / (1000 * 60 * 60 * 24);
-            return daysAgo < 7;
+            try {
+                var bookDate = new Date(dateString);
+                var daysAgo = (Date.now() - bookDate.getTime()) / (1000 * 60 * 60 * 24);
+                return daysAgo < 7;
+            } catch (e) {
+                return false;
+            }
         }
 
         function formatDate(dateString) {
             try {
-                const date = new Date(dateString);
+                var date = new Date(dateString);
                 return date.toLocaleDateString('en-US', { 
                     year: 'numeric', 
                     month: 'short', 
@@ -2540,51 +2392,46 @@
         }
 
         // ===== SEARCH FUNCTIONALITY =====
-        async function handleSearchInput(query) {
+        function handleSearchInput(query) {
             clearTimeout(searchTimeout);
             
-            searchTimeout = setTimeout(async () => {
+            searchTimeout = setTimeout(function() {
                 showLoading('Searching books...');
                 
-                try {
-                    const filters = getCurrentFilters();
-                    await loadBooks();
-                    
-                    const resultsInfo = document.getElementById('searchResultsInfo');
-                    const resultsCount = document.getElementById('resultsCount');
-                    
-                    if (resultsInfo && resultsCount) {
-                        const container = document.getElementById('booksContainer');
-                        const booksCount = container.querySelectorAll('.book-card').length;
+                setTimeout(function() {
+                    try {
+                        loadBooks();
                         
-                        if (query || filters.category) {
-                            resultsInfo.style.display = 'block';
-                            resultsCount.textContent = `${booksCount} result${booksCount !== 1 ? 's' : ''} found`;
+                        var resultsInfo = document.getElementById('searchResultsInfo');
+                        var resultsCount = document.getElementById('resultsCount');
+                        
+                        if (resultsInfo && resultsCount) {
+                            var container = document.getElementById('booksContainer');
+                            var booksCount = container.querySelectorAll('.book-card').length;
                             
                             if (query) {
-                                resultsCount.innerHTML += ` for "<strong>${query}</strong>"`;
+                                resultsInfo.style.display = 'block';
+                                resultsCount.textContent = booksCount + ' result' + (booksCount !== 1 ? 's' : '') + ' found';
+                                resultsCount.innerHTML += ' for "<strong>' + query + '</strong>"';
+                            } else {
+                                resultsInfo.style.display = 'none';
                             }
-                            if (filters.category) {
-                                resultsCount.innerHTML += ` in <strong>${filters.category}</strong>`;
-                            }
-                        } else {
-                            resultsInfo.style.display = 'none';
                         }
+                    } catch (error) {
+                        console.error('Search error:', error);
+                        showAlert('Search failed: ' + error.message, 'error');
+                    } finally {
+                        hideLoading();
                     }
-                } catch (error) {
-                    console.error('Search error:', error);
-                    showAlert('Search failed: ' + error.message, 'error');
-                } finally {
-                    hideLoading();
-                }
+                }, 300);
             }, 500);
         }
 
         function getCurrentFilters() {
-            const filters = {};
+            var filters = {};
             
-            const category = document.getElementById('filterCategory');
-            const sort = document.getElementById('filterSort');
+            var category = document.getElementById('filterCategory');
+            var sort = document.getElementById('filterSort');
             
             if (category && category.value) filters.category = category.value;
             if (sort && sort.value) filters.sortBy = sort.value;
@@ -2593,13 +2440,14 @@
         }
 
         function applyFilters() {
-            const query = document.getElementById('mainSearch')?.value || '';
+            var searchInput = document.getElementById('mainSearch');
+            var query = searchInput ? searchInput.value || '' : '';
             handleSearchInput(query);
         }
 
         function searchByCategory(category) {
-            const searchInput = document.getElementById('mainSearch');
-            const categoryFilter = document.getElementById('filterCategory');
+            var searchInput = document.getElementById('mainSearch');
+            var categoryFilter = document.getElementById('filterCategory');
             
             if (searchInput) searchInput.value = '';
             if (categoryFilter) categoryFilter.value = category;
@@ -2608,14 +2456,14 @@
         }
 
         function clearSearch() {
-            const searchInput = document.getElementById('mainSearch');
-            const resultsInfo = document.getElementById('searchResultsInfo');
+            var searchInput = document.getElementById('mainSearch');
+            var resultsInfo = document.getElementById('searchResultsInfo');
             
             if (searchInput) searchInput.value = '';
             if (resultsInfo) resultsInfo.style.display = 'none';
             
-            const category = document.getElementById('filterCategory');
-            const sort = document.getElementById('filterSort');
+            var category = document.getElementById('filterCategory');
+            var sort = document.getElementById('filterSort');
             
             if (category) category.value = '';
             if (sort) sort.value = 'newest';
@@ -2624,27 +2472,29 @@
         }
 
         // ===== LIKE SYSTEM =====
-        async function toggleLike(bookId) {
+        function toggleLike(bookId) {
             if (!currentUser.isLoggedIn) {
                 showLoginRequired();
                 return;
             }
             
             try {
-                const liked = await library.likeBook(bookId, currentUser.email);
+                var liked = DigitalLibrary.likeBook(bookId, currentUser.email);
                 
-                const likeBtn = document.getElementById(`likeBtn-${bookId}`);
+                var likeBtn = document.getElementById('likeBtn-' + bookId);
                 if (likeBtn) {
                     if (liked) {
                         likeBtn.classList.add('liked');
                         likeBtn.innerHTML = '<i class="fas fa-heart"></i> Liked';
                         
-                        const bookCard = document.getElementById(`book-${bookId}`);
+                        var bookCard = document.getElementById('book-' + bookId);
                         if (bookCard) {
-                            const likesCount = bookCard.querySelector('.likes-count');
+                            var likesCount = bookCard.querySelector('.likes-count');
                             if (likesCount) {
-                                const currentCount = parseInt(likesCount.textContent.match(/\d+/)[0]) || 0;
-                                likesCount.innerHTML = `<i class="fas fa-heart"></i> ${currentCount + 1}`;
+                                var currentText = likesCount.textContent || '';
+                                var match = currentText.match(/\d+/);
+                                var currentCount = match ? parseInt(match[0]) : 0;
+                                likesCount.innerHTML = '<i class="fas fa-heart"></i> ' + (currentCount + 1);
                             }
                         }
                         
@@ -2653,12 +2503,14 @@
                         likeBtn.classList.remove('liked');
                         likeBtn.innerHTML = '<i class="fas fa-heart"></i> Like';
                         
-                        const bookCard = document.getElementById(`book-${bookId}`);
+                        var bookCard = document.getElementById('book-' + bookId);
                         if (bookCard) {
-                            const likesCount = bookCard.querySelector('.likes-count');
+                            var likesCount = bookCard.querySelector('.likes-count');
                             if (likesCount) {
-                                const currentCount = parseInt(likesCount.textContent.match(/\d+/)[0]) || 0;
-                                likesCount.innerHTML = `<i class="fas fa-heart"></i> ${Math.max(0, currentCount - 1)}`;
+                                var currentText = likesCount.textContent || '';
+                                var match = currentText.match(/\d+/);
+                                var currentCount = match ? parseInt(match[0]) : 0;
+                                likesCount.innerHTML = '<i class="fas fa-heart"></i> ' + Math.max(0, currentCount - 1);
                             }
                         }
                         
@@ -2672,7 +2524,7 @@
         }
 
         // ===== DOWNLOAD SYSTEM =====
-        async function downloadBook(bookId) {
+        function downloadBook(bookId) {
             if (!currentUser.isLoggedIn) {
                 showLoginRequired();
                 return;
@@ -2681,133 +2533,96 @@
             try {
                 showLoading('Preparing download...');
                 
-                const book = await library.getBook(bookId);
-                if (!book || !book.hasPdf || !book.pdfId) {
-                    throw new Error('PDF not available for this book');
+                var book = DigitalLibrary.getBook(bookId);
+                if (!book) {
+                    throw new Error('Book not found');
                 }
                 
-                const pdf = await library.getPDF(book.pdfId);
-                if (!pdf) {
-                    throw new Error('PDF file not found');
-                }
+                DigitalLibrary.recordDownload(bookId, currentUser.email);
                 
-                await library.recordDownload(bookId, currentUser.email);
-                
-                const link = document.createElement('a');
-                link.href = pdf.url;
-                link.download = `${book.title.replace(/[^a-z0-9]/gi, '_')}.pdf`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                setTimeout(() => {
-                    URL.revokeObjectURL(pdf.url);
-                }, 100);
-                
-                showAlert(`"${book.title}" downloaded successfully!`, 'success');
+                setTimeout(function() {
+                    showAlert('"' + book.title + '" downloaded successfully!', 'success');
+                    hideLoading();
+                }, 1000);
                 
             } catch (error) {
                 console.error('Download error:', error);
                 showAlert('Download failed: ' + error.message, 'error');
-            } finally {
                 hideLoading();
             }
         }
 
         // ===== BOOK UPLOAD =====
-        async function handleAddBook(event) {
+        function handleAddBook(event) {
             event.preventDefault();
             
-            const title = document.getElementById('bookTitle').value.trim();
-            const author = document.getElementById('bookAuthor').value.trim();
-            const category = document.getElementById('bookCategory').value;
-            const description = document.getElementById('bookDescription').value.trim();
-            const pdfFile = document.getElementById('bookPdfFile').files[0];
+            var title = document.getElementById('bookTitle').value.trim();
+            var author = document.getElementById('bookAuthor').value.trim();
+            var category = document.getElementById('bookCategory').value;
+            var description = document.getElementById('bookDescription').value.trim();
+            var pdfFile = document.getElementById('bookPdfFile').files[0];
             
-            if (!title || !author || !category || !pdfFile) {
+            if (!title || !author || !category) {
                 showAlert('Please fill all required fields', 'error');
                 return;
             }
             
-            if (pdfFile.type !== 'application/pdf') {
+            if (pdfFile && pdfFile.type !== 'application/pdf') {
                 showAlert('Please upload a valid PDF file', 'error');
                 return;
             }
             
             try {
-                showLoading('Uploading book...');
+                showLoading('Adding book...');
                 
-                const submitBtn = document.getElementById('submitBookBtn');
-                if (submitBtn) submitBtn.disabled = true;
-                
-                const progressBar = document.getElementById('uploadProgress');
-                if (progressBar) progressBar.classList.add('active');
-                
-                const bookId = Date.now();
-                const pdfId = `pdf_${bookId}`;
-                
-                updateUploadProgress(50, 'Processing file...');
-                
-                await library.savePDF(pdfId, pdfFile);
-                updateUploadProgress(100, 'PDF uploaded successfully!');
-                
-                const newBook = {
+                var bookId = Date.now();
+                var newBook = {
                     id: bookId,
                     title: title,
                     author: author,
                     category: category,
-                    description: description || `A ${category.toLowerCase()} book about ${title}`,
-                    hasPdf: true,
-                    pdfId: pdfId,
+                    description: description || 'A ' + category.toLowerCase() + ' book about ' + title,
+                    hasPdf: false, // Simplified version - no actual PDF storage
                     dateAdded: new Date().toISOString(),
                     addedBy: currentUser.name || "Admin",
                     likesCount: 0,
                     downloadsCount: 0,
-                    fileSize: library.formatBytes(pdfFile.size)
+                    fileSize: pdfFile ? (pdfFile.size / (1024 * 1024)).toFixed(2) + ' MB' : 'N/A'
                 };
                 
-                await library.saveBook(newBook);
+                DigitalLibrary.saveBook(newBook);
                 
                 document.getElementById('addBookForm').reset();
                 document.getElementById('fileSizeInfo').textContent = '';
                 
-                await updateStorageInfo();
-                
                 closeModal('addBookModal');
                 
-                showAlert(`✅ "${title}" added successfully to the library!`, 'success');
+                showAlert('✅ "' + title + '" added successfully to the library!', 'success');
                 
                 if (currentPage === 'library') {
-                    await loadBooks();
+                    loadBooks();
                 }
                 
             } catch (error) {
                 console.error('Upload error:', error);
                 showAlert('Error: ' + error.message, 'error');
             } finally {
-                const submitBtn = document.getElementById('submitBookBtn');
-                if (submitBtn) submitBtn.disabled = false;
-                
-                const progressBar = document.getElementById('uploadProgress');
-                if (progressBar) progressBar.classList.remove('active');
-                updateUploadProgress(0, '');
-                
                 hideLoading();
             }
         }
 
         function updateUploadProgress(percent, message) {
-            const percentage = document.getElementById('uploadPercentage');
-            const progressBar = document.getElementById('uploadProgressBar');
-            const status = document.getElementById('uploadStatus');
+            var percentage = document.getElementById('uploadPercentage');
+            var progressBar = document.getElementById('uploadProgressBar');
+            var status = document.getElementById('uploadStatus');
             
-            if (percentage) percentage.textContent = `${percent}%`;
-            if (progressBar) progressBar.style.width = `${percent}%`;
+            if (percentage) percentage.textContent = percent + '%';
+            if (progressBar) progressBar.style.width = percent + '%';
             if (status) status.textContent = message;
         }
 
         // ===== DELETE BOOK =====
-        async function deleteBook(bookId) {
+        function deleteBook(bookId) {
             if (currentUser.role !== 'admin') {
                 showAlert('Only admins can remove books', 'error');
                 return;
@@ -2820,15 +2635,10 @@
             try {
                 showLoading('Deleting book...');
                 
-                const book = await library.getBook(bookId);
-                if (book && book.pdfId) {
-                    await library.deletePDF(book.pdfId);
-                }
-                
-                await library.deleteBook(bookId);
+                DigitalLibrary.deleteBook(bookId);
                 
                 showAlert('Book removed successfully', 'success');
-                await loadBooks();
+                loadBooks();
                 
             } catch (error) {
                 console.error('Delete error:', error);
@@ -2839,13 +2649,13 @@
         }
 
         // ===== USER AUTHENTICATION =====
-        async function handleUserSignup(event) {
+        function handleUserSignup(event) {
             event.preventDefault();
             
-            const name = document.getElementById('signupName').value.trim();
-            const email = document.getElementById('signupEmail').value.trim();
-            const password = document.getElementById('signupPassword').value;
-            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            var name = document.getElementById('signupName').value.trim();
+            var email = document.getElementById('signupEmail').value.trim();
+            var password = document.getElementById('signupPassword').value;
+            var confirmPassword = document.getElementById('signupConfirmPassword').value;
             
             if (!name || !email || !password || !confirmPassword) {
                 showAlert('Please fill all fields', 'error');
@@ -2865,13 +2675,13 @@
             try {
                 showLoading('Creating account...');
                 
-                const userData = {
+                var userData = {
                     name: name,
                     email: email,
                     password: password
                 };
                 
-                const user = await library.registerUser(userData);
+                var user = DigitalLibrary.registerUser(userData);
                 
                 currentUser = {
                     isLoggedIn: true,
@@ -2888,7 +2698,7 @@
                 updateNavigation();
                 
                 closeModal('signupModal');
-                showAlert(`🎉 Welcome ${name}! Your account has been created successfully.`, 'success');
+                showAlert('🎉 Welcome ' + name + '! Your account has been created successfully.', 'success');
                 
                 navigateTo('home');
                 
@@ -2899,17 +2709,17 @@
             }
         }
 
-        async function handleUserLogin(event) {
+        function handleUserLogin(event) {
             event.preventDefault();
             
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            const adminCode = document.getElementById('adminCode')?.value || null;
+            var email = document.getElementById('loginEmail').value.trim();
+            var password = document.getElementById('loginPassword').value;
+            var adminCode = document.getElementById('adminCode') ? document.getElementById('adminCode').value : null;
             
             try {
                 showLoading('Logging in...');
                 
-                const user = await library.loginUser(email, password, adminCode);
+                var user = DigitalLibrary.loginUser(email, password, adminCode);
                 
                 currentUser = {
                     isLoggedIn: true,
@@ -2928,9 +2738,9 @@
                 closeModal('loginModal');
                 
                 if (adminCode && user.role === 'admin') {
-                    showAlert(`🔐 Welcome Administrator ${user.name}!`, 'success');
+                    showAlert('🔐 Welcome Administrator ' + user.name + '!', 'success');
                 } else {
-                    showAlert(`Welcome back, ${user.name}!`, 'success');
+                    showAlert('Welcome back, ' + user.name + '!', 'success');
                 }
                 
                 navigateTo('home');
@@ -2954,7 +2764,7 @@
                 downloadedBooks: []
             };
             
-            localStorage.removeItem('electroUser');
+            localStorage.removeItem('currentUser');
             updateUserInterface();
             updateNavigation();
             showAlert('Logged out successfully', 'success');
@@ -2970,15 +2780,14 @@
             
             document.getElementById('addBookModal').style.display = 'flex';
             document.getElementById('fileSizeInfo').textContent = '';
-            updateStorageInfo();
             
-            const fileInput = document.getElementById('bookPdfFile');
+            var fileInput = document.getElementById('bookPdfFile');
             if (fileInput) {
                 fileInput.onchange = function(e) {
-                    const file = e.target.files[0];
+                    var file = e.target.files[0];
                     if (file) {
-                        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-                        document.getElementById('fileSizeInfo').textContent = `File size: ${sizeMB} MB`;
+                        var sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                        document.getElementById('fileSizeInfo').textContent = 'File size: ' + sizeMB + ' MB';
                         
                         if (file.size > 220 * 1024 * 1024) {
                             document.getElementById('fileSizeInfo').innerHTML += 
@@ -3002,25 +2811,25 @@
             document.getElementById('advancedSearchModal').style.display = 'flex';
         }
 
-        async function performAdvancedSearch(event) {
+        function performAdvancedSearch(event) {
             event.preventDefault();
             
-            const title = document.getElementById('searchTitle').value;
-            const author = document.getElementById('searchAuthor').value;
-            const category = document.getElementById('searchCategory').value;
+            var title = document.getElementById('searchTitle').value;
+            var author = document.getElementById('searchAuthor').value;
+            var category = document.getElementById('searchCategory').value;
             
-            let query = '';
-            if (title) query += ` ${title}`;
-            if (author) query += ` ${author}`;
+            var query = '';
+            if (title) query += ' ' + title;
+            if (author) query += ' ' + author;
             
             closeModal('advancedSearchModal');
             
-            const mainSearch = document.getElementById('mainSearch');
+            var mainSearch = document.getElementById('mainSearch');
             if (mainSearch && (title || author)) {
-                mainSearch.value = `${title} ${author}`.trim();
+                mainSearch.value = (title + ' ' + author).trim();
             }
             
-            const catFilter = document.getElementById('filterCategory');
+            var catFilter = document.getElementById('filterCategory');
             if (catFilter && category) {
                 catFilter.value = category;
             }
@@ -3033,50 +2842,56 @@
         }
 
         // ===== STORAGE FUNCTIONS =====
-        async function updateStorageInfo() {
+        function updateStorageInfo() {
             try {
-                const used = await library.getStorageUsage();
-                const percent = Math.min((used / library.STORAGE_LIMIT) * 100, 100);
+                var stats = DigitalLibrary.getLibraryStats();
+                var percent = Math.min((stats.storageUsed / stats.storageLimit) * 100, 100);
                 
-                document.getElementById('storageUsed').textContent = library.formatBytes(used);
-                document.getElementById('storagePercent').textContent = `${percent.toFixed(2)}%`;
-                document.getElementById('storageMeter').style.width = `${percent}%`;
+                var storageUsedEl = document.getElementById('storageUsed');
+                var storagePercentEl = document.getElementById('storagePercent');
+                var storageMeterEl = document.getElementById('storageMeter');
+                
+                if (storageUsedEl) storageUsedEl.textContent = DigitalLibrary.formatBytes(stats.storageUsed);
+                if (storagePercentEl) storagePercentEl.textContent = percent.toFixed(2) + '%';
+                if (storageMeterEl) storageMeterEl.style.width = percent + '%';
             } catch (error) {
                 console.error('Error updating storage info:', error);
             }
         }
 
-        async function showStorageStats() {
+        function showStorageStats() {
             try {
                 showLoading('Calculating statistics...');
                 
-                const stats = await library.getLibraryStats();
-                const used = library.formatBytes(stats.storageUsed);
-                const limit = library.formatBytes(stats.storageLimit);
-                
-                const message = `
-                    <strong>Library Storage Statistics:</strong><br><br>
-                    • Total Storage: 500GB<br>
-                    • Used: ${used}<br>
-                    • Available: ${library.formatBytes(stats.storageLimit - stats.storageUsed)}<br>
-                    • Usage: ${stats.storagePercent}%<br>
-                    • Supports files up to 500MB each<br><br>
-                    <small style="color: var(--text-gray);">
-                        <i class="fas fa-info-circle"></i> 
-                        Perfect for large academic books (220MB+)
-                    </small>
-                `;
-                
-                showAlert(message, 'info');
+                setTimeout(function() {
+                    var stats = DigitalLibrary.getLibraryStats();
+                    var used = DigitalLibrary.formatBytes(stats.storageUsed);
+                    var limit = DigitalLibrary.formatBytes(stats.storageLimit);
+                    
+                    var message = `
+                        <strong>Library Storage Statistics:</strong><br><br>
+                        • Total Storage: 500GB<br>
+                        • Used: ${used}<br>
+                        • Available: ${DigitalLibrary.formatBytes(stats.storageLimit - stats.storageUsed)}<br>
+                        • Usage: ${stats.storagePercent}%<br>
+                        • Supports files up to 500MB each<br><br>
+                        <small style="color: var(--text-gray);">
+                            <i class="fas fa-info-circle"></i> 
+                            Perfect for large academic books (220MB+)
+                        </small>
+                    `;
+                    
+                    showAlert(message, 'info');
+                    hideLoading();
+                }, 500);
                 
             } catch (error) {
                 showAlert('Error getting stats: ' + error.message, 'error');
-            } finally {
                 hideLoading();
             }
         }
 
-        async function showUserManagement() {
+        function showUserManagement() {
             if (currentUser.role !== 'admin') {
                 showAlert('Admin access required', 'error');
                 return;
@@ -3085,39 +2900,42 @@
             try {
                 showLoading('Loading user data...');
                 
-                const transaction = library.db.transaction(['users'], 'readonly');
-                const store = transaction.objectStore('users');
-                const request = store.getAll();
-                
-                const users = await new Promise((resolve, reject) => {
-                    request.onsuccess = (event) => resolve(event.target.result || []);
-                    request.onerror = (event) => reject(event.target.error);
-                });
-                
-                const regularUsers = users.filter(u => u.role === 'user');
-                const adminUsers = users.filter(u => u.role === 'admin');
-                
-                const userList = regularUsers.map(user => 
-                    `• ${user.name} (${user.email})<br>`
-                ).join('');
-                
-                const message = `
-                    <strong>User Management:</strong><br><br>
-                    <strong>Regular Users (${regularUsers.length}):</strong><br>
-                    ${userList || 'No regular users found.'}<br>
-                    <strong>Administrators (${adminUsers.length}):</strong><br>
-                    • System Administrators (hidden for security)<br><br>
-                    <small style="color: var(--text-gray);">
-                        <i class="fas fa-info-circle"></i> 
-                        Admin access requires special authorization
-                    </small>
-                `;
-                
-                showAlert(message, 'info');
+                setTimeout(function() {
+                    var users = DigitalLibrary.getUsers();
+                    var regularUsers = [];
+                    var adminUsers = [];
+                    
+                    for (var i = 0; i < users.length; i++) {
+                        if (users[i].role === 'user') {
+                            regularUsers.push(users[i]);
+                        } else if (users[i].role === 'admin') {
+                            adminUsers.push(users[i]);
+                        }
+                    }
+                    
+                    var userList = '';
+                    for (var j = 0; j < regularUsers.length; j++) {
+                        userList += '• ' + regularUsers[j].name + ' (' + regularUsers[j].email + ')<br>';
+                    }
+                    
+                    var message = `
+                        <strong>User Management:</strong><br><br>
+                        <strong>Regular Users (${regularUsers.length}):</strong><br>
+                        ${userList || 'No regular users found.'}<br>
+                        <strong>Administrators (${adminUsers.length}):</strong><br>
+                        • System Administrators (hidden for security)<br><br>
+                        <small style="color: var(--text-gray);">
+                            <i class="fas fa-info-circle"></i> 
+                            Admin access requires special authorization
+                        </small>
+                    `;
+                    
+                    showAlert(message, 'info');
+                    hideLoading();
+                }, 500);
                 
             } catch (error) {
                 showAlert('Error loading users: ' + error.message, 'error');
-            } finally {
                 hideLoading();
             }
         }
@@ -3128,7 +2946,7 @@
                 return;
             }
             
-            const profileHTML = `
+            var profileHTML = `
                 <div style="padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: 8px;">
                     <h3 style="color: var(--neon-green); margin-bottom: 1rem;">Your Profile</h3>
                     <p><strong>Name:</strong> ${currentUser.name}</p>
@@ -3155,11 +2973,14 @@
         }
 
         function showAlert(message, type) {
-            const existingAlerts = document.querySelectorAll('.alert');
-            existingAlerts.forEach(alert => alert.remove());
+            // Remove existing alerts
+            var existingAlerts = document.querySelectorAll('.alert');
+            for (var i = 0; i < existingAlerts.length; i++) {
+                existingAlerts[i].remove();
+            }
             
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type}`;
+            var alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-' + type;
             alertDiv.innerHTML = `
                 <div style="display: flex; align-items: flex-start; gap: 10px;">
                     <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}" style="margin-top: 2px;"></i>
@@ -3170,25 +2991,25 @@
             
             document.body.appendChild(alertDiv);
             
-            setTimeout(() => {
+            setTimeout(function() {
                 if (alertDiv.parentElement) {
                     alertDiv.remove();
                 }
             }, 5000);
         }
 
-        function showLoading(message = 'Loading...') {
-            const overlay = document.getElementById('loadingOverlay');
-            const text = document.getElementById('loadingText');
+        function showLoading(message) {
+            var overlay = document.getElementById('loadingOverlay');
+            var text = document.getElementById('loadingText');
             
             if (overlay && text) {
                 overlay.classList.add('active');
-                text.textContent = message;
+                text.textContent = message || 'Loading...';
             }
         }
 
         function hideLoading() {
-            const overlay = document.getElementById('loadingOverlay');
+            var overlay = document.getElementById('loadingOverlay');
             if (overlay) {
                 overlay.classList.remove('active');
             }
@@ -3205,7 +3026,7 @@
 
         // ===== EVENT LISTENERS =====
         window.addEventListener('hashchange', function() {
-            const hash = window.location.hash.replace('#', '');
+            var hash = window.location.hash.replace('#', '');
             if (hash && WEBSITE_PAGES[hash]) {
                 navigateTo(hash);
             }
@@ -3219,17 +3040,17 @@
 
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
-                const modals = document.querySelectorAll('.modal');
-                modals.forEach(modal => {
-                    if (modal.style.display === 'flex') {
-                        modal.style.display = 'none';
+                var modals = document.querySelectorAll('.modal');
+                for (var i = 0; i < modals.length; i++) {
+                    if (modals[i].style.display === 'flex') {
+                        modals[i].style.display = 'none';
                     }
-                });
+                }
             }
         });
 
         // Initial storage info update
-        setTimeout(() => {
+        setTimeout(function() {
             updateStorageInfo();
         }, 1000);
     </script>
