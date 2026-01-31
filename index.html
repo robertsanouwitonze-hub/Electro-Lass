@@ -1344,19 +1344,22 @@
             constructor() {
                 this.STORAGE_LIMIT = 500 * 1024 * 1024 * 1024; // 500GB
                 this.MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB per file
-                this.ADMIN_SECRET_CODE = "ELECTRO_LASS_ADMIN_2024"; // Hidden admin code
+                this.ADMIN_SECRET_CODE = "ELECTRO_LASS_ADMIN_2024";
                 this.db = null;
             }
             
             async init() {
+                console.log('Initializing Digital Library...');
                 await this.initDatabase();
-                await this.setupAdminUser();
+                await this.setupDefaultUsers();
                 await this.loadSampleBooks();
+                console.log('Digital Library initialized successfully');
             }
             
             initDatabase() {
                 return new Promise((resolve, reject) => {
-                    const request = indexedDB.open('DigitalLibraryDB', 8);
+                    console.log('Opening IndexedDB...');
+                    const request = indexedDB.open('DigitalLibraryDB', 3);
                     
                     request.onerror = (event) => {
                         console.error('IndexedDB error:', event.target.error);
@@ -1365,51 +1368,71 @@
                     
                     request.onsuccess = (event) => {
                         this.db = event.target.result;
-                        console.log('Database initialized successfully');
+                        console.log('Database opened successfully');
                         resolve(this.db);
                     };
                     
                     request.onupgradeneeded = (event) => {
+                        console.log('Database upgrade needed. Old version:', event.oldVersion, 'New version:', event.newVersion);
                         const db = event.target.result;
-                        console.log('Database upgrade needed, version:', event.oldVersion, '->', event.newVersion);
                         
-                        // Create object stores
-                        const stores = [
-                            { name: 'books', keyPath: 'id' },
-                            { name: 'users', keyPath: 'email' },
-                            { name: 'pdfs', keyPath: 'id' },
-                            { name: 'likes', keyPath: 'id' },
-                            { name: 'downloads', keyPath: 'id' },
-                            { name: 'settings', keyPath: 'key' }
-                        ];
+                        // Delete old object stores if they exist
+                        if (event.oldVersion < 1) {
+                            const storeNames = ['books', 'users', 'pdfs', 'likes', 'downloads', 'settings'];
+                            storeNames.forEach(name => {
+                                if (db.objectStoreNames.contains(name)) {
+                                    db.deleteObjectStore(name);
+                                }
+                            });
+                        }
                         
-                        stores.forEach(store => {
-                            if (!db.objectStoreNames.contains(store.name)) {
-                                console.log('Creating object store:', store.name);
-                                const objectStore = db.createObjectStore(store.name, { keyPath: store.keyPath });
-                                
-                                if (store.name === 'books') {
-                                    objectStore.createIndex('title', 'title', { unique: false });
-                                    objectStore.createIndex('author', 'author', { unique: false });
-                                    objectStore.createIndex('category', 'category', { unique: false });
-                                    objectStore.createIndex('dateAdded', 'dateAdded', { unique: false });
-                                    objectStore.createIndex('likesCount', 'likesCount', { unique: false });
-                                }
-                                
-                                if (store.name === 'likes') {
-                                    objectStore.createIndex('bookId', 'bookId', { unique: false });
-                                    objectStore.createIndex('userId', 'userId', { unique: false });
-                                    objectStore.createIndex('bookId_userId', ['bookId', 'userId'], { unique: true });
-                                }
-                            }
-                        });
+                        // Create books store
+                        if (!db.objectStoreNames.contains('books')) {
+                            console.log('Creating books store');
+                            const booksStore = db.createObjectStore('books', { keyPath: 'id' });
+                            booksStore.createIndex('title', 'title', { unique: false });
+                            booksStore.createIndex('author', 'author', { unique: false });
+                            booksStore.createIndex('category', 'category', { unique: false });
+                            booksStore.createIndex('dateAdded', 'dateAdded', { unique: false });
+                        }
+                        
+                        // Create users store
+                        if (!db.objectStoreNames.contains('users')) {
+                            console.log('Creating users store');
+                            const usersStore = db.createObjectStore('users', { keyPath: 'email' });
+                            usersStore.createIndex('name', 'name', { unique: false });
+                            usersStore.createIndex('role', 'role', { unique: false });
+                        }
+                        
+                        // Create likes store
+                        if (!db.objectStoreNames.contains('likes')) {
+                            console.log('Creating likes store');
+                            const likesStore = db.createObjectStore('likes', { keyPath: 'id' });
+                            likesStore.createIndex('bookId', 'bookId', { unique: false });
+                            likesStore.createIndex('userId', 'userId', { unique: false });
+                            likesStore.createIndex('bookId_userId', ['bookId', 'userId'], { unique: true });
+                        }
+                        
+                        // Create downloads store
+                        if (!db.objectStoreNames.contains('downloads')) {
+                            console.log('Creating downloads store');
+                            const downloadsStore = db.createObjectStore('downloads', { keyPath: 'id' });
+                            downloadsStore.createIndex('bookId', 'bookId', { unique: false });
+                            downloadsStore.createIndex('userId', 'userId', { unique: false });
+                        }
+                        
+                        // Create pdfs store
+                        if (!db.objectStoreNames.contains('pdfs')) {
+                            console.log('Creating pdfs store');
+                            db.createObjectStore('pdfs', { keyPath: 'id' });
+                        }
                     };
                 });
             }
             
-            async setupAdminUser() {
+            async setupDefaultUsers() {
                 try {
-                    // Create test user for easy testing
+                    console.log('Setting up default users...');
                     const testUser = {
                         name: "Test User",
                         email: "test@user.com",
@@ -1418,29 +1441,15 @@
                         registrationDate: new Date().toISOString(),
                         lastLogin: new Date().toISOString(),
                         likedBooks: [],
-                        downloadedBooks: [],
-                        isSystemAdmin: false
+                        downloadedBooks: []
                     };
                     
-                    // Check if test user exists
-                    const existingUser = await this.getUserByEmail(testUser.email);
-                    if (!existingUser) {
-                        const transaction = this.db.transaction(['users'], 'readwrite');
-                        const store = transaction.objectStore('users');
-                        await store.put(testUser);
-                        console.log('Test user created:', testUser.email);
-                    } else {
-                        console.log('Test user already exists');
-                    }
+                    await this.saveUser(testUser);
+                    console.log('Test user created:', testUser.email);
                     
                 } catch (error) {
-                    console.error('Error setting up test user:', error);
+                    console.error('Error setting up default users:', error);
                 }
-            }
-            
-            verifyAdminCode(code) {
-                // Securely verify admin code without exposing it
-                return code === this.ADMIN_SECRET_CODE;
             }
             
             async loadSampleBooks() {
@@ -1517,6 +1526,113 @@
                 }
             }
             
+            // ===== USER OPERATIONS =====
+            async saveUser(user) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(['users'], 'readwrite');
+                    const store = transaction.objectStore('users');
+                    const request = store.put(user);
+                    
+                    request.onsuccess = () => resolve(true);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+            
+            async getUserByEmail(email) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(['users'], 'readonly');
+                    const store = transaction.objectStore('users');
+                    const request = store.get(email);
+                    
+                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+            
+            async registerUser(userData) {
+                try {
+                    const existingUser = await this.getUserByEmail(userData.email);
+                    if (existingUser) {
+                        throw new Error('Email already registered. Please use a different email or login.');
+                    }
+                    
+                    if (!this.validatePasswordStrength(userData.password)) {
+                        throw new Error('Password must be at least 8 characters with uppercase, lowercase, numbers, and special characters.');
+                    }
+                    
+                    const user = {
+                        ...userData,
+                        role: 'user',
+                        registrationDate: new Date().toISOString(),
+                        lastLogin: new Date().toISOString(),
+                        likedBooks: [],
+                        downloadedBooks: []
+                    };
+                    
+                    await this.saveUser(user);
+                    console.log('User registered successfully:', user.email);
+                    return user;
+                    
+                } catch (error) {
+                    console.error('Error registering user:', error);
+                    throw error;
+                }
+            }
+            
+            validatePasswordStrength(password) {
+                const minLength = 8;
+                const hasUpperCase = /[A-Z]/.test(password);
+                const hasLowerCase = /[a-z]/.test(password);
+                const hasNumbers = /\d/.test(password);
+                const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+                
+                return password.length >= minLength && 
+                       hasUpperCase && 
+                       hasLowerCase && 
+                       hasNumbers && 
+                       hasSpecialChar;
+            }
+            
+            async loginUser(email, password, adminCode = null) {
+                try {
+                    console.log('Attempting login for:', email);
+                    const user = await this.getUserByEmail(email);
+                    
+                    if (!user) {
+                        throw new Error('Account not found. Please check your email or sign up.');
+                    }
+                    
+                    if (user.password !== password) {
+                        throw new Error('Incorrect password. Please try again.');
+                    }
+                    
+                    // Check for admin access
+                    if (adminCode) {
+                        if (adminCode === this.ADMIN_SECRET_CODE) {
+                            user.role = 'admin';
+                            console.log('Admin access granted for:', email);
+                        } else {
+                            throw new Error('Invalid admin code.');
+                        }
+                    }
+                    
+                    // Update last login
+                    user.lastLogin = new Date().toISOString();
+                    await this.saveUser(user);
+                    
+                    console.log('Login successful for:', email, 'Role:', user.role);
+                    return user;
+                    
+                } catch (error) {
+                    console.error('Login error:', error);
+                    throw error;
+                }
+            }
+            
+            verifyAdminCode(code) {
+                return code === this.ADMIN_SECRET_CODE;
+            }
+            
             // ===== BOOK OPERATIONS =====
             async getAllBooks() {
                 return new Promise((resolve, reject) => {
@@ -1530,11 +1646,9 @@
                         };
                         
                         request.onerror = (event) => {
-                            console.error('Error getting books:', event.target.error);
                             reject(event.target.error);
                         };
                     } catch (error) {
-                        console.error('Transaction error:', error);
                         reject(error);
                     }
                 });
@@ -1616,140 +1730,6 @@
                 });
                 
                 return filtered;
-            }
-            
-            // ===== USER OPERATIONS =====
-            async registerUser(userData) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['users'], 'readwrite');
-                    const store = transaction.objectStore('users');
-                    
-                    // Check if user exists
-                    const checkRequest = store.get(userData.email);
-                    
-                    checkRequest.onsuccess = (event) => {
-                        if (event.target.result) {
-                            reject(new Error('Email already registered. Please use a different email or login.'));
-                            return;
-                        }
-                        
-                        // Validate password strength
-                        if (!this.validatePasswordStrength(userData.password)) {
-                            reject(new Error('Password must be at least 8 characters with uppercase, lowercase, numbers, and special characters.'));
-                            return;
-                        }
-                        
-                        // Add registration date and set as regular user
-                        userData.registrationDate = new Date().toISOString();
-                        userData.lastLogin = new Date().toISOString();
-                        userData.role = 'user';
-                        userData.likedBooks = [];
-                        userData.downloadedBooks = [];
-                        userData.isSystemAdmin = false;
-                        
-                        const addRequest = store.add(userData);
-                        
-                        addRequest.onsuccess = () => {
-                            console.log('User registered successfully:', userData.email);
-                            resolve(userData);
-                        };
-                        addRequest.onerror = (addEvent) => {
-                            console.error('Error registering user:', addEvent.target.error);
-                            reject(addEvent.target.error);
-                        };
-                    };
-                    
-                    checkRequest.onerror = (event) => {
-                        console.error('Error checking user existence:', event.target.error);
-                        reject(event.target.error);
-                    };
-                });
-            }
-            
-            validatePasswordStrength(password) {
-                const minLength = 8;
-                const hasUpperCase = /[A-Z]/.test(password);
-                const hasLowerCase = /[a-z]/.test(password);
-                const hasNumbers = /\d/.test(password);
-                const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-                
-                return password.length >= minLength && 
-                       hasUpperCase && 
-                       hasLowerCase && 
-                       hasNumbers && 
-                       hasSpecialChar;
-            }
-            
-            async loginUser(email, password, adminCode = null) {
-                return new Promise((resolve, reject) => {
-                    console.log('Attempting login for:', email);
-                    
-                    const transaction = this.db.transaction(['users'], 'readwrite');
-                    const store = transaction.objectStore('users');
-                    const request = store.get(email);
-                    
-                    request.onsuccess = (event) => {
-                        const user = event.target.result;
-                        
-                        if (!user) {
-                            console.log('User not found:', email);
-                            reject(new Error('Account not found. Please check your email or sign up.'));
-                            return;
-                        }
-                        
-                        console.log('User found, checking password...');
-                        
-                        if (user.password !== password) {
-                            console.log('Password incorrect for:', email);
-                            reject(new Error('Incorrect password. Please try again.'));
-                            return;
-                        }
-                        
-                        console.log('Password correct for:', email);
-                        
-                        // Check for admin access
-                        if (adminCode) {
-                            console.log('Checking admin code...');
-                            if (this.verifyAdminCode(adminCode)) {
-                                console.log('Admin code verified, granting admin access');
-                                user.role = 'admin';
-                            } else {
-                                console.log('Invalid admin code');
-                                reject(new Error('Invalid admin code.'));
-                                return;
-                            }
-                        }
-                        
-                        // Update last login
-                        user.lastLogin = new Date().toISOString();
-                        const updateRequest = store.put(user);
-                        
-                        updateRequest.onsuccess = () => {
-                            console.log('Login successful for:', email, 'Role:', user.role);
-                            resolve(user);
-                        };
-                        updateRequest.onerror = (updateEvent) => {
-                            console.error('Error updating last login:', updateEvent.target.error);
-                            reject(updateEvent.target.error);
-                        };
-                    };
-                    
-                    request.onerror = (event) => {
-                        console.error('Error fetching user:', event.target.error);
-                        reject(event.target.error);
-                    };
-                });
-            }
-            
-            async getUserByEmail(email) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['users'], 'readonly');
-                    const store = transaction.objectStore('users');
-                    const request = store.get(email);
-                    
-                    request.onsuccess = (event) => resolve(event.target.result);
-                    request.onerror = (event) => reject(event.target.error);
-                });
             }
             
             // ===== LIKE SYSTEM =====
@@ -2213,17 +2193,13 @@
             
             let strength = 0;
             
-            // Length check
             if (password.length >= 8) strength += 1;
             if (password.length >= 12) strength += 1;
-            
-            // Character variety checks
             if (/[A-Z]/.test(password)) strength += 1;
             if (/[a-z]/.test(password)) strength += 1;
             if (/[0-9]/.test(password)) strength += 1;
             if (/[^A-Za-z0-9]/.test(password)) strength += 1;
             
-            // Update strength bar
             strengthBar.className = 'password-strength';
             if (strength <= 2) {
                 strengthBar.classList.add('strength-weak');
@@ -2259,40 +2235,18 @@
 
         // ===== INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', async function() {
+            console.log('DOM loaded, initializing app...');
             showLoading('Initializing Digital Library...');
             
             try {
-                console.log('Starting library initialization...');
                 await library.init();
                 console.log('Library initialized successfully');
                 
-                // Load current user from localStorage
-                const savedUser = localStorage.getItem('electroUser');
-                if (savedUser) {
-                    const userData = JSON.parse(savedUser);
-                    if (userData.isLoggedIn && userData.email) {
-                        try {
-                            console.log('Attempting to load saved user:', userData.email);
-                            const dbUser = await library.getUserByEmail(userData.email);
-                            if (dbUser) {
-                                currentUser = {
-                                    ...userData,
-                                    ...dbUser,
-                                    isLoggedIn: true
-                                };
-                                console.log('User loaded from localStorage:', currentUser.email);
-                            } else {
-                                console.log('User not found in database, clearing localStorage');
-                                localStorage.removeItem('electroUser');
-                            }
-                        } catch (error) {
-                            console.log('Error loading user from database:', error);
-                            localStorage.removeItem('electroUser');
-                        }
-                    }
-                }
+                // Load saved user from localStorage
+                await loadSavedUser();
                 
                 updateUserInterface();
+                updateNavigation();
                 
                 // Load initial page
                 const hash = window.location.hash.replace('#', '');
@@ -2309,6 +2263,51 @@
                 hideLoading();
             }
         });
+
+        async function loadSavedUser() {
+            try {
+                const savedUser = localStorage.getItem('electroUser');
+                if (savedUser) {
+                    const userData = JSON.parse(savedUser);
+                    if (userData.email) {
+                        console.log('Loading saved user:', userData.email);
+                        const dbUser = await library.getUserByEmail(userData.email);
+                        if (dbUser) {
+                            currentUser = {
+                                isLoggedIn: true,
+                                role: dbUser.role || "user",
+                                name: dbUser.name,
+                                email: dbUser.email,
+                                lastLogin: dbUser.lastLogin,
+                                likedBooks: dbUser.likedBooks || [],
+                                downloadedBooks: dbUser.downloadedBooks || []
+                            };
+                            console.log('User loaded successfully:', currentUser.email);
+                        } else {
+                            console.log('User not found in database, clearing localStorage');
+                            localStorage.removeItem('electroUser');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading saved user:', error);
+                localStorage.removeItem('electroUser');
+            }
+        }
+
+        function saveUserToStorage(user) {
+            try {
+                localStorage.setItem('electroUser', JSON.stringify({
+                    email: user.email,
+                    name: user.name,
+                    role: user.role,
+                    lastLogin: user.lastLogin
+                }));
+                console.log('User saved to localStorage:', user.email);
+            } catch (error) {
+                console.error('Error saving user to localStorage:', error);
+            }
+        }
 
         // ===== NAVIGATION =====
         function navigateTo(page) {
@@ -2872,22 +2871,19 @@
                     password: password
                 };
                 
-                await library.registerUser(userData);
-                
-                const user = await library.loginUser(email, password);
+                const user = await library.registerUser(userData);
                 
                 currentUser = {
                     isLoggedIn: true,
                     role: user.role || "user",
                     name: user.name,
                     email: email,
-                    lastLogin: new Date().toISOString(),
-                    likedBooks: [],
-                    downloadedBooks: []
+                    lastLogin: user.lastLogin,
+                    likedBooks: user.likedBooks || [],
+                    downloadedBooks: user.downloadedBooks || []
                 };
                 
-                localStorage.setItem('electroUser', JSON.stringify(currentUser));
-                
+                saveUserToStorage(currentUser);
                 updateUserInterface();
                 updateNavigation();
                 
@@ -2920,13 +2916,12 @@
                     role: user.role || "user",
                     name: user.name,
                     email: email,
-                    lastLogin: new Date().toISOString(),
+                    lastLogin: user.lastLogin,
                     likedBooks: user.likedBooks || [],
                     downloadedBooks: user.downloadedBooks || []
                 };
                 
-                localStorage.setItem('electroUser', JSON.stringify(currentUser));
-                
+                saveUserToStorage(currentUser);
                 updateUserInterface();
                 updateNavigation();
                 
