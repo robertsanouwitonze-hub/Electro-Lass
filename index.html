@@ -979,6 +979,156 @@
             display: inline-block;
         }
 
+        /* Team Section */
+        .team-section {
+            background: linear-gradient(135deg, rgba(157, 0, 255, 0.2), rgba(7, 23, 140, 0.3));
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid var(--spark-purple);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .team-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-green);
+        }
+
+        .team-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--electric-orange), var(--spark-purple));
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            border: 4px solid rgba(0, 255, 204, 0.3);
+        }
+
+        .team-name {
+            font-size: 1.5rem;
+            color: var(--neon-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .team-role {
+            color: var(--electric-orange);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .team-bio {
+            color: var(--text-gray);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* Help Section */
+        .help-section {
+            background: linear-gradient(135deg, rgba(255, 114, 0, 0.15), rgba(7, 23, 140, 0.3));
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid var(--electric-orange);
+        }
+
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .help-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--neon-green);
+            transition: all 0.3s ease;
+        }
+
+        .help-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .help-icon {
+            font-size: 2rem;
+            color: var(--neon-green);
+            margin-bottom: 1rem;
+        }
+
+        .help-title {
+            font-size: 1.2rem;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .help-description {
+            color: var(--text-gray);
+            line-height: 1.5;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            border-bottom: 2px solid rgba(0, 255, 204, 0.2);
+            padding-bottom: 0.5rem;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            border-radius: 8px 8px 0 0;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab-btn:hover {
+            background: rgba(0, 255, 204, 0.1);
+            color: var(--text-light);
+        }
+
+        .tab-btn.active {
+            background: rgba(0, 255, 204, 0.2);
+            color: var(--neon-green);
+            border-bottom: 3px solid var(--neon-green);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .nav-container {
@@ -1373,6 +1523,16 @@
                 if (!localStorage.getItem('library_downloads')) {
                     localStorage.setItem('library_downloads', JSON.stringify([]));
                 }
+                
+                // Initialize system info
+                if (!localStorage.getItem('library_system')) {
+                    localStorage.setItem('library_system', JSON.stringify({
+                        version: '1.0.0',
+                        created: new Date().toISOString(),
+                        totalUsers: 0,
+                        totalBooks: 0
+                    }));
+                }
             },
             
             // Setup default test data
@@ -1391,6 +1551,7 @@
                 
                 if (!testUserExists) {
                     var testUser = {
+                        id: 'test_user_001',
                         name: "Test User",
                         email: "test@user.com",
                         password: "Test123!",
@@ -1398,7 +1559,8 @@
                         registrationDate: new Date().toISOString(),
                         lastLogin: new Date().toISOString(),
                         likedBooks: [],
-                        downloadedBooks: []
+                        downloadedBooks: [],
+                        accountStatus: "active"
                     };
                     
                     users.push(testUser);
@@ -1414,52 +1576,102 @@
                             title: "JavaScript: The Definitive Guide",
                             author: "David Flanagan",
                             category: "Programming",
-                            description: "Master JavaScript programming with this comprehensive guide",
-                            hasPdf: false,
+                            description: "Master JavaScript programming with this comprehensive guide covering ES6 and modern web development",
+                            hasPdf: true,
+                            pdfId: "js_guide_001",
                             dateAdded: new Date().toISOString(),
                             addedBy: "system",
                             likesCount: 42,
                             downloadsCount: 156,
-                            fileSize: "2.5 MB"
+                            fileSize: "2.5 MB",
+                            isbn: "978-1491952023",
+                            pages: 1096,
+                            year: 2020
                         },
                         {
                             id: 2,
                             title: "Clean Code: A Handbook of Agile Software Craftsmanship",
                             author: "Robert C. Martin",
                             category: "Programming",
-                            description: "Learn to write clean, maintainable code",
-                            hasPdf: false,
+                            description: "Learn to write clean, maintainable code with practical examples and best practices",
+                            hasPdf: true,
+                            pdfId: "clean_code_002",
                             dateAdded: new Date().toISOString(),
                             addedBy: "system",
                             likesCount: 38,
                             downloadsCount: 89,
-                            fileSize: "3.1 MB"
+                            fileSize: "3.1 MB",
+                            isbn: "978-0132350884",
+                            pages: 464,
+                            year: 2008
                         },
                         {
                             id: 3,
                             title: "The Great Gatsby",
                             author: "F. Scott Fitzgerald",
                             category: "Novel",
-                            description: "Classic American novel about the Jazz Age",
-                            hasPdf: false,
+                            description: "Classic American novel about the Jazz Age, exploring themes of idealism, resistance to change, and excess",
+                            hasPdf: true,
+                            pdfId: "gatsby_003",
                             dateAdded: new Date().toISOString(),
                             addedBy: "system",
                             likesCount: 51,
                             downloadsCount: 203,
-                            fileSize: "1.8 MB"
+                            fileSize: "1.8 MB",
+                            isbn: "978-0743273565",
+                            pages: 180,
+                            year: 1925
                         },
                         {
                             id: 4,
                             title: "1984",
                             author: "George Orwell",
                             category: "Novel",
-                            description: "Dystopian social science fiction novel",
-                            hasPdf: false,
+                            description: "Dystopian social science fiction novel exploring totalitarianism and surveillance society",
+                            hasPdf: true,
+                            pdfId: "1984_004",
                             dateAdded: new Date().toISOString(),
                             addedBy: "system",
                             likesCount: 67,
                             downloadsCount: 312,
-                            fileSize: "2.2 MB"
+                            fileSize: "2.2 MB",
+                            isbn: "978-0451524935",
+                            pages: 328,
+                            year: 1949
+                        },
+                        {
+                            id: 5,
+                            title: "The Pragmatic Programmer",
+                            author: "Andrew Hunt & David Thomas",
+                            category: "Programming",
+                            description: "Your journey to mastery with practical tips and timeless advice for software developers",
+                            hasPdf: true,
+                            pdfId: "pragmatic_005",
+                            dateAdded: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+                            addedBy: "system",
+                            likesCount: 29,
+                            downloadsCount: 94,
+                            fileSize: "2.8 MB",
+                            isbn: "978-0201616224",
+                            pages: 352,
+                            year: 1999
+                        },
+                        {
+                            id: 6,
+                            title: "Pride and Prejudice",
+                            author: "Jane Austen",
+                            category: "Novel",
+                            description: "Romantic novel of manners set in rural England at the turn of the 19th century",
+                            hasPdf: true,
+                            pdfId: "pride_006",
+                            dateAdded: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+                            addedBy: "system",
+                            likesCount: 45,
+                            downloadsCount: 178,
+                            fileSize: "1.5 MB",
+                            isbn: "978-1503290563",
+                            pages: 432,
+                            year: 1813
                         }
                     ];
                     
@@ -1498,11 +1710,13 @@
                 }
                 
                 if (!found) {
+                    // Generate unique ID for new user
+                    user.id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                     users.push(user);
                 }
                 
                 localStorage.setItem('library_users', JSON.stringify(users));
-                return true;
+                return user;
             },
             
             registerUser: function(userData) {
@@ -1523,7 +1737,13 @@
                     registrationDate: new Date().toISOString(),
                     lastLogin: new Date().toISOString(),
                     likedBooks: [],
-                    downloadedBooks: []
+                    downloadedBooks: [],
+                    accountStatus: "active",
+                    preferences: {
+                        theme: "dark",
+                        notifications: true,
+                        language: "en"
+                    }
                 };
                 
                 this.saveUser(user);
@@ -1553,6 +1773,10 @@
                     throw new Error('Account not found. Please check your email or sign up.');
                 }
                 
+                if (user.accountStatus === "suspended") {
+                    throw new Error('Account suspended. Please contact support.');
+                }
+                
                 if (user.password !== password) {
                     throw new Error('Incorrect password. Please try again.');
                 }
@@ -1569,6 +1793,7 @@
                 
                 // Update last login
                 user.lastLogin = new Date().toISOString();
+                user.loginCount = (user.loginCount || 0) + 1;
                 this.saveUser(user);
                 
                 console.log('Login successful for:', email, 'Role:', user.role);
@@ -1609,6 +1834,10 @@
                 }
                 
                 if (!found) {
+                    // Generate ID if not provided
+                    if (!book.id) {
+                        book.id = Date.now();
+                    }
                     books.push(book);
                 }
                 
@@ -1721,6 +1950,16 @@
                             this.saveBook(book);
                         }
                         
+                        // Update user's liked books
+                        var user = this.getUserByEmail(userId);
+                        if (user) {
+                            var index = user.likedBooks.indexOf(bookId);
+                            if (index > -1) {
+                                user.likedBooks.splice(index, 1);
+                                this.saveUser(user);
+                            }
+                        }
+                        
                         return false;
                     }
                 }
@@ -1740,6 +1979,13 @@
                 if (book) {
                     book.likesCount = (book.likesCount || 0) + 1;
                     this.saveBook(book);
+                }
+                
+                // Update user's liked books
+                var user = this.getUserByEmail(userId);
+                if (user) {
+                    user.likedBooks.push(bookId);
+                    this.saveUser(user);
                 }
                 
                 return true;
@@ -1778,6 +2024,15 @@
                     this.saveBook(book);
                 }
                 
+                // Update user's downloaded books
+                var user = this.getUserByEmail(userId);
+                if (user) {
+                    if (!user.downloadedBooks.includes(bookId)) {
+                        user.downloadedBooks.push(bookId);
+                        this.saveUser(user);
+                    }
+                }
+                
                 return true;
             },
             
@@ -1789,9 +2044,13 @@
             // ===== STATISTICS =====
             getLibraryStats: function() {
                 var books = this.getBooks();
+                var users = this.getUsers();
                 var stats = {
                     totalBooks: books.length,
+                    totalUsers: users.length,
+                    activeUsers: users.filter(function(u) { return u.accountStatus === "active"; }).length,
                     novelsCount: 0,
+                    programmingCount: 0,
                     totalLikes: 0,
                     totalDownloads: 0,
                     storageUsed: 0,
@@ -1805,6 +2064,9 @@
                     stats.totalDownloads += book.downloadsCount || 0;
                     if (book.category === 'Novel') {
                         stats.novelsCount++;
+                    }
+                    if (book.category === 'Programming') {
+                        stats.programmingCount++;
                     }
                 }
                 
@@ -1822,6 +2084,12 @@
                 var i = Math.floor(Math.log(bytes) / Math.log(k));
                 
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+            },
+            
+            // ===== SYSTEM INFO =====
+            getSystemInfo: function() {
+                var system = localStorage.getItem('library_system');
+                return system ? JSON.parse(system) : {};
             }
         };
 
@@ -1833,7 +2101,8 @@
             email: "",
             lastLogin: null,
             likedBooks: [],
-            downloadedBooks: []
+            downloadedBooks: [],
+            accountStatus: "active"
         };
         
         var currentPage = 'home';
@@ -1852,88 +2121,262 @@
                             <h1>Welcome to Electro-LASS Digital Library</h1>
                             <p class="page-subtitle">Your gateway to ${stats.totalBooks} books with 500GB storage. ${stats.novelsCount} Novels available.</p>
                         </div>
-                    `;
-                    
-                    if (!currentUser.isLoggedIn) {
-                        content += `
-                            <div class="dashboard-section">
-                                <h2><i class="fas fa-book-reader"></i> Access Our Digital Library</h2>
-                                <p>Browse ${stats.totalBooks} books as a guest, or sign up to unlock likes, downloads, and more!</p>
-                                <div class="admin-actions">
-                                    <button class="btn btn-primary" onclick="navigateTo('library')">
-                                        <i class="fas fa-book-open"></i> Browse Library (${stats.totalBooks} books)
-                                    </button>
-                                    <button class="btn" onclick="openLoginModal()" style="background: var(--neon-green); color: var(--dark-bg);">
-                                        <i class="fas fa-sign-in-alt"></i> Login to Access More
-                                    </button>
-                                    <button class="btn" onclick="openSignupModal()" style="background: var(--spark-purple); color: white;">
-                                        <i class="fas fa-user-plus"></i> Sign Up Free
-                                    </button>
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        content += `
-                            <div class="dashboard-section">
-                                <h2><i class="fas fa-book-open"></i> Welcome back, ${currentUser.name}!</h2>
-                                <p>You have ${currentUser.role === 'admin' ? 'admin' : 'full'} access to our digital library with ${stats.totalBooks} books</p>
-                                <div class="admin-actions">
-                                    <button class="btn btn-primary" onclick="navigateTo('library')">
-                                        <i class="fas fa-book"></i> Browse All Books
-                                    </button>
-                                    ${currentUser.role === 'admin' ? `
-                                        <button class="btn" onclick="openAddBookModal()" style="background: var(--neon-green); color: var(--dark-bg);">
-                                            <i class="fas fa-plus"></i> Add New Book
+                        
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+                            <button class="tab-btn" onclick="switchTab('team')">Our Team</button>
+                            <button class="tab-btn" onclick="switchTab('help')">Help & Support</button>
+                            <button class="tab-btn" onclick="switchTab('about')">About Us</button>
+                        </div>
+                        
+                        <div id="overviewTab" class="tab-content active">
+                            ${!currentUser.isLoggedIn ? `
+                                <div class="dashboard-section">
+                                    <h2><i class="fas fa-book-reader"></i> Access Our Digital Library</h2>
+                                    <p>Browse ${stats.totalBooks} books as a guest, or sign up to unlock likes, downloads, and more!</p>
+                                    <div class="admin-actions">
+                                        <button class="btn btn-primary" onclick="navigateTo('library')">
+                                            <i class="fas fa-book-open"></i> Browse Library (${stats.totalBooks} books)
                                         </button>
-                                    ` : ''}
-                                    <button class="btn" onclick="showUserProfile()" style="background: var(--spark-purple); color: white;">
-                                        <i class="fas fa-user"></i> My Profile
+                                        <button class="btn" onclick="openLoginModal()" style="background: var(--neon-green); color: var(--dark-bg);">
+                                            <i class="fas fa-sign-in-alt"></i> Login to Access More
+                                        </button>
+                                        <button class="btn" onclick="openSignupModal()" style="background: var(--spark-purple); color: white;">
+                                            <i class="fas fa-user-plus"></i> Sign Up Free
+                                        </button>
+                                    </div>
+                                </div>
+                            ` : `
+                                <div class="dashboard-section">
+                                    <h2><i class="fas fa-book-open"></i> Welcome back, ${currentUser.name}!</h2>
+                                    <p>You have ${currentUser.role === 'admin' ? 'admin' : 'full'} access to our digital library with ${stats.totalBooks} books</p>
+                                    <div class="admin-actions">
+                                        <button class="btn btn-primary" onclick="navigateTo('library')">
+                                            <i class="fas fa-book"></i> Browse All Books
+                                        </button>
+                                        ${currentUser.role === 'admin' ? `
+                                            <button class="btn" onclick="openAddBookModal()" style="background: var(--neon-green); color: var(--dark-bg);">
+                                                <i class="fas fa-plus"></i> Add New Book
+                                            </button>
+                                        ` : ''}
+                                        <button class="btn" onclick="showUserProfile()" style="background: var(--spark-purple); color: white;">
+                                            <i class="fas fa-user"></i> My Profile
+                                        </button>
+                                    </div>
+                                </div>
+                            `}
+                            
+                            <div class="stats-container">
+                                <div class="stat-card">
+                                    <div class="stat-number">${stats.totalBooks}</div>
+                                    <div class="stat-label">Total Books</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number">${stats.novelsCount}</div>
+                                    <div class="stat-label">Novels</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number">${stats.totalDownloads}</div>
+                                    <div class="stat-label">Total Downloads</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number">${DigitalLibrary.formatBytes(stats.storageUsed)}</div>
+                                    <div class="stat-label">Storage Used / 500GB</div>
+                                </div>
+                            </div>
+                            
+                            ${currentUser.role === 'admin' ? `
+                                <div class="admin-panel">
+                                    <h3><i class="fas fa-user-shield"></i> Admin Panel</h3>
+                                    <p>Manage library, users, and storage (500GB total capacity)</p>
+                                    <div class="admin-actions">
+                                        <button class="btn" onclick="openAddBookModal()">
+                                            <i class="fas fa-plus"></i> Add Book
+                                        </button>
+                                        <button class="btn" onclick="showStorageStats()">
+                                            <i class="fas fa-chart-pie"></i> Storage Stats
+                                        </button>
+                                        <button class="btn" onclick="showUserManagement()">
+                                            <i class="fas fa-users"></i> Manage Users
+                                        </button>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div id="teamTab" class="tab-content">
+                            <div class="team-section">
+                                <h2><i class="fas fa-users"></i> Meet Our Team</h2>
+                                <p class="page-subtitle">The dedicated team behind Electro-LASS Digital Library</p>
+                                
+                                <div class="team-grid">
+                                    <div class="team-card">
+                                        <div class="team-avatar">
+                                            <i class="fas fa-crown"></i>
+                                        </div>
+                                        <h3 class="team-name">Robert Sano</h3>
+                                        <div class="team-role">CEO & Founder</div>
+                                        <div class="team-bio">
+                                            <p>Visionary leader with 15+ years in digital library technology. Founded Electro-LASS with a mission to make knowledge accessible to everyone.</p>
+                                            <p><strong>Expertise:</strong> Digital Transformation, Library Sciences, Technology Innovation</p>
+                                            <p><strong>Quote:</strong> "Knowledge should be as accessible as electricity."</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="team-card">
+                                        <div class="team-avatar">
+                                            <i class="fas fa-trophy"></i>
+                                        </div>
+                                        <h3 class="team-name">Champion Bruce</h3>
+                                        <div class="team-role">Library Manager</div>
+                                        <div class="team-bio">
+                                            <p>Experienced library manager with 10+ years in digital content curation and user experience optimization.</p>
+                                            <p><strong>Expertise:</strong> Content Management, User Experience, Digital Preservation</p>
+                                            <p><strong>Quote:</strong> "Every book in our library is carefully selected to inspire and educate."</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="team-card">
+                                        <div class="team-avatar">
+                                            <i class="fas fa-code"></i>
+                                        </div>
+                                        <h3 class="team-name">Alex Techton</h3>
+                                        <div class="team-role">Lead Developer</div>
+                                        <div class="team-bio">
+                                            <p>Full-stack developer specializing in digital library systems and user interface design.</p>
+                                            <p><strong>Expertise:</strong> Web Development, Database Design, System Architecture</p>
+                                            <p><strong>Quote:</strong> "Building systems that make knowledge discovery effortless."</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="helpTab" class="tab-content">
+                            <div class="help-section">
+                                <h2><i class="fas fa-question-circle"></i> Help & Support</h2>
+                                <p class="page-subtitle">Get assistance with using our digital library</p>
+                                
+                                <div class="help-grid">
+                                    <div class="help-card">
+                                        <div class="help-icon">
+                                            <i class="fas fa-user-plus"></i>
+                                        </div>
+                                        <h3 class="help-title">Getting Started</h3>
+                                        <div class="help-description">
+                                            <p><strong>1.</strong> Create a free account or use test credentials</p>
+                                            <p><strong>2.</strong> Browse books as guest or logged-in user</p>
+                                            <p><strong>3.</strong> Login to unlock likes and downloads</p>
+                                            <p><strong>Test User:</strong> test@user.com / Test123!</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="help-card">
+                                        <div class="help-icon">
+                                            <i class="fas fa-search"></i>
+                                        </div>
+                                        <h3 class="help-title">Search & Discovery</h3>
+                                        <div class="help-description">
+                                            <p>• Search by title, author, or category</p>
+                                            <p>• Use filters to narrow results</p>
+                                            <p>• Quick category buttons for Programming, Novels, Science, Technology</p>
+                                            <p>• Advanced search for complex queries</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="help-card">
+                                        <div class="help-icon">
+                                            <i class="fas fa-heart"></i>
+                                        </div>
+                                        <h3 class="help-title">Features</h3>
+                                        <div class="help-description">
+                                            <p><strong>Likes:</strong> Save favorite books (login required)</p>
+                                            <p><strong>Downloads:</strong> Access book content (login required)</p>
+                                            <p><strong>Admin Features:</strong> Add/delete books (admin only)</p>
+                                            <p><strong>User Profile:</strong> View your activity and preferences</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="help-card">
+                                        <div class="help-icon">
+                                            <i class="fas fa-shield-alt"></i>
+                                        </div>
+                                        <h3 class="help-title">Admin Access</h3>
+                                        <div class="help-description">
+                                            <p><strong>Admin Code:</strong> ELECTRO_LASS_ADMIN_2024</p>
+                                            <p>1. Login with any account</p>
+                                            <p>2. Click "Admin Login" button</p>
+                                            <p>3. Enter admin code above</p>
+                                            <p>4. Gain admin privileges instantly</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(0, 255, 204, 0.1); border-radius: var(--border-radius); border: 1px solid rgba(0, 255, 204, 0.3);">
+                                    <h3 style="color: var(--neon-green); margin-bottom: 1rem;"><i class="fas fa-headset"></i> Contact Support</h3>
+                                    <p><strong>Email:</strong> support@electro-lass.com</p>
+                                    <p><strong>Hours:</strong> Monday-Friday, 9AM-6PM</p>
+                                    <p><strong>Response Time:</strong> Within 24 hours</p>
+                                    <button class="btn" onclick="showAlert('Email support@electro-lass.com with your questions', 'info')" style="margin-top: 1rem;">
+                                        <i class="fas fa-envelope"></i> Email Support
                                     </button>
                                 </div>
                             </div>
-                        `;
-                    }
-                    
-                    content += `
-                        <div class="stats-container">
-                            <div class="stat-card">
-                                <div class="stat-number">${stats.totalBooks}</div>
-                                <div class="stat-label">Total Books</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number">${stats.novelsCount}</div>
-                                <div class="stat-label">Novels</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number">${stats.totalDownloads}</div>
-                                <div class="stat-label">Total Downloads</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number">${DigitalLibrary.formatBytes(stats.storageUsed)}</div>
-                                <div class="stat-label">Storage Used / 500GB</div>
+                        </div>
+                        
+                        <div id="aboutTab" class="tab-content">
+                            <div class="dashboard-section">
+                                <h2><i class="fas fa-info-circle"></i> About Electro-LASS</h2>
+                                
+                                <div style="margin-bottom: 2rem;">
+                                    <h3 style="color: var(--neon-green); margin-bottom: 1rem;">Our Mission</h3>
+                                    <p>Electro-LASS Digital Library was founded with a simple yet powerful mission: to make knowledge as accessible and essential as electricity in our daily lives. We believe that everyone should have free access to educational resources, regardless of their location or background.</p>
+                                </div>
+                                
+                                <div style="margin-bottom: 2rem;">
+                                    <h3 style="color: var(--neon-green); margin-bottom: 1rem;">What We Offer</h3>
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                                        <div style="padding: 1rem; background: rgba(7, 23, 140, 0.2); border-radius: 8px;">
+                                            <i class="fas fa-book" style="color: var(--electric-orange); font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                            <h4>500GB Storage</h4>
+                                            <p>Massive storage for large academic books</p>
+                                        </div>
+                                        <div style="padding: 1rem; background: rgba(157, 0, 255, 0.2); border-radius: 8px;">
+                                            <i class="fas fa-users" style="color: var(--spark-purple); font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                            <h4>User-Friendly</h4>
+                                            <p>Easy navigation for all users</p>
+                                        </div>
+                                        <div style="padding: 1rem; background: rgba(0, 255, 204, 0.2); border-radius: 8px;">
+                                            <i class="fas fa-lock" style="color: var(--neon-green); font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                            <h4>Secure</h4>
+                                            <p>Your data is protected</p>
+                                        </div>
+                                        <div style="padding: 1rem; background: rgba(255, 114, 0, 0.2); border-radius: 8px;">
+                                            <i class="fas fa-mobile-alt" style="color: #ff7200; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                            <h4>Responsive</h4>
+                                            <p>Works on all devices</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 2rem;">
+                                    <h3 style="color: var(--neon-green); margin-bottom: 1rem;">Technology</h3>
+                                    <p>Built with modern web technologies including HTML5, CSS3, and JavaScript. Our system uses localStorage for data persistence, making it fast and accessible without server requirements.</p>
+                                </div>
+                                
+                                <div>
+                                    <h3 style="color: var(--neon-green); margin-bottom: 1rem;">Future Plans</h3>
+                                    <ul style="padding-left: 1.5rem; color: var(--text-gray);">
+                                        <li>PDF viewer integration</li>
+                                        <li>User book reviews and ratings</li>
+                                        <li>Reading progress tracking</li>
+                                        <li>Mobile app development</li>
+                                        <li>Collaboration with educational institutions</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     `;
-                    
-                    if (currentUser.role === 'admin') {
-                        content += `
-                            <div class="admin-panel">
-                                <h3><i class="fas fa-user-shield"></i> Admin Panel</h3>
-                                <p>Manage library, users, and storage (500GB total capacity)</p>
-                                <div class="admin-actions">
-                                    <button class="btn" onclick="openAddBookModal()">
-                                        <i class="fas fa-plus"></i> Add Book
-                                    </button>
-                                    <button class="btn" onclick="showStorageStats()">
-                                        <i class="fas fa-chart-pie"></i> Storage Stats
-                                    </button>
-                                    <button class="btn" onclick="showUserManagement()">
-                                        <i class="fas fa-users"></i> Manage Users
-                                    </button>
-                                </div>
-                            </div>
-                        `;
-                    }
                     
                     return content;
                 }
@@ -2087,6 +2530,30 @@
                 section.style.display = 'none';
             }
         }
+        
+        function switchTab(tabName) {
+            // Hide all tab contents
+            var tabContents = document.querySelectorAll('.tab-content');
+            for (var i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Remove active class from all tab buttons
+            var tabButtons = document.querySelectorAll('.tab-btn');
+            for (var i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+            
+            // Show selected tab content
+            var selectedTab = document.getElementById(tabName + 'Tab');
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+            
+            // Activate clicked tab button
+            var clickedButton = event.target;
+            clickedButton.classList.add('active');
+        }
 
         // ===== INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', function() {
@@ -2135,9 +2602,11 @@
                                 email: dbUser.email,
                                 lastLogin: dbUser.lastLogin,
                                 likedBooks: dbUser.likedBooks || [],
-                                downloadedBooks: dbUser.downloadedBooks || []
+                                downloadedBooks: dbUser.downloadedBooks || [],
+                                accountStatus: dbUser.accountStatus || "active"
                             };
                             console.log('User loaded successfully:', currentUser.email);
+                            console.log('User data:', currentUser);
                         } else {
                             console.log('User not found in database, clearing localStorage');
                             localStorage.removeItem('currentUser');
@@ -2156,7 +2625,8 @@
                     email: user.email,
                     name: user.name,
                     role: user.role,
-                    lastLogin: user.lastLogin
+                    lastLogin: user.lastLogin,
+                    accountStatus: user.accountStatus
                 }));
                 console.log('User saved to localStorage:', user.email);
             } catch (error) {
@@ -2582,12 +3052,16 @@
                     author: author,
                     category: category,
                     description: description || 'A ' + category.toLowerCase() + ' book about ' + title,
-                    hasPdf: false, // Simplified version - no actual PDF storage
+                    hasPdf: !!pdfFile,
+                    pdfId: pdfFile ? 'pdf_' + bookId : null,
                     dateAdded: new Date().toISOString(),
                     addedBy: currentUser.name || "Admin",
                     likesCount: 0,
                     downloadsCount: 0,
-                    fileSize: pdfFile ? (pdfFile.size / (1024 * 1024)).toFixed(2) + ' MB' : 'N/A'
+                    fileSize: pdfFile ? (pdfFile.size / (1024 * 1024)).toFixed(2) + ' MB' : 'N/A',
+                    isbn: 'ISBN-' + Date.now().toString().slice(-10),
+                    pages: Math.floor(Math.random() * 500) + 100,
+                    year: new Date().getFullYear() - Math.floor(Math.random() * 10)
                 };
                 
                 DigitalLibrary.saveBook(newBook);
@@ -2690,7 +3164,8 @@
                     email: email,
                     lastLogin: user.lastLogin,
                     likedBooks: user.likedBooks || [],
-                    downloadedBooks: user.downloadedBooks || []
+                    downloadedBooks: user.downloadedBooks || [],
+                    accountStatus: user.accountStatus || "active"
                 };
                 
                 saveUserToStorage(currentUser);
@@ -2716,10 +3191,14 @@
             var password = document.getElementById('loginPassword').value;
             var adminCode = document.getElementById('adminCode') ? document.getElementById('adminCode').value : null;
             
+            console.log('Login attempt:', email, 'Admin code:', adminCode);
+            
             try {
                 showLoading('Logging in...');
                 
                 var user = DigitalLibrary.loginUser(email, password, adminCode);
+                
+                console.log('Login successful, user data:', user);
                 
                 currentUser = {
                     isLoggedIn: true,
@@ -2728,8 +3207,11 @@
                     email: email,
                     lastLogin: user.lastLogin,
                     likedBooks: user.likedBooks || [],
-                    downloadedBooks: user.downloadedBooks || []
+                    downloadedBooks: user.downloadedBooks || [],
+                    accountStatus: user.accountStatus || "active"
                 };
+                
+                console.log('Current user set:', currentUser);
                 
                 saveUserToStorage(currentUser);
                 updateUserInterface();
@@ -2761,7 +3243,8 @@
                 email: "",
                 lastLogin: null,
                 likedBooks: [],
-                downloadedBooks: []
+                downloadedBooks: [],
+                accountStatus: "active"
             };
             
             localStorage.removeItem('currentUser');
@@ -2801,6 +3284,10 @@
         function openLoginModal() {
             document.getElementById('loginModal').style.display = 'flex';
             document.getElementById('adminLoginSection').style.display = 'none';
+            
+            // Pre-fill test credentials for easy testing
+            document.getElementById('loginEmail').value = 'test@user.com';
+            document.getElementById('loginPassword').value = 'Test123!';
         }
 
         function openSignupModal() {
@@ -2915,7 +3402,8 @@
                     
                     var userList = '';
                     for (var j = 0; j < regularUsers.length; j++) {
-                        userList += '• ' + regularUsers[j].name + ' (' + regularUsers[j].email + ')<br>';
+                        var user = regularUsers[j];
+                        userList += '• ' + user.name + ' (' + user.email + ') - Registered: ' + formatDate(user.registrationDate) + '<br>';
                     }
                     
                     var message = `
@@ -2946,6 +3434,10 @@
                 return;
             }
             
+            var user = DigitalLibrary.getUserByEmail(currentUser.email);
+            var likedBooks = currentUser.likedBooks ? currentUser.likedBooks.length : 0;
+            var downloadedBooks = currentUser.downloadedBooks ? currentUser.downloadedBooks.length : 0;
+            
             var profileHTML = `
                 <div style="padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: 8px;">
                     <h3 style="color: var(--neon-green); margin-bottom: 1rem;">Your Profile</h3>
@@ -2953,7 +3445,10 @@
                     <p><strong>Email:</strong> ${currentUser.email}</p>
                     <p><strong>Role:</strong> ${currentUser.role}</p>
                     <p><strong>Account Type:</strong> ${currentUser.role === 'admin' ? 'Administrator' : 'Regular User'}</p>
+                    <p><strong>Account Status:</strong> ${currentUser.accountStatus || 'Active'}</p>
                     <p><strong>Last Login:</strong> ${formatDate(currentUser.lastLogin)}</p>
+                    <p><strong>Liked Books:</strong> ${likedBooks}</p>
+                    <p><strong>Downloaded Books:</strong> ${downloadedBooks}</p>
                     
                     <div style="margin-top: 1.5rem;">
                         <h4 style="color: var(--electric-orange); margin-bottom: 0.5rem;">Permissions:</h4>
@@ -2965,6 +3460,14 @@
                                 '<li>Add/Delete books</li><li>Manage storage</li><li>View user statistics</li>' 
                                 : ''}
                         </ul>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 255, 204, 0.1); border-radius: 6px;">
+                        <h4 style="color: var(--neon-green); margin-bottom: 0.5rem;">Your Data in System:</h4>
+                        <p><i class="fas fa-check-circle" style="color: var(--neon-green);"></i> Account information saved</p>
+                        <p><i class="fas fa-check-circle" style="color: var(--neon-green);"></i> Liked books recorded (${likedBooks})</p>
+                        <p><i class="fas fa-check-circle" style="color: var(--neon-green);"></i> Downloaded books tracked (${downloadedBooks})</p>
+                        <p><i class="fas fa-check-circle" style="color: var(--neon-green);"></i> Login history maintained</p>
                     </div>
                 </div>
             `;
@@ -3021,7 +3524,45 @@
         }
 
         function openBookDetails(bookId) {
-            showAlert('Book details feature coming soon!', 'info');
+            var book = DigitalLibrary.getBook(bookId);
+            if (!book) {
+                showAlert('Book not found', 'error');
+                return;
+            }
+            
+            var detailsHTML = `
+                <div style="padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: 8px; max-width: 500px;">
+                    <h3 style="color: var(--neon-green); margin-bottom: 1rem;">${book.title}</h3>
+                    <p><strong>Author:</strong> ${book.author}</p>
+                    <p><strong>Category:</strong> ${book.category}</p>
+                    <p><strong>Description:</strong> ${book.description || 'No description available.'}</p>
+                    <p><strong>Added:</strong> ${formatDate(book.dateAdded)}</p>
+                    <p><strong>File Size:</strong> ${book.fileSize || 'N/A'}</p>
+                    <p><strong>Likes:</strong> ${book.likesCount || 0}</p>
+                    <p><strong>Downloads:</strong> ${book.downloadsCount || 0}</p>
+                    
+                    ${book.isbn ? `<p><strong>ISBN:</strong> ${book.isbn}</p>` : ''}
+                    ${book.pages ? `<p><strong>Pages:</strong> ${book.pages}</p>` : ''}
+                    ${book.year ? `<p><strong>Year:</strong> ${book.year}</p>` : ''}
+                    
+                    <div style="margin-top: 1.5rem; display: flex; gap: 10px;">
+                        ${currentUser.isLoggedIn ? `
+                            <button class="btn btn-primary" onclick="toggleLike(${book.id}); closeModal('bookDetailsModal')">
+                                <i class="fas fa-heart"></i> ${DigitalLibrary.hasUserLikedBook(book.id, currentUser.email) ? 'Unlike' : 'Like'}
+                            </button>
+                            <button class="btn" style="background: var(--neon-green); color: var(--dark-bg);" onclick="downloadBook(${book.id}); closeModal('bookDetailsModal')">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                        ` : `
+                            <button class="btn btn-primary" onclick="showLoginRequired(); closeModal('bookDetailsModal')">
+                                <i class="fas fa-sign-in-alt"></i> Login to Access
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+            
+            showAlert(detailsHTML, 'info');
         }
 
         // ===== EVENT LISTENERS =====
