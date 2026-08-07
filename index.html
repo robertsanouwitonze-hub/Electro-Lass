@@ -17,7 +17,7 @@
     </script>
 
     <style>
-        /* ===== BASE STYLES (same as before – trimmed for brevity) ===== */
+        /* ===== BASE STYLES ===== */
         :root {
             --electro-blue: #07178c;
             --electric-orange: #ff7200;
@@ -40,6 +40,8 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
+
+        /* Header */
         .main-header {
             background: rgba(10, 15, 46, 0.95);
             padding: 1rem 2rem;
@@ -138,12 +140,16 @@
         .btn-logout:hover {
             background: rgba(255, 56, 96, 0.2);
         }
+
+        /* Page Container */
         #pageContainer {
             padding: 2rem;
             max-width: 1400px;
             margin: 0 auto;
             min-height: calc(100vh - 120px);
         }
+
+        /* Page Header */
         .page-header {
             text-align: center;
             margin-bottom: 2rem;
@@ -167,6 +173,8 @@
             max-width: 600px;
             margin: 0 auto;
         }
+
+        /* Forms */
         .form-container {
             background: rgba(10, 15, 46, 0.7);
             padding: 2.5rem;
@@ -244,6 +252,30 @@
         .file-info .file-size {
             color: var(--text-gray);
         }
+        .upload-progress {
+            display: none;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(0, 255, 204, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(0, 255, 204, 0.2);
+        }
+        .upload-progress.active {
+            display: block;
+        }
+        .upload-progress .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        .upload-progress .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-green), var(--electric-orange));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
         .password-toggle {
             position: absolute;
             right: 12px;
@@ -297,6 +329,7 @@
         .password-hints li {
             margin-bottom: 2px;
         }
+
         .btn {
             padding: 12px 24px;
             border-radius: 8px;
@@ -347,7 +380,7 @@
             background: linear-gradient(135deg, #ffca28, #ffa726);
         }
 
-        /* (the rest of the styles – same as before – omitted for brevity) */
+        /* Search */
         .search-section {
             margin: 2rem 0;
             padding: 1.5rem;
@@ -429,6 +462,8 @@
             border-left: 4px solid var(--neon-green);
             display: none;
         }
+
+        /* Books Grid */
         .books-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -638,6 +673,8 @@
             color: var(--text-gray);
             font-size: 0.8rem;
         }
+
+        /* Storage Controls */
         .storage-controls {
             background: rgba(157, 0, 255, 0.1);
             border: 1px solid var(--spark-purple);
@@ -665,6 +702,8 @@
             background: linear-gradient(90deg, var(--neon-green), var(--electric-orange));
             transition: width 0.3s ease;
         }
+
+        /* Modals */
         .modal {
             display: none;
             position: fixed;
@@ -738,6 +777,8 @@
             gap: 10px;
             color: var(--neon-green);
         }
+
+        /* Alert */
         .alert {
             position: fixed;
             top: 100px;
@@ -781,6 +822,8 @@
             border: 1px solid #ffc107;
             color: #ffc107;
         }
+
+        /* Loading Overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -816,6 +859,8 @@
             color: var(--neon-green);
             text-align: center;
         }
+
+        /* Stats */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -843,6 +888,8 @@
             font-size: 0.9rem;
             color: var(--text-gray);
         }
+
+        /* Dashboard */
         .dashboard-section {
             background: linear-gradient(135deg, rgba(7, 23, 140, 0.3), rgba(157, 0, 255, 0.2));
             border-radius: var(--border-radius);
@@ -870,6 +917,8 @@
             flex-wrap: wrap;
             margin-top: 0.5rem;
         }
+
+        /* Team */
         .team-section {
             background: linear-gradient(135deg, rgba(157, 0, 255, 0.2), rgba(7, 23, 140, 0.3));
             border-radius: var(--border-radius);
@@ -924,6 +973,8 @@
             line-height: 1.6;
             font-size: 0.95rem;
         }
+
+        /* Help */
         .help-section {
             background: linear-gradient(135deg, rgba(255, 114, 0, 0.15), rgba(7, 23, 140, 0.3));
             border-radius: var(--border-radius);
@@ -962,6 +1013,8 @@
             color: var(--text-gray);
             line-height: 1.5;
         }
+
+        /* Tabs */
         .tabs {
             display: flex;
             gap: 0.5rem;
@@ -996,6 +1049,8 @@
         .tab-content.active {
             display: block;
         }
+
+        /* PDF Viewer */
         .pdf-viewer-container {
             display: none;
             position: fixed;
@@ -1055,6 +1110,8 @@
             flex-wrap: wrap;
             gap: 0.5rem;
         }
+
+        /* User Dashboard */
         .user-stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -1068,6 +1125,8 @@
             text-align: center;
             border: 1px solid rgba(0, 255, 204, 0.2);
         }
+
+        /* Feature Badge */
         .feature-badge {
             background: linear-gradient(135deg, var(--electric-orange), var(--spark-purple));
             color: white;
@@ -1097,6 +1156,8 @@
         .shelf-book:hover {
             transform: translateY(-5px);
         }
+
+        /* Recent Books */
         .recent-books {
             margin: 3rem 0;
             padding: 2rem;
@@ -1129,6 +1190,8 @@
             background: rgba(255, 255, 255, 0.1);
             transform: translateX(5px);
         }
+
+        /* Privacy Badge */
         .privacy-badge {
             background: rgba(0, 255, 204, 0.1);
             padding: 0.5rem 1rem;
@@ -1140,6 +1203,8 @@
             gap: 5px;
             margin-top: 0.5rem;
         }
+
+        /* Reviews */
         .reviews-section {
             margin: 2rem 0;
             padding: 1.5rem;
@@ -1192,6 +1257,8 @@
         .star.active {
             color: #ffc107;
         }
+
+        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
@@ -1203,6 +1270,8 @@
             color: var(--electric-orange);
             opacity: 0.5;
         }
+
+        /* Missing Features */
         .missing-features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -1235,6 +1304,21 @@
             color: var(--text-gray);
             font-size: 0.9rem;
         }
+
+        /* Sync status */
+        .sync-status {
+            font-size: 0.7rem;
+            color: var(--neon-green);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 8px;
+        }
+        .sync-status .pulse {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .nav-container {
                 flex-direction: column;
@@ -1278,54 +1362,6 @@
         }
         .highlight-new {
             animation: highlight 1.5s ease;
-        }
-        .pdf-viewer-content::-webkit-scrollbar {
-            width: 8px;
-        }
-        .pdf-viewer-content::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-        }
-        .pdf-viewer-content::-webkit-scrollbar-thumb {
-            background: var(--electric-orange);
-            border-radius: 4px;
-        }
-        .pdf-viewer-content::-webkit-scrollbar-thumb:hover {
-            background: var(--neon-green);
-        }
-        .upload-progress {
-            display: none;
-            margin-top: 0.5rem;
-            padding: 0.5rem;
-            background: rgba(0, 255, 204, 0.1);
-            border-radius: 6px;
-            border: 1px solid rgba(0, 255, 204, 0.2);
-        }
-        .upload-progress.active {
-            display: block;
-        }
-        .upload-progress .progress-bar {
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-top: 4px;
-        }
-        .upload-progress .progress-bar .fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--neon-green), var(--electric-orange));
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        .sync-status {
-            font-size: 0.7rem;
-            color: var(--neon-green);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-left: 8px;
-        }
-        .sync-status .pulse {
-            animation: pulse 1.5s ease-in-out infinite;
         }
     </style>
 </head>
@@ -1600,9 +1636,7 @@
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
             <h2><i class="fas fa-sign-in-alt"></i> User Login</h2>
-            <div class="privacy-badge" style="margin-bottom:1rem;display:inline-flex;">
-                <i class="fas fa-lock"></i> Secure &amp; Private
-            </div>
+            <!-- Demo info hidden as requested -->
             <form id="loginForm" onsubmit="handleUserLogin(event)">
                 <div class="form-group">
                     <label>Email Address</label>
@@ -1826,8 +1860,8 @@
         }
 
         function formatDate(ds) {
-            try { return new Date(ds).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); } catch (
-                e) { return 'Unknown date'; }
+            try { return new Date(ds).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
+            catch (e) { return 'Unknown date'; }
         }
 
         function getRatingStars(rating) {
@@ -1853,8 +1887,6 @@
             var i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
         }
-
-        function getBookIdFromDoc(doc) { return doc.id; }
 
         function setSyncStatus(online) {
             var label = document.getElementById('syncLabel');
@@ -1890,6 +1922,7 @@
                     else if (page === 'library') container.innerHTML = getLibraryPageContent();
                     else container.innerHTML = '<div class="alert-error">Page not found</div>';
                     if (page === 'library') loadBooks();
+                    if (page === 'home') updateHomeStatsAndContent();
                 } catch (e) {
                     container.innerHTML = '<div class="alert-error">Error loading page: ' + e.message + '</div>';
                 } finally {
@@ -1938,7 +1971,7 @@
         }
 
         // ============================================================
-        //  PAGE CONTENT (same as before – trimmed)
+        //  PAGE CONTENT
         // ============================================================
         function getHomePageContent() {
             var isAdmin = currentUser.role === 'admin';
@@ -2084,15 +2117,21 @@
           ${isAdmin ? `
           <div id="missingTab" class="tab-content">
             <div class="help-section" style="border-color:var(--neon-green);">
-              <h2><i class="fas fa-rocket"></i> Coming Soon</h2>
-              <p class="page-subtitle">Features we're building for Electro-LASS</p>
+              <h2><i class="fas fa-rocket"></i> Coming Soon – What's Missing?</h2>
+              <p class="page-subtitle">Features we're building to make Electro-LASS the ultimate digital library</p>
               <div class="missing-features-grid">
-                <div class="missing-feature-card"><i class="fas fa-hand-holding-heart"></i><h4>Borrowing System</h4><p>Check out books with due dates.</p></div>
-                <div class="missing-feature-card"><i class="fas fa-list-ul"></i><h4>Reading Lists</h4><p>Create custom shelves.</p></div>
-                <div class="missing-feature-card"><i class="fas fa-bell"></i><h4>Smart Notifications</h4><p>Get alerts for new books.</p></div>
-                <div class="missing-feature-card"><i class="fas fa-chart-pie"></i><h4>Reading Analytics</h4><p>Insights into your habits.</p></div>
-                <div class="missing-feature-card"><i class="fas fa-share-alt"></i><h4>Social Features</h4><p>Follow friends and share.</p></div>
-                <div class="missing-feature-card"><i class="fas fa-mobile-alt"></i><h4>Mobile App</h4><p>Read anywhere.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-hand-holding-heart"></i><h4>Book Borrowing System</h4><p>Check out books with due dates and automatic returns.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-list-ul"></i><h4>Reading Lists &amp; Collections</h4><p>Create custom shelves and curated reading lists.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-bell"></i><h4>Smart Notifications</h4><p>Get alerts for new books, due dates, and recommendations.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-chart-pie"></i><h4>Reading Analytics</h4><p>Detailed insights into your reading habits and progress.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-share-alt"></i><h4>Social Features</h4><p>Follow friends, share reviews, and see what others are reading.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-mobile-alt"></i><h4>Mobile App</h4><p>Read anywhere with our dedicated mobile application.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-cloud-download-alt"></i><h4>Offline Reading</h4><p>Download books and read without internet connection.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-language"></i><h4>Multi-Language Support</h4><p>Interface and book metadata in multiple languages.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-universal-access"></i><h4>Accessibility Features</h4><p>Screen reader support, high contrast, and more.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-file-import"></i><h4>Bulk Import / Export</h4><p>Easily add or export books in bulk formats.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-user-graduate"></i><h4>Educator Tools</h4><p>Assignment tracking, class reading lists, and progress monitoring.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-shield-alt"></i><h4>Advanced Privacy Controls</h4><p>Fine‑grained control over who sees your reading activity.</p></div>
               </div>
             </div>
           </div>
@@ -2553,7 +2592,7 @@
         }
 
         // ============================================================
-        //  BOOKS LOADING / SEARCH (for Library page)
+        //  BOOKS LOADING / SEARCH
         // ============================================================
         function loadBooks() {
             var container = document.getElementById('booksContainer');
@@ -3178,16 +3217,35 @@
         }
 
         // ============================================================
-        //  USER AUTH (Firebase Auth + Demo)
+        //  USER AUTH (Firebase Auth)
         // ============================================================
         function demoLogin() {
-            // Use a pre‑created demo user in Firestore (no Firebase Auth needed)
-            var demoEmail = 'demo@electrolass.com';
-            var demoName = 'Demo User';
+            var demoEmail = 'demo@user.com';
+            var demoPass = 'Demo123!';
             showLoading('Logging in with demo account...');
-            getUserByEmail(demoEmail).then(function(dbUser) {
-                if (dbUser) {
-                    // User exists, log them in
+            auth.signInWithEmailAndPassword(demoEmail, demoPass)
+                .then(function(cred) {
+                    var user = cred.user;
+                    return getUserByEmail(demoEmail).then(function(dbUser) {
+                        if (!dbUser) {
+                            var userData = {
+                                name: 'Demo User',
+                                email: demoEmail,
+                                role: 'user',
+                                registrationDate: new Date().toISOString(),
+                                lastLogin: new Date().toISOString(),
+                                accountStatus: 'active',
+                                preferences: { theme: 'dark', notifications: true, language: 'en' }
+                            };
+                            return saveUserDoc(userData).then(function() {
+                                return getUserByEmail(demoEmail);
+                            });
+                        }
+                        return dbUser;
+                    });
+                })
+                .then(function(dbUser) {
+                    if (!dbUser) throw new Error('User data not found');
                     currentUser = {
                         isLoggedIn: true,
                         role: dbUser.role || 'user',
@@ -3209,53 +3267,11 @@
                     navigateTo('home');
                     setupRealtimeListeners();
                     hideLoading();
-                } else {
-                    // Create demo user doc
-                    var userData = {
-                        name: demoName,
-                        email: demoEmail,
-                        role: 'user',
-                        registrationDate: new Date().toISOString(),
-                        lastLogin: new Date().toISOString(),
-                        accountStatus: 'active',
-                        preferences: { theme: 'dark', notifications: true, language: 'en' }
-                    };
-                    saveUserDoc(userData).then(function(docRef) {
-                        return getUserByEmail(demoEmail);
-                    }).then(function(newUser) {
-                        if (newUser) {
-                            currentUser = {
-                                isLoggedIn: true,
-                                role: newUser.role || 'user',
-                                name: newUser.name,
-                                email: newUser.email,
-                                id: newUser.id,
-                                likedBooks: [],
-                                downloadedBooks: [],
-                                reviewedBooks: [],
-                                readingProgress: {},
-                                accountStatus: 'active'
-                            };
-                            localStorage.setItem('currentUser', JSON.stringify({ email: currentUser
-                                    .email, name: currentUser.name, role: currentUser.role,
-                                id: currentUser.id }));
-                            updateUserInterface();
-                            updateNavigation();
-                            closeModal('loginModal');
-                            showAlert('🎉 Demo account created and logged in', 'success');
-                            navigateTo('home');
-                            setupRealtimeListeners();
-                            hideLoading();
-                        }
-                    }).catch(function(err) {
-                        hideLoading();
-                        showAlert('Error creating demo account: ' + err.message, 'error');
-                    });
-                }
-            }).catch(function(err) {
-                hideLoading();
-                showAlert('Demo login failed: ' + err.message, 'error');
-            });
+                })
+                .catch(function(err) {
+                    hideLoading();
+                    showAlert('Demo login failed: ' + err.message, 'error');
+                });
         }
 
         function handleUserSignup(e) {
@@ -3305,7 +3321,6 @@
                 })
                 .catch(function(err) {
                     hideLoading();
-                    // Show detailed Firebase error
                     var msg = err.message;
                     if (err.code === 'auth/email-already-in-use') msg = 'Email already registered.';
                     else if (err.code === 'auth/weak-password') msg = 'Password is too weak.';
@@ -3323,11 +3338,17 @@
                 .then(function(cred) {
                     var user = cred.user;
                     return getUserByEmail(email).then(function(dbUser) {
+                        // If no user doc exists, create one.
+                        // For admin email, set role to admin.
+                        var role = 'user';
+                        if (email === 'admin@electrolass.com') {
+                            role = 'admin';
+                        }
                         if (!dbUser) {
                             var userData = {
                                 name: email.split('@')[0] || 'User',
                                 email: email,
-                                role: 'user',
+                                role: role,
                                 registrationDate: new Date().toISOString(),
                                 lastLogin: new Date().toISOString(),
                                 accountStatus: 'active',
@@ -3336,8 +3357,16 @@
                             return saveUserDoc(userData).then(function() {
                                 return getUserByEmail(email);
                             });
+                        } else {
+                            // Ensure admin role if it's the admin email
+                            if (email === 'admin@electrolass.com' && dbUser.role !== 'admin') {
+                                dbUser.role = 'admin';
+                                return saveUserDoc(dbUser).then(function() {
+                                    return getUserByEmail(email);
+                                });
+                            }
+                            return dbUser;
                         }
-                        return dbUser;
                     });
                 })
                 .then(function(dbUser) {
