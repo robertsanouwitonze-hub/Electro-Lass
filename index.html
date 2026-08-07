@@ -16,73 +16,13 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js">
     </script>
 
-    <!-- 
-    ============================================================
-    FIREBASE RULES – Deploy these in your Firebase Console
-    ============================================================
-    
-    // 1) Firestore Rules (security – recommended)
-    rules_version = '2';
-    service cloud.firestore {
-      match /databases/{database}/documents {
-        // Books: admins can write, all authenticated users can read
-        match /books/{bookId} {
-          allow read: if request.auth != null;
-          allow write: if request.auth != null && request.auth.token.admin == true;
-        }
-        // Users: users can read their own data, admins can read all
-        match /users/{userId} {
-          allow read: if request.auth != null && (request.auth.uid == userId || request.auth.token.admin == true);
-          allow write: if request.auth != null && request.auth.uid == userId;
-        }
-        // Reviews: anyone can create, only the author can update/delete
-        match /reviews/{docId} {
-          allow read: if request.auth != null;
-          allow create: if request.auth != null;
-          allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
-        }
-        // Likes, readingProgress, bookmarks, downloads: ownership rules
-        match /likes/{docId} {
-          allow read: if request.auth != null;
-          allow create: if request.auth != null;
-          allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
-        }
-        match /readingProgress/{docId} {
-          allow read: if request.auth != null;
-          allow create: if request.auth != null;
-          allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
-        }
-        match /downloads/{docId} {
-          allow read: if request.auth != null;
-          allow create: if request.auth != null;
-        }
-        match /bookmarks/{docId} {
-          allow read: if request.auth != null;
-          allow create: if request.auth != null;
-          allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
-        }
-      }
-    }
-
-    // 2) Storage Rules (minimum fix – allows any authenticated user to upload)
-    rules_version = '2';
-    service firebase.storage {
-      match /b/{bucket}/o {
-        match /pdfs/{allPaths=**} {
-          allow read: if request.auth != null;
-          allow write: if request.auth != null;   // You can restrict to admin with custom claims
-        }
-      }
-    }
-
-    // For stricter Storage (admin only), set custom claim and use:
-    // allow write: if request.auth != null && request.auth.token.admin == true;
-
-    ============================================================
-    -->
+    <!-- ============================================================
+    IMPORTANT: Cloudinary is used for PDF uploads. 
+    Firebase Storage is kept as fallback for existing books.
+    ============================================================ -->
 
     <style>
-        /* ===== BASE STYLES ===== */
+        /* ===== BASE STYLES (same as before) ===== */
         :root {
             --electro-blue: #07178c;
             --electric-orange: #ff7200;
@@ -106,7 +46,6 @@
             overflow-x: hidden;
         }
 
-        /* Header */
         .main-header {
             background: rgba(10, 15, 46, 0.95);
             padding: 1rem 2rem;
@@ -206,7 +145,6 @@
             background: rgba(255, 56, 96, 0.2);
         }
 
-        /* Page Container */
         #pageContainer {
             padding: 2rem;
             max-width: 1400px;
@@ -214,7 +152,6 @@
             min-height: calc(100vh - 120px);
         }
 
-        /* Page Header */
         .page-header {
             text-align: center;
             margin-bottom: 2rem;
@@ -239,7 +176,6 @@
             margin: 0 auto;
         }
 
-        /* Forms */
         .form-container {
             background: rgba(10, 15, 46, 0.7);
             padding: 2.5rem;
@@ -445,7 +381,6 @@
             background: linear-gradient(135deg, #ffca28, #ffa726);
         }
 
-        /* Search */
         .search-section {
             margin: 2rem 0;
             padding: 1.5rem;
@@ -528,7 +463,6 @@
             display: none;
         }
 
-        /* Books Grid */
         .books-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -739,7 +673,6 @@
             font-size: 0.8rem;
         }
 
-        /* Storage Controls */
         .storage-controls {
             background: rgba(157, 0, 255, 0.1);
             border: 1px solid var(--spark-purple);
@@ -768,7 +701,6 @@
             transition: width 0.3s ease;
         }
 
-        /* Modals */
         .modal {
             display: none;
             position: fixed;
@@ -843,7 +775,6 @@
             color: var(--neon-green);
         }
 
-        /* Alert */
         .alert {
             position: fixed;
             top: 100px;
@@ -888,7 +819,6 @@
             color: #ffc107;
         }
 
-        /* Loading Overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -925,7 +855,6 @@
             text-align: center;
         }
 
-        /* Stats */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -954,7 +883,6 @@
             color: var(--text-gray);
         }
 
-        /* Dashboard */
         .dashboard-section {
             background: linear-gradient(135deg, rgba(7, 23, 140, 0.3), rgba(157, 0, 255, 0.2));
             border-radius: var(--border-radius);
@@ -983,7 +911,6 @@
             margin-top: 0.5rem;
         }
 
-        /* Team */
         .team-section {
             background: linear-gradient(135deg, rgba(157, 0, 255, 0.2), rgba(7, 23, 140, 0.3));
             border-radius: var(--border-radius);
@@ -1039,7 +966,6 @@
             font-size: 0.95rem;
         }
 
-        /* Help */
         .help-section {
             background: linear-gradient(135deg, rgba(255, 114, 0, 0.15), rgba(7, 23, 140, 0.3));
             border-radius: var(--border-radius);
@@ -1079,7 +1005,6 @@
             line-height: 1.5;
         }
 
-        /* Tabs */
         .tabs {
             display: flex;
             gap: 0.5rem;
@@ -1115,7 +1040,6 @@
             display: block;
         }
 
-        /* PDF Viewer */
         .pdf-viewer-container {
             display: none;
             position: fixed;
@@ -1176,7 +1100,6 @@
             gap: 0.5rem;
         }
 
-        /* User Dashboard */
         .user-stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -1191,7 +1114,6 @@
             border: 1px solid rgba(0, 255, 204, 0.2);
         }
 
-        /* Feature Badge */
         .feature-badge {
             background: linear-gradient(135deg, var(--electric-orange), var(--spark-purple));
             color: white;
@@ -1222,7 +1144,6 @@
             transform: translateY(-5px);
         }
 
-        /* Recent Books */
         .recent-books {
             margin: 3rem 0;
             padding: 2rem;
@@ -1256,7 +1177,6 @@
             transform: translateX(5px);
         }
 
-        /* Privacy Badge */
         .privacy-badge {
             background: rgba(0, 255, 204, 0.1);
             padding: 0.5rem 1rem;
@@ -1269,7 +1189,6 @@
             margin-top: 0.5rem;
         }
 
-        /* Reviews */
         .reviews-section {
             margin: 2rem 0;
             padding: 1.5rem;
@@ -1323,7 +1242,6 @@
             color: #ffc107;
         }
 
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
@@ -1336,7 +1254,6 @@
             opacity: 0.5;
         }
 
-        /* Missing Features */
         .missing-features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -1370,7 +1287,6 @@
             font-size: 0.9rem;
         }
 
-        /* Sync status */
         .sync-status {
             font-size: 0.7rem;
             color: var(--neon-green);
@@ -1383,7 +1299,6 @@
             animation: pulse 1.5s ease-in-out infinite;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .nav-container {
                 flex-direction: column;
@@ -1516,7 +1431,7 @@
                 </div>
                 <div class="storage-meter"><div class="storage-used" id="storageMeter"></div></div>
                 <small style="color:var(--text-gray);display:block;margin-top:5px;">
-                    <i class="fas fa-info-circle"></i> Upload PDF files up to 50MB
+                    <i class="fas fa-info-circle"></i> Upload PDF up to 50MB (via Cloudinary)
                 </small>
             </div>
             <form id="addBookForm" onsubmit="handleAddBook(event)" style="margin-top:1rem;">
@@ -1558,11 +1473,11 @@
                         <span class="file-size" id="fileSizeDisplay"></span>
                     </div>
                     <div class="upload-progress" id="uploadProgress">
-                        <span>Uploading to Firebase...</span>
+                        <span>Uploading to Cloudinary...</span>
                         <div class="progress-bar"><div class="fill" id="uploadProgressFill"></div></div>
                     </div>
                     <small style="color:var(--text-gray);font-size:0.8rem;display:block;margin-top:5px;">
-                        <i class="fas fa-shield-alt"></i> Max file size: 50MB
+                        <i class="fas fa-cloud-upload-alt"></i> Uploaded via Cloudinary (secure, fast)
                     </small>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block" id="submitBookBtn">
@@ -1617,11 +1532,11 @@
                         <span class="file-size" id="editFileSizeDisplay"></span>
                     </div>
                     <div class="upload-progress" id="editUploadProgress">
-                        <span>Uploading to Firebase...</span>
+                        <span>Uploading to Cloudinary...</span>
                         <div class="progress-bar"><div class="fill" id="editUploadProgressFill"></div></div>
                     </div>
                     <small style="color:var(--text-gray);font-size:0.8rem;display:block;margin-top:5px;">
-                        <i class="fas fa-shield-alt"></i> Leave empty to keep current PDF
+                        <i class="fas fa-cloud-upload-alt"></i> Leave empty to keep current PDF
                     </small>
                 </div>
                 <button type="submit" class="btn btn-success btn-block">
@@ -1701,7 +1616,6 @@
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
             <h2><i class="fas fa-sign-in-alt"></i> User Login</h2>
-            <!-- Demo info hidden as requested -->
             <form id="loginForm" onsubmit="handleUserLogin(event)">
                 <div class="form-group">
                     <label>Email Address</label>
@@ -1824,7 +1738,7 @@
             .catch(function(err) { console.warn('Firestore persistence:', err.code); });
 
         // ============================================================
-        //  INDEXEDDB – PDF CACHE
+        //  INDEXEDDB – PDF CACHE (for Firebase Storage fallback)
         // ============================================================
         var PDFStore = {
             db: null,
@@ -2036,7 +1950,7 @@
         }
 
         // ============================================================
-        //  PAGE CONTENT
+        //  PAGE CONTENT (same as before)
         // ============================================================
         function getHomePageContent() {
             var isAdmin = currentUser.role === 'admin';
@@ -2274,7 +2188,7 @@
         }
 
         // ============================================================
-        //  FIRESTORE DATA LAYER
+        //  FIRESTORE DATA LAYER (unchanged)
         // ============================================================
         function getAllBooks() {
             return new Promise(function(resolve, reject) {
@@ -2495,7 +2409,7 @@
         }
 
         // ============================================================
-        //  REAL‑TIME LISTENERS
+        //  REAL‑TIME LISTENERS (unchanged)
         // ============================================================
         function setupRealtimeListeners() {
             if (unsubBooks) unsubBooks();
@@ -2540,7 +2454,7 @@
         }
 
         // ============================================================
-        //  HOME STATS & CONTENT UPDATE
+        //  HOME STATS & CONTENT UPDATE (unchanged)
         // ============================================================
         function updateHomeStatsAndContent(books) {
             if (!books) books = window._allBooks || [];
@@ -2601,7 +2515,7 @@
         }
 
         // ============================================================
-        //  USER DASHBOARD
+        //  USER DASHBOARD (unchanged)
         // ============================================================
         function updateUserDashboard() {
             if (!currentUser.isLoggedIn) return;
@@ -2657,7 +2571,7 @@
         }
 
         // ============================================================
-        //  BOOKS LOADING / SEARCH
+        //  BOOKS LOADING / SEARCH (unchanged)
         // ============================================================
         function loadBooks() {
             var container = document.getElementById('booksContainer');
@@ -2836,7 +2750,7 @@
         }
 
         // ============================================================
-        //  LIKE
+        //  LIKE (unchanged)
         // ============================================================
         function toggleLike(bookId) {
             if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
@@ -2859,7 +2773,7 @@
         }
 
         // ============================================================
-        //  PDF VIEWER with Firebase Storage
+        //  PDF VIEWER – Hybrid approach (Cloudinary URL first, Firebase fallback)
         // ============================================================
         function openPdfViewer(bookId) {
             if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
@@ -2872,23 +2786,38 @@
                 if (pdfBlobUrl) { URL.revokeObjectURL(pdfBlobUrl);
                     pdfBlobUrl = null; }
 
-                var cacheKey = 'pdf_' + bookId + (book.pdfId ? '_' + book.pdfId : '');
-                PDFStore.getPDF(cacheKey).then(function(cached) {
-                    if (cached) {
-                        var blob = new Blob([cached], { type: 'application/pdf' });
-                        var url = URL.createObjectURL(blob);
-                        pdfBlobUrl = url;
-                        document.getElementById('pdfFrame').src = url;
-                        document.getElementById('pdfViewer').style.display = 'flex';
-                        getBookProgress(bookId, currentUser.id).then(function(p) {
-                            document.getElementById('readingProgressSlider').value = p;
-                            document.getElementById('currentProgress').textContent = p + '%';
-                        }).catch(function() {});
-                        hideLoading();
-                        showAlert('Opening "' + book.title + '"', 'info');
-                        return;
-                    }
-                    if (book.pdfId) {
+                // 1. If we have a Cloudinary URL (pdfUrl), use it directly
+                if (book.pdfUrl) {
+                    document.getElementById('pdfFrame').src = book.pdfUrl;
+                    document.getElementById('pdfViewer').style.display = 'flex';
+                    getBookProgress(bookId, currentUser.id).then(function(p) {
+                        document.getElementById('readingProgressSlider').value = p;
+                        document.getElementById('currentProgress').textContent = p + '%';
+                    }).catch(function() {});
+                    hideLoading();
+                    showAlert('Opening "' + book.title + '"', 'info');
+                    return;
+                }
+
+                // 2. Fallback: Firebase Storage (pdfId)
+                if (book.pdfId) {
+                    var cacheKey = 'pdf_' + bookId + '_' + book.pdfId;
+                    PDFStore.getPDF(cacheKey).then(function(cached) {
+                        if (cached) {
+                            var blob = new Blob([cached], { type: 'application/pdf' });
+                            var url = URL.createObjectURL(blob);
+                            pdfBlobUrl = url;
+                            document.getElementById('pdfFrame').src = url;
+                            document.getElementById('pdfViewer').style.display = 'flex';
+                            getBookProgress(bookId, currentUser.id).then(function(p) {
+                                document.getElementById('readingProgressSlider').value = p;
+                                document.getElementById('currentProgress').textContent = p + '%';
+                            }).catch(function() {});
+                            hideLoading();
+                            showAlert('Opening "' + book.title + '"', 'info');
+                            return;
+                        }
+                        // Not cached, fetch from Firebase Storage
                         var storageRef = storage.ref('pdfs/' + book.pdfId);
                         storageRef.getDownloadURL().then(function(url) {
                             fetch(url).then(function(res) {
@@ -2920,19 +2849,13 @@
                             hideLoading();
                             showAlert('Error getting PDF: ' + err.message, 'error');
                         });
-                    } else {
-                        hideLoading();
-                        showAlert('No PDF source available', 'error');
-                    }
-                }).catch(function() {
-                    if (book.pdfId) {
+                    }).catch(function() {
+                        // If IndexedDB fails, try direct download
                         var storageRef = storage.ref('pdfs/' + book.pdfId);
                         storageRef.getDownloadURL().then(function(url) {
                             fetch(url).then(function(res) { return res.arrayBuffer(); })
                                 .then(function(buffer) {
-                                    var cacheKey2 = 'pdf_' + bookId + (book.pdfId ?
-                                        '_' + book.pdfId : '');
-                                    PDFStore.savePDF(cacheKey2, buffer).catch(function() {});
+                                    PDFStore.savePDF(cacheKey, buffer).catch(function() {});
                                     var blob = new Blob([buffer], { type: 'application/pdf' });
                                     var objUrl = URL.createObjectURL(blob);
                                     pdfBlobUrl = objUrl;
@@ -2957,11 +2880,11 @@
                             hideLoading();
                             showAlert('Error getting PDF: ' + err.message, 'error');
                         });
-                    } else {
-                        hideLoading();
-                        showAlert('No PDF source available', 'error');
-                    }
-                });
+                    });
+                } else {
+                    hideLoading();
+                    showAlert('No PDF source available (missing pdfUrl or pdfId)', 'error');
+                }
             }).catch(function(err) {
                 hideLoading();
                 showAlert('Error: ' + err.message, 'error');
@@ -2979,6 +2902,20 @@
         function downloadCurrentPdf() {
             if (!currentPdfBook) return;
             recordDownloadDoc(currentPdfBook.id, currentUser.id).catch(function() {});
+
+            // If Cloudinary URL exists, download directly
+            if (currentPdfBook.pdfUrl) {
+                var link = document.createElement('a');
+                link.href = currentPdfBook.pdfUrl;
+                link.download = currentPdfBook.title.replace(/[^a-z0-9]/gi, '_') + '.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showAlert('Downloading "' + currentPdfBook.title + '"', 'success');
+                return;
+            }
+
+            // Fallback: Firebase Storage
             if (currentPdfBook.pdfId) {
                 var storageRef = storage.ref('pdfs/' + currentPdfBook.pdfId);
                 storageRef.getDownloadURL().then(function(url) {
@@ -3023,7 +2960,7 @@
         }
 
         // ============================================================
-        //  REVIEW
+        //  REVIEW (unchanged)
         // ============================================================
         function openReviewModal(bookId) {
             if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
@@ -3074,7 +3011,7 @@
         }
 
         // ============================================================
-        //  DOWNLOAD / READ
+        //  DOWNLOAD / READ (unchanged)
         // ============================================================
         function downloadBook(bookId) {
             if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
@@ -3083,7 +3020,7 @@
         }
 
         // ============================================================
-        //  BOOK CRUD (ADMIN) with Firebase Storage
+        //  BOOK CRUD (ADMIN) – Cloudinary upload
         // ============================================================
         function handleAddBook(e) {
             e.preventDefault();
@@ -3104,28 +3041,33 @@
                 showAlert('Please upload a valid PDF file.', 'error');
                 return;
             }
-            showLoading('Uploading to Firebase...');
-            var pdfId = 'pdf_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-            var storageRef = storage.ref('pdfs/' + pdfId);
-            var uploadTask = storageRef.put(file);
-            uploadTask.on('state_changed',
-                function(snapshot) {
-                    var pct = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    showUploadProgress('uploadProgress', 'uploadProgressFill', pct);
-                },
-                function(err) {
-                    hideLoading();
-                    hideUploadProgress('uploadProgress');
-                    showAlert('Upload failed: ' + err.message, 'error');
-                },
-                function() {
+
+            showLoading('Uploading to Cloudinary...');
+
+            var formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'Electro-lass'); // Your Cloudinary preset
+
+            fetch('https://api.cloudinary.com/v1_1/dbftx1vrf/raw/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Cloudinary upload failed: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
                     var newBook = {
                         title: title,
                         author: author,
                         category: category,
                         description: description || 'A ' + category.toLowerCase() + ' book about ' + title,
                         hasPdf: true,
-                        pdfId: pdfId,
+                        pdfUrl: data.secure_url, // Cloudinary secure URL
+                        // Keep pdfId null or omit – we use pdfUrl as primary
+                        pdfId: null,
                         dateAdded: new Date().toISOString(),
                         addedBy: currentUser.name,
                         likesCount: 0,
@@ -3138,22 +3080,26 @@
                         year: new Date().getFullYear() - Math.floor(Math.random() * 10),
                         isUploaded: true
                     };
-                    saveBook(newBook).then(function(docRef) {
-                        document.getElementById('addBookForm').reset();
-                        document.getElementById('fileNameDisplay').textContent = 'No file selected';
-                        document.getElementById('fileSizeDisplay').textContent = '';
-                        closeModal('addBookModal');
-                        hideUploadProgress('uploadProgress');
-                        hideLoading();
-                        showAlert('✅ "' + title + '" added successfully with PDF!', 'success');
-                        if (currentPage === 'library') loadBooks();
-                    }).catch(function(err) {
-                        hideLoading();
-                        hideUploadProgress('uploadProgress');
-                        showAlert('Error saving book: ' + err.message, 'error');
-                    });
-                }
-            );
+                    return saveBook(newBook);
+                })
+                .then(function() {
+                    document.getElementById('addBookForm').reset();
+                    document.getElementById('fileNameDisplay').textContent = 'No file selected';
+                    document.getElementById('fileSizeDisplay').textContent = '';
+                    closeModal('addBookModal');
+                    hideUploadProgress('uploadProgress');
+                    hideLoading();
+                    showAlert('✅ "' + title + '" added successfully with PDF!', 'success');
+                    if (currentPage === 'library') {
+                        loadBooks();
+                    }
+                })
+                .catch(function(err) {
+                    hideLoading();
+                    hideUploadProgress('uploadProgress');
+                    console.error('Cloudinary upload error:', err);
+                    showAlert('Upload failed: ' + err.message, 'error');
+                });
         }
 
         function openEditBookModal(bookId) {
@@ -3165,8 +3111,8 @@
                 document.getElementById('editBookAuthor').value = book.author;
                 document.getElementById('editBookCategory').value = book.category;
                 document.getElementById('editBookDescription').value = book.description || '';
-                document.getElementById('editFileNameDisplay').textContent = book.isUploaded ? 'Current: PDF uploaded' :
-                    'Current: External URL';
+                document.getElementById('editFileNameDisplay').textContent = book.pdfUrl ? 'Current: Cloudinary PDF' :
+                    'Current: Firebase Storage PDF';
                 document.getElementById('editFileSizeDisplay').textContent = book.fileSize || '';
                 document.getElementById('editBookModal').style.display = 'flex';
             }).catch(function(err) {
@@ -3189,13 +3135,15 @@
             getBook(id).then(function(book) {
                 if (!book) throw new Error('Book not found');
 
-                var updateBookData = function(pdfId, fileSize) {
+                var updateBookData = function(pdfUrl, fileSize) {
                     book.title = title;
                     book.author = author;
                     book.category = category;
                     book.description = description || book.description;
-                    if (pdfId) {
-                        book.pdfId = pdfId;
+                    if (pdfUrl) {
+                        book.pdfUrl = pdfUrl;
+                        // If we replace with Cloudinary, we can clear pdfId if any
+                        book.pdfId = null;
                         book.isUploaded = true;
                         book.fileSize = fileSize || book.fileSize;
                     }
@@ -3215,37 +3163,41 @@
                         showAlert('Please upload a valid PDF file.', 'error');
                         return;
                     }
-                    var pdfId = 'pdf_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-                    var storageRef = storage.ref('pdfs/' + pdfId);
-                    var uploadTask = storageRef.put(file);
-                    uploadTask.on('state_changed',
-                        function(snapshot) {
-                            var pct = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            showUploadProgress('editUploadProgress', 'editUploadProgressFill', pct);
-                        },
-                        function(err) {
+
+                    showLoading('Uploading new PDF to Cloudinary...');
+                    var formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', 'Electro-lass');
+
+                    fetch('https://api.cloudinary.com/v1_1/dbftx1vrf/raw/upload', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(function(response) {
+                            if (!response.ok) {
+                                throw new Error('Cloudinary upload failed: ' + response.status);
+                            }
+                            return response.json();
+                        })
+                        .then(function(data) {
+                            // If the book had a previous Firebase Storage PDF, we could delete it, but we'll keep it (optional)
+                            return updateBookData(data.secure_url, formatBytes(file.size));
+                        })
+                        .then(function() {
+                            closeModal('editBookModal');
+                            hideUploadProgress('editUploadProgress');
+                            hideLoading();
+                            showAlert('✅ "' + title + '" updated successfully!', 'success');
+                            if (currentPage === 'library') loadBooks();
+                        })
+                        .catch(function(err) {
                             hideLoading();
                             hideUploadProgress('editUploadProgress');
+                            console.error('Cloudinary upload error:', err);
                             showAlert('Upload failed: ' + err.message, 'error');
-                        },
-                        function() {
-                            if (book.pdfId) {
-                                storage.ref('pdfs/' + book.pdfId).delete().catch(function() {});
-                            }
-                            updateBookData(pdfId, formatBytes(file.size)).then(function() {
-                                closeModal('editBookModal');
-                                hideUploadProgress('editUploadProgress');
-                                hideLoading();
-                                showAlert('✅ "' + title + '" updated successfully!', 'success');
-                                if (currentPage === 'library') loadBooks();
-                            }).catch(function(err) {
-                                hideLoading();
-                                hideUploadProgress('editUploadProgress');
-                                showAlert('Error: ' + err.message, 'error');
-                            });
-                        }
-                    );
+                        });
                 } else {
+                    // No new file – just update metadata
                     updateBookData(null, null).then(function() {
                         closeModal('editBookModal');
                         hideLoading();
@@ -3267,9 +3219,12 @@
             if (!confirm('Delete this book permanently?')) return;
             showLoading('Deleting...');
             getBook(bookId).then(function(book) {
+                // If the book has a Firebase Storage PDF, we can delete it (optional)
                 if (book && book.pdfId) {
                     storage.ref('pdfs/' + book.pdfId).delete().catch(function() {});
                 }
+                // Cloudinary files are not automatically deleted – we could call Cloudinary API but that requires more setup.
+                // For simplicity, we just remove the Firestore document.
                 return deleteBookDoc(bookId);
             }).then(function() {
                 showAlert('Book removed', 'success');
@@ -3282,7 +3237,7 @@
         }
 
         // ============================================================
-        //  USER AUTH (Firebase Auth)
+        //  USER AUTH (unchanged)
         // ============================================================
         function demoLogin() {
             var demoEmail = 'demo@user.com';
@@ -3403,8 +3358,6 @@
                 .then(function(cred) {
                     var user = cred.user;
                     return getUserByEmail(email).then(function(dbUser) {
-                        // If no user doc exists, create one.
-                        // For admin email, set role to admin.
                         var role = 'user';
                         if (email === 'admin@electrolass.com') {
                             role = 'admin';
@@ -3423,7 +3376,6 @@
                                 return getUserByEmail(email);
                             });
                         } else {
-                            // Ensure admin role if it's the admin email
                             if (email === 'admin@electrolass.com' && dbUser.role !== 'admin') {
                                 dbUser.role = 'admin';
                                 return saveUserDoc(dbUser).then(function() {
@@ -3551,7 +3503,7 @@
         });
 
         // ============================================================
-        //  BOOK DETAILS
+        //  BOOK DETAILS (unchanged)
         // ============================================================
         function openBookDetails(bookId) {
             showLoading('Loading book details...');
@@ -3648,7 +3600,7 @@
         }
 
         // ============================================================
-        //  MODALS
+        //  MODALS (unchanged)
         // ============================================================
         function openAddBookModal() {
             if (currentUser.role !== 'admin') { showAlert('Admin access required', 'error'); return; }
@@ -3681,7 +3633,7 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         // ============================================================
-        //  USER PROFILE / ADMIN UTILITIES
+        //  USER PROFILE / ADMIN UTILITIES (unchanged)
         // ============================================================
         function showUserProfile() {
             if (!currentUser.isLoggedIn) { openLoginModal(); return; }
@@ -3729,7 +3681,7 @@
         }
 
         // ============================================================
-        //  UI HELPERS
+        //  UI HELPERS (unchanged)
         // ============================================================
         function showAlert(message, type) {
             var existing = document.querySelectorAll('.alert');
