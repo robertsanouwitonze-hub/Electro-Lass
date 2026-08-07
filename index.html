@@ -5,8 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Electro-LASS Digital Library</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- Firebase SDK (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js">
+    </script>
+
     <style>
-        /* ===== BASE STYLES ===== */
+        /* ===== BASE STYLES (same as before – trimmed for brevity) ===== */
         :root {
             --electro-blue: #07178c;
             --electric-orange: #ff7200;
@@ -29,8 +40,6 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-
-        /* Header */
         .main-header {
             background: rgba(10, 15, 46, 0.95);
             padding: 1rem 2rem;
@@ -129,16 +138,12 @@
         .btn-logout:hover {
             background: rgba(255, 56, 96, 0.2);
         }
-
-        /* Page Container */
         #pageContainer {
             padding: 2rem;
             max-width: 1400px;
             margin: 0 auto;
             min-height: calc(100vh - 120px);
         }
-
-        /* Page Header */
         .page-header {
             text-align: center;
             margin-bottom: 2rem;
@@ -162,8 +167,6 @@
             max-width: 600px;
             margin: 0 auto;
         }
-
-        /* Forms */
         .form-container {
             background: rgba(10, 15, 46, 0.7);
             padding: 2.5rem;
@@ -294,7 +297,6 @@
         .password-hints li {
             margin-bottom: 2px;
         }
-
         .btn {
             padding: 12px 24px;
             border-radius: 8px;
@@ -336,8 +338,16 @@
             width: 100%;
             justify-content: center;
         }
+        .btn-demo {
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: #000;
+            margin-top: 0.5rem;
+        }
+        .btn-demo:hover {
+            background: linear-gradient(135deg, #ffca28, #ffa726);
+        }
 
-        /* Search */
+        /* (the rest of the styles – same as before – omitted for brevity) */
         .search-section {
             margin: 2rem 0;
             padding: 1.5rem;
@@ -419,8 +429,6 @@
             border-left: 4px solid var(--neon-green);
             display: none;
         }
-
-        /* Books Grid */
         .books-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -630,8 +638,6 @@
             color: var(--text-gray);
             font-size: 0.8rem;
         }
-
-        /* Storage Controls */
         .storage-controls {
             background: rgba(157, 0, 255, 0.1);
             border: 1px solid var(--spark-purple);
@@ -659,8 +665,6 @@
             background: linear-gradient(90deg, var(--neon-green), var(--electric-orange));
             transition: width 0.3s ease;
         }
-
-        /* Modals */
         .modal {
             display: none;
             position: fixed;
@@ -734,8 +738,6 @@
             gap: 10px;
             color: var(--neon-green);
         }
-
-        /* Alert */
         .alert {
             position: fixed;
             top: 100px;
@@ -779,8 +781,6 @@
             border: 1px solid #ffc107;
             color: #ffc107;
         }
-
-        /* Loading Overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -816,8 +816,6 @@
             color: var(--neon-green);
             text-align: center;
         }
-
-        /* Stats */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -845,8 +843,6 @@
             font-size: 0.9rem;
             color: var(--text-gray);
         }
-
-        /* Dashboard */
         .dashboard-section {
             background: linear-gradient(135deg, rgba(7, 23, 140, 0.3), rgba(157, 0, 255, 0.2));
             border-radius: var(--border-radius);
@@ -874,8 +870,6 @@
             flex-wrap: wrap;
             margin-top: 0.5rem;
         }
-
-        /* Team */
         .team-section {
             background: linear-gradient(135deg, rgba(157, 0, 255, 0.2), rgba(7, 23, 140, 0.3));
             border-radius: var(--border-radius);
@@ -930,8 +924,6 @@
             line-height: 1.6;
             font-size: 0.95rem;
         }
-
-        /* Help */
         .help-section {
             background: linear-gradient(135deg, rgba(255, 114, 0, 0.15), rgba(7, 23, 140, 0.3));
             border-radius: var(--border-radius);
@@ -970,8 +962,6 @@
             color: var(--text-gray);
             line-height: 1.5;
         }
-
-        /* Tabs */
         .tabs {
             display: flex;
             gap: 0.5rem;
@@ -1006,8 +996,6 @@
         .tab-content.active {
             display: block;
         }
-
-        /* PDF Viewer */
         .pdf-viewer-container {
             display: none;
             position: fixed;
@@ -1067,8 +1055,6 @@
             flex-wrap: wrap;
             gap: 0.5rem;
         }
-
-        /* User Dashboard */
         .user-stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -1082,8 +1068,6 @@
             text-align: center;
             border: 1px solid rgba(0, 255, 204, 0.2);
         }
-
-        /* Feature Badge */
         .feature-badge {
             background: linear-gradient(135deg, var(--electric-orange), var(--spark-purple));
             color: white;
@@ -1113,8 +1097,6 @@
         .shelf-book:hover {
             transform: translateY(-5px);
         }
-
-        /* Recent Books */
         .recent-books {
             margin: 3rem 0;
             padding: 2rem;
@@ -1147,8 +1129,6 @@
             background: rgba(255, 255, 255, 0.1);
             transform: translateX(5px);
         }
-
-        /* Privacy Badge */
         .privacy-badge {
             background: rgba(0, 255, 204, 0.1);
             padding: 0.5rem 1rem;
@@ -1160,8 +1140,6 @@
             gap: 5px;
             margin-top: 0.5rem;
         }
-
-        /* Reviews */
         .reviews-section {
             margin: 2rem 0;
             padding: 1.5rem;
@@ -1214,8 +1192,6 @@
         .star.active {
             color: #ffc107;
         }
-
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
@@ -1227,8 +1203,6 @@
             color: var(--electric-orange);
             opacity: 0.5;
         }
-
-        /* Missing Features */
         .missing-features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -1261,8 +1235,6 @@
             color: var(--text-gray);
             font-size: 0.9rem;
         }
-
-        /* Responsive */
         @media (max-width: 768px) {
             .nav-container {
                 flex-direction: column;
@@ -1307,8 +1279,6 @@
         .highlight-new {
             animation: highlight 1.5s ease;
         }
-
-        /* Custom scrollbar for PDF viewer */
         .pdf-viewer-content::-webkit-scrollbar {
             width: 8px;
         }
@@ -1322,8 +1292,6 @@
         .pdf-viewer-content::-webkit-scrollbar-thumb:hover {
             background: var(--neon-green);
         }
-
-        /* Upload progress indicator */
         .upload-progress {
             display: none;
             margin-top: 0.5rem;
@@ -1348,6 +1316,17 @@
             width: 0%;
             transition: width 0.3s ease;
         }
+        .sync-status {
+            font-size: 0.7rem;
+            color: var(--neon-green);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 8px;
+        }
+        .sync-status .pulse {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
     </style>
 </head>
 <body>
@@ -1358,6 +1337,7 @@
             <a class="logo" onclick="navigateTo('home'); return false;">
                 <i class="fas fa-bolt"></i>
                 <span>Electro-LASS</span>
+                <span class="sync-status" id="syncStatus"><i class="fas fa-cloud"></i> <span id="syncLabel">Synced</span></span>
             </a>
             <nav class="main-nav" id="mainNav"></nav>
             <div class="user-panel">
@@ -1477,7 +1457,7 @@
                         <span class="file-size" id="fileSizeDisplay"></span>
                     </div>
                     <div class="upload-progress" id="uploadProgress">
-                        <span>Uploading...</span>
+                        <span>Uploading to Firebase...</span>
                         <div class="progress-bar"><div class="fill" id="uploadProgressFill"></div></div>
                     </div>
                     <small style="color:var(--text-gray);font-size:0.8rem;display:block;margin-top:5px;">
@@ -1536,7 +1516,7 @@
                         <span class="file-size" id="editFileSizeDisplay"></span>
                     </div>
                     <div class="upload-progress" id="editUploadProgress">
-                        <span>Uploading...</span>
+                        <span>Uploading to Firebase...</span>
                         <div class="progress-bar"><div class="fill" id="editUploadProgressFill"></div></div>
                     </div>
                     <small style="color:var(--text-gray);font-size:0.8rem;display:block;margin-top:5px;">
@@ -1640,6 +1620,9 @@
                 <button type="submit" class="btn btn-primary btn-block">
                     <i class="fas fa-sign-in-alt"></i> Sign In
                 </button>
+                <button type="button" class="btn btn-demo btn-block" onclick="demoLogin()">
+                    <i class="fas fa-user-astronaut"></i> Use Demo Account
+                </button>
                 <div style="text-align:center;margin-top:1rem;">
                     <span style="color:var(--text-gray);">Don't have an account? </span>
                     <button type="button" class="btn" onclick="openSignupModal()" style="background:none;color:var(--neon-green);padding:5px;">
@@ -1721,570 +1704,76 @@
 
     <script>
         // ============================================================
-        //  INDEXEDDB – PDF STORAGE
+        //  FIREBASE CONFIG & INIT
+        // ============================================================
+        var firebaseConfig = {
+            apiKey: "AIzaSyDedupt8sEx-fyv57NPEhkpCnR74miLoS0",
+            authDomain: "electro-lass.firebaseapp.com",
+            projectId: "electro-lass",
+            storageBucket: "electro-lass.firebasestorage.app",
+            messagingSenderId: "50993129751",
+            appId: "1:50993129751:web:f6f15090d866d76dff6f52",
+            measurementId: "G-BYSYN6YVW1"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        var auth = firebase.auth();
+        var db = firebase.firestore();
+        var storage = firebase.storage();
+
+        db.enablePersistence({ synchronizeTabs: true })
+            .catch(function(err) { console.warn('Firestore persistence:', err.code); });
+
+        // ============================================================
+        //  INDEXEDDB – PDF CACHE
         // ============================================================
         var PDFStore = {
             db: null,
             init: function() {
                 return new Promise(function(resolve, reject) {
-                    var request = indexedDB.open('ElectroLASS_PDFStore', 1);
+                    var request = indexedDB.open('ElectroLASS_PDFCache', 1);
                     request.onupgradeneeded = function(e) {
-                        var db = e.target.result;
-                        if (!db.objectStoreNames.contains('pdfs')) {
-                            db.createObjectStore('pdfs', { keyPath: 'id' });
+                        var d = e.target.result;
+                        if (!d.objectStoreNames.contains('pdfs')) {
+                            d.createObjectStore('pdfs', { keyPath: 'id' });
                         }
                     };
-                    request.onsuccess = function(e) {
-                        PDFStore.db = e.target.result;
-                        resolve();
-                    };
-                    request.onerror = function(e) {
-                        reject(e.target.error);
-                    };
+                    request.onsuccess = function(e) { PDFStore.db = e.target.result;
+                        resolve(); };
+                    request.onerror = function(e) { reject(e.target.error); };
                 });
             },
             savePDF: function(id, data) {
                 return new Promise(function(resolve, reject) {
-                    if (!PDFStore.db) { reject(new Error('Database not initialized')); return; }
+                    if (!PDFStore.db) { reject(new Error('DB not ready')); return; }
                     var tx = PDFStore.db.transaction('pdfs', 'readwrite');
-                    var store = tx.objectStore('pdfs');
-                    store.put({ id: String(id), data: data });
+                    tx.objectStore('pdfs').put({ id: String(id), data: data });
                     tx.oncomplete = function() { resolve(); };
                     tx.onerror = function(e) { reject(e.target.error); };
                 });
             },
             getPDF: function(id) {
                 return new Promise(function(resolve, reject) {
-                    if (!PDFStore.db) { reject(new Error('Database not initialized')); return; }
+                    if (!PDFStore.db) { reject(new Error('DB not ready')); return; }
                     var tx = PDFStore.db.transaction('pdfs', 'readonly');
-                    var store = tx.objectStore('pdfs');
-                    var request = store.get(String(id));
-                    request.onsuccess = function() { resolve(request.result ? request.result.data : null); };
-                    request.onerror = function(e) { reject(e.target.error); };
+                    var req = tx.objectStore('pdfs').get(String(id));
+                    req.onsuccess = function() { resolve(req.result ? req.result.data : null); };
+                    req.onerror = function(e) { reject(e.target.error); };
                 });
             },
             deletePDF: function(id) {
                 return new Promise(function(resolve, reject) {
-                    if (!PDFStore.db) { reject(new Error('Database not initialized')); return; }
+                    if (!PDFStore.db) { reject(new Error('DB not ready')); return; }
                     var tx = PDFStore.db.transaction('pdfs', 'readwrite');
-                    var store = tx.objectStore('pdfs');
-                    store.delete(String(id));
+                    tx.objectStore('pdfs').delete(String(id));
                     tx.oncomplete = function() { resolve(); };
                     tx.onerror = function(e) { reject(e.target.error); };
                 });
-            },
-            getAllPDFIds: function() {
-                return new Promise(function(resolve, reject) {
-                    if (!PDFStore.db) { reject(new Error('Database not initialized')); return; }
-                    var tx = PDFStore.db.transaction('pdfs', 'readonly');
-                    var store = tx.objectStore('pdfs');
-                    var request = store.getAllKeys();
-                    request.onsuccess = function() { resolve(request.result || []); };
-                    request.onerror = function(e) { reject(e.target.error); };
-                });
             }
         };
 
         // ============================================================
-        //  DIGITAL LIBRARY – ENHANCED
-        // ============================================================
-
-        var DigitalLibrary = {
-            init: function() {
-                console.log('Initializing Digital Library...');
-                this.initStorage();
-                this.setupDefaultData();
-                console.log('Digital Library initialized');
-            },
-
-            initStorage: function() {
-                var keys = ['library_books', 'library_users', 'library_likes', 'library_downloads',
-                    'library_reviews', 'library_reading_progress', 'library_bookmarks'
-                ];
-                keys.forEach(function(k) {
-                    if (!localStorage.getItem(k)) localStorage.setItem(k, JSON.stringify([]));
-                });
-            },
-
-            setupDefaultData: function() {
-                var users = this.getUsers();
-                var books = this.getBooks();
-
-                // --- Admin user ---
-                var adminExists = users.some(u => u.email === 'admin@electrolass.com');
-                if (!adminExists) {
-                    users.push({
-                        id: 'admin_001',
-                        name: 'Admin',
-                        email: 'admin@electrolass.com',
-                        password: 'Admin@123',
-                        role: 'admin',
-                        registrationDate: new Date().toISOString(),
-                        lastLogin: new Date().toISOString(),
-                        likedBooks: [],
-                        downloadedBooks: [],
-                        reviewedBooks: [],
-                        readingProgress: {},
-                        bookmarks: [],
-                        accountStatus: 'active',
-                        preferences: { theme: 'dark', notifications: true, language: 'en' }
-                    });
-                    console.log('Admin user created');
-                }
-
-                // --- Demo user (hidden from UI) ---
-                var demoExists = users.some(u => u.email === 'demo@user.com');
-                if (!demoExists) {
-                    users.push({
-                        id: 'demo_user_001',
-                        name: 'Demo User',
-                        email: 'demo@user.com',
-                        password: 'Demo123!',
-                        role: 'user',
-                        registrationDate: new Date().toISOString(),
-                        lastLogin: new Date().toISOString(),
-                        likedBooks: [],
-                        downloadedBooks: [],
-                        reviewedBooks: [],
-                        readingProgress: {},
-                        bookmarks: [],
-                        accountStatus: 'active',
-                        preferences: { theme: 'dark', notifications: true, language: 'en' }
-                    });
-                    console.log('Demo user created (hidden)');
-                }
-                localStorage.setItem('library_users', JSON.stringify(users));
-
-                // --- Sample books (with PDF IDs) ---
-                if (books.length === 0) {
-                    var samples = [{
-                        id: 1,
-                        title: 'JavaScript: The Definitive Guide',
-                        author: 'David Flanagan',
-                        category: 'Programming',
-                        description: 'Master JavaScript programming with this comprehensive guide covering ES6 and modern web development.',
-                        hasPdf: true,
-                        pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-                        pdfId: null,
-                        dateAdded: new Date().toISOString(),
-                        addedBy: 'system',
-                        likesCount: 42,
-                        downloadsCount: 156,
-                        reviewsCount: 3,
-                        averageRating: 4.5,
-                        fileSize: '2.5 MB',
-                        isbn: '978-1491952023',
-                        pages: 1096,
-                        year: 2020,
-                        isUploaded: false
-                    }, {
-                        id: 2,
-                        title: 'Clean Code: A Handbook of Agile Software Craftsmanship',
-                        author: 'Robert C. Martin',
-                        category: 'Programming',
-                        description: 'Learn to write clean, maintainable code with practical examples and best practices.',
-                        hasPdf: true,
-                        pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-                        pdfId: null,
-                        dateAdded: new Date().toISOString(),
-                        addedBy: 'system',
-                        likesCount: 38,
-                        downloadsCount: 89,
-                        reviewsCount: 2,
-                        averageRating: 4.7,
-                        fileSize: '3.1 MB',
-                        isbn: '978-0132350884',
-                        pages: 464,
-                        year: 2008,
-                        isUploaded: false
-                    }, {
-                        id: 3,
-                        title: 'The Great Gatsby',
-                        author: 'F. Scott Fitzgerald',
-                        category: 'Novel',
-                        description: 'Classic American novel about the Jazz Age, exploring themes of idealism, resistance to change, and excess.',
-                        hasPdf: true,
-                        pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-                        pdfId: null,
-                        dateAdded: new Date().toISOString(),
-                        addedBy: 'system',
-                        likesCount: 51,
-                        downloadsCount: 203,
-                        reviewsCount: 5,
-                        averageRating: 4.8,
-                        fileSize: '1.8 MB',
-                        isbn: '978-0743273565',
-                        pages: 180,
-                        year: 1925,
-                        isUploaded: false
-                    }, {
-                        id: 4,
-                        title: 'Introduction to Algorithms',
-                        author: 'Thomas H. Cormen',
-                        category: 'Programming',
-                        description: 'Comprehensive guide to algorithms and data structures for computer scientists.',
-                        hasPdf: true,
-                        pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-                        pdfId: null,
-                        dateAdded: new Date(Date.now() - 86400000).toISOString(),
-                        addedBy: 'system',
-                        likesCount: 29,
-                        downloadsCount: 94,
-                        reviewsCount: 1,
-                        averageRating: 4.6,
-                        fileSize: '4.2 MB',
-                        isbn: '978-0262033848',
-                        pages: 1292,
-                        year: 2009,
-                        isUploaded: false
-                    }];
-                    localStorage.setItem('library_books', JSON.stringify(samples));
-                    console.log('Sample books loaded');
-                }
-
-                // --- Sample reviews ---
-                var reviews = this.getReviews();
-                if (reviews.length === 0) {
-                    var sr = [{
-                        id: 1,
-                        bookId: 1,
-                        userId: 'demo_user_001',
-                        userName: 'Demo User',
-                        rating: 5,
-                        review: 'Excellent guide for JavaScript developers. Very comprehensive!',
-                        date: new Date().toISOString()
-                    }, {
-                        id: 2,
-                        bookId: 2,
-                        userId: 'demo_user_001',
-                        userName: 'Demo User',
-                        rating: 4,
-                        review: 'Great book for learning clean code principles.',
-                        date: new Date().toISOString()
-                    }, {
-                        id: 3,
-                        bookId: 3,
-                        userId: 'demo_user_001',
-                        userName: 'Demo User',
-                        rating: 5,
-                        review: 'A timeless classic that everyone should read.',
-                        date: new Date().toISOString()
-                    }];
-                    localStorage.setItem('library_reviews', JSON.stringify(sr));
-                }
-            },
-
-            // ---- Users ----
-            getUsers: function() {
-                return JSON.parse(localStorage.getItem('library_users') || '[]');
-            },
-            getUserByEmail: function(email) {
-                return this.getUsers().find(u => u.email === email) || null;
-            },
-            getUserById: function(id) {
-                return this.getUsers().find(u => u.id === id) || null;
-            },
-            saveUser: function(user) {
-                var users = this.getUsers();
-                var idx = users.findIndex(u => u.email === user.email);
-                if (idx > -1) users[idx] = user;
-                else {
-                    user.id = user.id || 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-                    users.push(user);
-                }
-                localStorage.setItem('library_users', JSON.stringify(users));
-                return user;
-            },
-            registerUser: function(data) {
-                if (this.getUserByEmail(data.email)) throw new Error('Email already registered.');
-                if (!this.validatePasswordStrength(data.password))
-                    throw new Error('Password must be 8+ chars with uppercase, lowercase, number & special.');
-                var user = {
-                    name: data.name,
-                    email: data.email,
-                    password: data.password,
-                    role: 'user',
-                    registrationDate: new Date().toISOString(),
-                    lastLogin: new Date().toISOString(),
-                    likedBooks: [],
-                    downloadedBooks: [],
-                    reviewedBooks: [],
-                    readingProgress: {},
-                    bookmarks: [],
-                    accountStatus: 'active',
-                    preferences: { theme: 'dark', notifications: true, language: 'en' }
-                };
-                this.saveUser(user);
-                return user;
-            },
-            validatePasswordStrength: function(p) {
-                return p.length >= 8 && /[A-Z]/.test(p) && /[a-z]/.test(p) && /\d/.test(p) && /[!@#$%^&*(),.?":{}|<>]/
-                    .test(p);
-            },
-            loginUser: function(email, password) {
-                var user = this.getUserByEmail(email);
-                if (!user) throw new Error('Account not found.');
-                if (user.accountStatus === 'suspended') throw new Error('Account suspended.');
-                if (user.password !== password) throw new Error('Incorrect password.');
-                user.lastLogin = new Date().toISOString();
-                user.loginCount = (user.loginCount || 0) + 1;
-                this.saveUser(user);
-                return user;
-            },
-
-            // ---- Books ----
-            getBooks: function() {
-                return JSON.parse(localStorage.getItem('library_books') || '[]');
-            },
-            getBook: function(id) {
-                return this.getBooks().find(b => b.id == id) || null;
-            },
-            saveBook: function(book) {
-                var books = this.getBooks();
-                var idx = books.findIndex(b => b.id == book.id);
-                if (idx > -1) books[idx] = book;
-                else {
-                    book.id = book.id || Date.now();
-                    books.push(book);
-                }
-                localStorage.setItem('library_books', JSON.stringify(books));
-                return true;
-            },
-            deleteBook: function(id) {
-                var books = this.getBooks().filter(b => b.id != id);
-                localStorage.setItem('library_books', JSON.stringify(books));
-                // Also delete PDF from IndexedDB
-                PDFStore.deletePDF(id).catch(function(e) { console.warn('PDF delete error:', e); });
-                return true;
-            },
-            searchBooks: function(query, filters) {
-                var books = this.getBooks();
-                if (!query && (!filters || !Object.keys(filters).length)) return books;
-                var terms = query ? query.toLowerCase().split(/\s+/) : [];
-                var filtered = [];
-                for (var b of books) {
-                    var include = true;
-                    if (terms.length) {
-                        var txt = (b.title + ' ' + b.author + ' ' + b.category + ' ' + b.description).toLowerCase();
-                        for (var t of terms) { if (txt.indexOf(t) === -1) { include = false; break; } }
-                    }
-                    if (include && filters && filters.category && b.category !== filters.category) include = false;
-                    if (include) filtered.push(b);
-                }
-                var sort = (filters && filters.sortBy) || 'newest';
-                var map = {
-                    newest: (a, b) => new Date(b.dateAdded) - new Date(a.dateAdded),
-                    oldest: (a, b) => new Date(a.dateAdded) - new Date(b.dateAdded),
-                    title_asc: (a, b) => (a.title || '').localeCompare(b.title || ''),
-                    title_desc: (a, b) => (b.title || '').localeCompare(a.title || ''),
-                    popularity: (a, b) => (b.likesCount || 0) - (a.likesCount || 0),
-                    rating: (a, b) => (b.averageRating || 0) - (a.averageRating || 0)
-                };
-                filtered.sort(map[sort] || map.newest);
-                return filtered;
-            },
-
-            // ---- Likes ----
-            getLikes: function() {
-                return JSON.parse(localStorage.getItem('library_likes') || '[]');
-            },
-            likeBook: function(bookId, userId) {
-                var likes = this.getLikes();
-                var id = bookId + '_' + userId;
-                var idx = likes.findIndex(l => l.id === id);
-                if (idx > -1) {
-                    likes.splice(idx, 1);
-                    localStorage.setItem('library_likes', JSON.stringify(likes));
-                    var book = this.getBook(bookId);
-                    if (book) { book.likesCount = Math.max(0, (book.likesCount || 0) - 1);
-                        this.saveBook(book); }
-                    var user = this.getUserById(userId);
-                    if (user) { user.likedBooks = user.likedBooks.filter(b => b != bookId);
-                        this.saveUser(user); }
-                    return false;
-                }
-                likes.push({ id: id, bookId: bookId, userId: userId, timestamp: new Date().toISOString() });
-                localStorage.setItem('library_likes', JSON.stringify(likes));
-                var book = this.getBook(bookId);
-                if (book) { book.likesCount = (book.likesCount || 0) + 1;
-                    this.saveBook(book); }
-                var user = this.getUserById(userId);
-                if (user) { if (!user.likedBooks.includes(bookId)) user.likedBooks.push(bookId);
-                    this.saveUser(user); }
-                return true;
-            },
-            hasUserLikedBook: function(bookId, userId) {
-                return this.getLikes().some(l => l.id === bookId + '_' + userId);
-            },
-
-            // ---- Downloads ----
-            getDownloads: function() {
-                return JSON.parse(localStorage.getItem('library_downloads') || '[]');
-            },
-            recordDownload: function(bookId, userId) {
-                var dls = this.getDownloads();
-                dls.push({ id: bookId + '_' + userId + '_' + Date.now(), bookId: bookId, userId: userId,
-                    timestamp: new Date().toISOString() });
-                localStorage.setItem('library_downloads', JSON.stringify(dls));
-                var book = this.getBook(bookId);
-                if (book) { book.downloadsCount = (book.downloadsCount || 0) + 1;
-                    this.saveBook(book); }
-                var user = this.getUserById(userId);
-                if (user && !user.downloadedBooks.includes(bookId)) { user.downloadedBooks.push(bookId);
-                    this.saveUser(user); }
-                return true;
-            },
-
-            // ---- Reviews ----
-            getReviews: function() {
-                return JSON.parse(localStorage.getItem('library_reviews') || '[]');
-            },
-            getBookReviews: function(bookId) {
-                return this.getReviews().filter(r => r.bookId == bookId);
-            },
-            addReview: function(data) {
-                var reviews = this.getReviews();
-                var review = {
-                    id: Date.now(),
-                    bookId: data.bookId,
-                    userId: data.userId,
-                    userName: data.userName,
-                    rating: data.rating,
-                    review: data.review,
-                    date: new Date().toISOString()
-                };
-                reviews.push(review);
-                localStorage.setItem('library_reviews', JSON.stringify(reviews));
-                var bookReviews = this.getBookReviews(data.bookId);
-                var avg = bookReviews.reduce((s, r) => s + r.rating, 0) / bookReviews.length;
-                var book = this.getBook(data.bookId);
-                if (book) { book.reviewsCount = bookReviews.length;
-                    book.averageRating = parseFloat(avg.toFixed(1));
-                    this.saveBook(book); }
-                var user = this.getUserById(data.userId);
-                if (user && !user.reviewedBooks.includes(data.bookId)) { user.reviewedBooks.push(data.bookId);
-                    this.saveUser(user); }
-                return review;
-            },
-            hasUserReviewedBook: function(bookId, userId) {
-                return this.getReviews().some(r => r.bookId == bookId && r.userId === userId);
-            },
-
-            // ---- Reading Progress ----
-            getReadingProgress: function() {
-                return JSON.parse(localStorage.getItem('library_reading_progress') || '[]');
-            },
-            updateReadingProgress: function(bookId, userId, progress) {
-                var all = this.getReadingProgress();
-                var id = bookId + '_' + userId;
-                var idx = all.findIndex(p => p.id === id);
-                if (idx > -1) { all[idx].progress = progress;
-                    all[idx].lastUpdated = new Date().toISOString(); } else {
-                    all.push({ id: id, bookId: bookId, userId: userId, progress: progress, lastUpdated: new Date()
-                            .toISOString() });
-                }
-                localStorage.setItem('library_reading_progress', JSON.stringify(all));
-                var user = this.getUserById(userId);
-                if (user) { user.readingProgress = user.readingProgress || {};
-                    user.readingProgress[bookId] = progress;
-                    this.saveUser(user); }
-                return true;
-            },
-            getBookProgress: function(bookId, userId) {
-                var all = this.getReadingProgress();
-                var p = all.find(p => p.id === bookId + '_' + userId);
-                return p ? p.progress : 0;
-            },
-
-            // ---- Bookmarks ----
-            getBookmarks: function() {
-                return JSON.parse(localStorage.getItem('library_bookmarks') || '[]');
-            },
-            addBookmark: function(bookId, userId, note) {
-                var bm = this.getBookmarks();
-                var id = bookId + '_' + userId + '_' + Date.now();
-                bm.push({ id: id, bookId: bookId, userId: userId, note: note || '', timestamp: new Date()
-                        .toISOString() });
-                localStorage.setItem('library_bookmarks', JSON.stringify(bm));
-                var user = this.getUserById(userId);
-                if (user) { user.bookmarks = user.bookmarks || [];
-                    user.bookmarks.push(id);
-                    this.saveUser(user); }
-                return true;
-            },
-
-            // ---- Stats ----
-            getLibraryStats: function() {
-                var books = this.getBooks();
-                var users = this.getUsers();
-                var reviews = this.getReviews();
-                var stats = {
-                    totalBooks: books.length,
-                    totalUsers: users.length,
-                    activeUsers: users.filter(u => u.accountStatus === 'active').length,
-                    totalReviews: reviews.length,
-                    totalLikes: 0,
-                    totalDownloads: 0,
-                    storageUsed: 0,
-                    storageLimit: 500 * 1024 * 1024 * 1024,
-                    storagePercent: '0.00'
-                };
-                for (var b of books) {
-                    stats.totalLikes += b.likesCount || 0;
-                    stats.totalDownloads += b.downloadsCount || 0;
-                }
-                stats.storagePercent = (stats.storageUsed / stats.storageLimit * 100).toFixed(2);
-                return stats;
-            },
-            getUserStats: function(userId) {
-                var user = this.getUserById(userId);
-                if (!user) return null;
-                return {
-                    totalLiked: (user.likedBooks || []).length,
-                    totalDownloaded: (user.downloadedBooks || []).length,
-                    totalReviewed: (user.reviewedBooks || []).length,
-                    readingProgress: user.readingProgress || {},
-                    bookmarksCount: (user.bookmarks || []).length,
-                    accountAge: Math.floor((Date.now() - new Date(user.registrationDate)) / (1000 * 60 * 60 * 24))
-                };
-            },
-            formatBytes: function(bytes) {
-                if (bytes === 0) return '0 Bytes';
-                var k = 1024,
-                    dm = 2,
-                    sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-                var i = Math.floor(Math.log(bytes) / Math.log(k));
-                return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-            },
-
-            getRecommendedBooks: function(userId) {
-                var user = this.getUserById(userId);
-                var books = this.getBooks();
-                if (!user || !user.likedBooks || !user.likedBooks.length) {
-                    return books.sort((a, b) => (b.likesCount || 0) - (a.likesCount || 0)).slice(0, 3);
-                }
-                var cats = {};
-                for (var id of user.likedBooks) {
-                    var b = this.getBook(id);
-                    if (b && b.category) cats[b.category] = (cats[b.category] || 0) + 1;
-                }
-                var recs = [];
-                for (var b of books) {
-                    if (!user.likedBooks.includes(b.id.toString())) {
-                        var score = cats[b.category] || 0;
-                        recs.push({ book: b, score: score });
-                    }
-                }
-                recs.sort((a, b) => b.score - a.score || (b.book.likesCount || 0) - (a.book.likesCount || 0));
-                return recs.slice(0, 3).map(r => r.book);
-            },
-            getRecentlyAddedBooks: function() {
-                return this.getBooks().sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)).slice(0, 4);
-            }
-        };
-
-        // ============================================================
-        //  GLOBALS
+        //  GLOBAL STATE
         // ============================================================
         var currentUser = {
             isLoggedIn: false,
@@ -2292,7 +1781,6 @@
             name: '',
             email: '',
             id: '',
-            lastLogin: null,
             likedBooks: [],
             downloadedBooks: [],
             reviewedBooks: [],
@@ -2302,8 +1790,13 @@
         var currentPage = 'home';
         var searchTimeout = null;
         var currentPdfBook = null;
+        var pdfBlobUrl = null;
         var currentReviewBookId = null;
-        var pdfBlobUrl = null; // Track blob URL for cleanup
+
+        var unsubBooks = null;
+        var unsubReviews = null;
+        var unsubLikes = null;
+        var unsubProgress = null;
 
         // ============================================================
         //  HELPERS
@@ -2333,8 +1826,8 @@
         }
 
         function formatDate(ds) {
-            try { return new Date(ds).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
-            catch (e) { return 'Unknown date'; }
+            try { return new Date(ds).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); } catch (
+                e) { return 'Unknown date'; }
         }
 
         function getRatingStars(rating) {
@@ -2352,16 +1845,27 @@
             try { return (Date.now() - new Date(dateString).getTime()) < 7 * 24 * 60 * 60 * 1000; } catch (e) { return false; }
         }
 
-        function showUploadProgress(elementId, fillId, percent) {
-            var container = document.getElementById(elementId);
-            var fill = document.getElementById(fillId);
-            if (container) container.classList.add('active');
-            if (fill) fill.style.width = Math.min(100, percent) + '%';
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            var k = 1024,
+                dm = 2,
+                sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            var i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
         }
 
-        function hideUploadProgress(elementId) {
-            var container = document.getElementById(elementId);
-            if (container) container.classList.remove('active');
+        function getBookIdFromDoc(doc) { return doc.id; }
+
+        function setSyncStatus(online) {
+            var label = document.getElementById('syncLabel');
+            var icon = document.querySelector('.sync-status i');
+            if (online) {
+                label.textContent = 'Synced';
+                icon.className = 'fas fa-cloud';
+            } else {
+                label.textContent = 'Offline';
+                icon.className = 'fas fa-cloud-upload-alt';
+            }
         }
 
         // ============================================================
@@ -2385,6 +1889,7 @@
                     if (page === 'home') container.innerHTML = getHomePageContent();
                     else if (page === 'library') container.innerHTML = getLibraryPageContent();
                     else container.innerHTML = '<div class="alert-error">Page not found</div>';
+                    if (page === 'library') loadBooks();
                 } catch (e) {
                     container.innerHTML = '<div class="alert-error">Error loading page: ' + e.message + '</div>';
                 } finally {
@@ -2433,20 +1938,14 @@
         }
 
         // ============================================================
-        //  PAGE CONTENT
+        //  PAGE CONTENT (same as before – trimmed)
         // ============================================================
         function getHomePageContent() {
-            var stats = DigitalLibrary.getLibraryStats();
-            var recentlyAdded = DigitalLibrary.getRecentlyAddedBooks();
-            var recommended = currentUser.isLoggedIn ?
-                DigitalLibrary.getRecommendedBooks(currentUser.id) :
-                DigitalLibrary.getRecentlyAddedBooks().slice(0, 3);
             var isAdmin = currentUser.role === 'admin';
-
             return `
           <div class="page-header">
             <h1>Welcome to Electro-LASS Digital Library</h1>
-            <p class="page-subtitle">Your gateway to ${stats.totalBooks} books with 500GB storage. Explore, read, and discover!</p>
+            <p class="page-subtitle">Your cloud‑sync digital library. Read anywhere, on any device.</p>
           </div>
           <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('overview', this)">Overview</button>
@@ -2455,13 +1954,11 @@
             <button class="tab-btn" onclick="switchTab('help', this)">Help &amp; Support</button>
             ${isAdmin ? `<button class="tab-btn" onclick="switchTab('missing', this)">Coming Soon</button>` : ''}
           </div>
-
-          <!-- Overview -->
           <div id="overviewTab" class="tab-content active">
             ${!currentUser.isLoggedIn ? `
               <div class="dashboard-section">
                 <h2><i class="fas fa-book-reader"></i> Access Our Digital Library</h2>
-                <p>Browse ${stats.totalBooks} books as a guest, or sign up to unlock enhanced features!</p>
+                <p>Browse all books as a guest, or sign up to unlock enhanced features!</p>
                 <div class="admin-actions">
                   <button class="btn btn-primary" onclick="navigateTo('library')"><i class="fas fa-book-open"></i> Browse Library</button>
                   <button class="btn" onclick="openLoginModal()" style="background:var(--neon-green);color:var(--dark-bg);"><i class="fas fa-sign-in-alt"></i> Login</button>
@@ -2471,7 +1968,7 @@
             ` : `
               <div class="dashboard-section">
                 <h2><i class="fas fa-book-open"></i> Welcome back, ${currentUser.name}!</h2>
-                <p>Continue your reading journey with our enhanced features</p>
+                <p>Your library syncs across all your devices.</p>
                 <div class="admin-actions">
                   <button class="btn btn-primary" onclick="navigateTo('library')"><i class="fas fa-book"></i> Browse Books</button>
                   ${currentUser.role === 'admin' ? `<button class="btn" onclick="openAddBookModal()" style="background:var(--neon-green);color:var(--dark-bg);"><i class="fas fa-plus"></i> Add New Book</button>` : ''}
@@ -2479,91 +1976,39 @@
                 </div>
               </div>
             `}
-            <div class="stats-container">
-              <div class="stat-card"><div class="stat-number">${stats.totalBooks}</div><div class="stat-label">Total Books</div></div>
-              <div class="stat-card"><div class="stat-number">${stats.totalUsers}</div><div class="stat-label">Active Users</div></div>
-              <div class="stat-card"><div class="stat-number">${stats.totalReviews}</div><div class="stat-label">Reviews</div></div>
-              <div class="stat-card"><div class="stat-number">${DigitalLibrary.formatBytes(stats.storageUsed)}</div><div class="stat-label">Storage Used / 500GB</div></div>
+            <div class="stats-container" id="statsContainer">
+              <div class="stat-card"><div class="stat-number" id="statBooks">—</div><div class="stat-label">Total Books</div></div>
+              <div class="stat-card"><div class="stat-number" id="statUsers">—</div><div class="stat-label">Active Users</div></div>
+              <div class="stat-card"><div class="stat-number" id="statReviews">—</div><div class="stat-label">Reviews</div></div>
+              <div class="stat-card"><div class="stat-number" id="statStorage">—</div><div class="stat-label">Storage Used</div></div>
             </div>
-
-            ${currentUser.isLoggedIn && recommended.length ? `
-              <div class="recent-books">
+            ${currentUser.isLoggedIn ? `
+              <div class="recent-books" id="recommendedContainer">
                 <h2><i class="fas fa-lightbulb"></i> Recommended For You</h2>
                 <p>Based on your reading preferences</p>
-                <div class="recent-books-grid">
-                  ${recommended.map(b => `
-                    <div class="recent-book-card" onclick="openBookDetails(${b.id})">
-                      <h4>${b.title}</h4>
-                      <p style="color:var(--neon-green);font-size:0.9rem;">${b.author}</p>
-                      <div style="margin:0.5rem 0;">${getRatingStars(b.averageRating || 0)}</div>
-                      <button class="btn" onclick="event.stopPropagation();openPdfViewer(${b.id})" style="padding:5px 10px;font-size:0.8rem;"><i class="fas fa-book-open"></i> Read Now</button>
-                    </div>
-                  `).join('')}
-                </div>
+                <div class="recent-books-grid" id="recommendedGrid"></div>
               </div>
             ` : ''}
-
-            ${recentlyAdded.length ? `
-              <div class="recent-books">
-                <h2><i class="fas fa-clock"></i> Recently Added</h2>
-                <p>Discover our latest additions</p>
-                <div class="recent-books-grid">
-                  ${recentlyAdded.map(b => `
-                    <div class="recent-book-card" onclick="openBookDetails(${b.id})">
-                      <h4>${b.title}</h4>
-                      <p style="color:var(--neon-green);font-size:0.9rem;">${b.author}</p>
-                      <div style="margin:0.5rem 0;">${getRatingStars(b.averageRating || 0)}</div>
-                      <button class="btn" onclick="event.stopPropagation();openPdfViewer(${b.id})" style="padding:5px 10px;font-size:0.8rem;"><i class="fas fa-book-open"></i> Read Now</button>
-                    </div>
-                  `).join('')}
-                </div>
-              </div>
-            ` : ''}
+            <div class="recent-books" id="recentContainer">
+              <h2><i class="fas fa-clock"></i> Recently Added</h2>
+              <p>Discover our latest additions</p>
+              <div class="recent-books-grid" id="recentGrid"></div>
+            </div>
           </div>
-
-          <!-- Dashboard -->
           <div id="dashboardTab" class="tab-content">
             ${currentUser.isLoggedIn ? `
               <div class="dashboard-section">
                 <h2><i class="fas fa-tachometer-alt"></i> My Dashboard</h2>
-                ${(() => {
-                  var us = DigitalLibrary.getUserStats(currentUser.id);
-                  return us ? `
-                    <div class="user-stats-grid">
-                      <div class="user-stat-card"><div class="stat-number">${us.totalLiked}</div><div class="stat-label">Liked Books</div></div>
-                      <div class="user-stat-card"><div class="stat-number">${us.totalDownloaded}</div><div class="stat-label">Downloads</div></div>
-                      <div class="user-stat-card"><div class="stat-number">${us.totalReviewed}</div><div class="stat-label">Reviews</div></div>
-                      <div class="user-stat-card"><div class="stat-number">${us.accountAge}</div><div class="stat-label">Days as Member</div></div>
-                    </div>
-                  ` : '';
-                })()}
-                ${(() => {
-                  var books = DigitalLibrary.getBooks();
-                  var inProgress = [];
-                  if (currentUser.readingProgress) {
-                    for (var bid in currentUser.readingProgress) {
-                      var b = DigitalLibrary.getBook(bid);
-                      if (b && currentUser.readingProgress[bid] > 0) inProgress.push({book:b, progress:currentUser.readingProgress[bid]});
-                    }
-                  }
-                  if (inProgress.length) {
-                    return `
-                      <div style="margin-top:2rem;">
-                        <h3 style="color:var(--neon-green);margin-bottom:1rem;"><i class="fas fa-bookmark"></i> Continue Reading</h3>
-                        <div class="book-shelf">
-                          ${inProgress.map(item => `
-                            <div class="shelf-book" onclick="openPdfViewer(${item.book.id})">
-                              <h4 style="font-size:0.9rem;">${item.book.title}</h4>
-                              <div class="book-progress"><div class="progress-fill" style="width:${item.progress}%"></div></div>
-                              <div style="font-size:0.8rem;color:var(--neon-green);text-align:center;margin-top:0.5rem;">${item.progress}% Complete</div>
-                            </div>
-                          `).join('')}
-                        </div>
-                      </div>
-                    `;
-                  }
-                  return '';
-                })()}
+                <div class="user-stats-grid" id="userStatsGrid">
+                  <div class="user-stat-card"><div class="stat-number" id="uLiked">—</div><div class="stat-label">Liked Books</div></div>
+                  <div class="user-stat-card"><div class="stat-number" id="uDownloaded">—</div><div class="stat-label">Downloads</div></div>
+                  <div class="user-stat-card"><div class="stat-number" id="uReviewed">—</div><div class="stat-label">Reviews</div></div>
+                  <div class="user-stat-card"><div class="stat-number" id="uAge">—</div><div class="stat-label">Days as Member</div></div>
+                </div>
+                <div id="continueReadingContainer">
+                  <h3 style="color:var(--neon-green);margin:2rem 0 1rem 0;"><i class="fas fa-bookmark"></i> Continue Reading</h3>
+                  <div class="book-shelf" id="continueReadingShelf"></div>
+                </div>
                 ${currentUser.role === 'admin' ? `
                   <div class="admin-panel" style="margin-top:2rem;">
                     <h4><i class="fas fa-user-shield"></i> Admin Quick Actions</h4>
@@ -2584,8 +2029,6 @@
               </div>
             `}
           </div>
-
-          <!-- Team -->
           <div id="teamTab" class="tab-content">
             <div class="team-section">
               <h2><i class="fas fa-users"></i> Meet Our Team</h2>
@@ -2606,8 +2049,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Help -->
           <div id="helpTab" class="tab-content">
             <div class="help-section">
               <h2><i class="fas fa-question-circle"></i> Help &amp; Support</h2>
@@ -2617,7 +2058,7 @@
                   <div class="help-icon"><i class="fas fa-book"></i></div>
                   <h3 class="help-title">Reading Features</h3>
                   <div class="help-description">
-                    <p>• Built-in PDF viewer</p><p>• Reading progress tracking</p>
+                    <p>• Built‑in PDF viewer</p><p>• Reading progress tracking</p>
                     <p>• Bookmarks and notes</p><p>• Download books offline</p>
                   </div>
                 </div>
@@ -2640,74 +2081,18 @@
               </div>
             </div>
           </div>
-
-          <!-- Missing Features (Admin only) -->
           ${isAdmin ? `
           <div id="missingTab" class="tab-content">
             <div class="help-section" style="border-color:var(--neon-green);">
-              <h2><i class="fas fa-rocket"></i> Coming Soon – What's Missing?</h2>
-              <p class="page-subtitle">Features we're building to make Electro-LASS the ultimate digital library</p>
+              <h2><i class="fas fa-rocket"></i> Coming Soon</h2>
+              <p class="page-subtitle">Features we're building for Electro-LASS</p>
               <div class="missing-features-grid">
-                <div class="missing-feature-card">
-                  <i class="fas fa-hand-holding-heart"></i>
-                  <h4>Book Borrowing System</h4>
-                  <p>Check out books with due dates and automatic returns.</p>
-                </div>
-                <div class="missing-feature-card">
-                  <i class="fas fa-list-ul"></i>
-                  <h4>Reading Lists &amp; Collections</h4>
-                  <p>Create custom shelves and curated reading lists.</p>
-                </div>
-                <div class="missing-feature-card">
-                  <i class="fas fa-bell"></i>
-                  <h4>Smart Notifications</h4>
-                  <p>Get alerts for new books, due dates, and recommendations.</p>
-                </div>
-                <div class="missing-feature-card">
-                  <i class="fas fa-chart-pie"></i>
-                  <h4>Reading Analytics</h4>
-                  <p>Detailed insights into your reading habits and progress.</p>
-                </div>
-                <div class="missing-feature-card">
-                  <i class="fas fa-share-alt"></i>
-                  <h4>Social Features</h4>
-                  <p>Follow friends, share reviews, and see what others are reading.</p>
-                </div>
-                <div class="missing-feature-card">
-                  <i class="fas fa-mobile-alt"></i>
-                  <h4>Mobile App</h4>
-                  <p>Read anywhere with our dedicated mobile application.</p>
-                </div>
-                <div class="missing-feature-card">
-                  <i class="fas fa-cloud-download-alt"></i>
-                  <h4>Offline Reading</h4>
-                  <p>Download books and read without internet connection.</p>
-                </div>
-                <div class="missing-feature-card">
-                  <i class="fas fa-language"></i>
-                  <h4>Multi-Language Support</h4>
-                  <p>Interface and book metadata in multiple languages.</p>
-                </div>
-                <div class="missing-feature-card">
-                  <i class="fas fa-universal-access"></i>
-                  <h4>Accessibility Features</h4>
-                  <p>Screen reader support, high contrast, and more.</p>
-                </div>
-                <div class="missing-feature-card">
-                  <i class="fas fa-file-import"></i>
-                  <h4>Bulk Import / Export</h4>
-                  <p>Easily add or export books in bulk formats.</p>
-                </div>
-                <div class="missing-feature-card">
-                  <i class="fas fa-user-graduate"></i>
-                  <h4>Educator Tools</h4>
-                  <p>Assignment tracking, class reading lists, and progress monitoring.</p>
-                </div>
-                <div class="missing-feature-card">
-                  <i class="fas fa-shield-alt"></i>
-                  <h4>Advanced Privacy Controls</h4>
-                  <p>Fine-grained control over who sees your reading activity.</p>
-                </div>
+                <div class="missing-feature-card"><i class="fas fa-hand-holding-heart"></i><h4>Borrowing System</h4><p>Check out books with due dates.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-list-ul"></i><h4>Reading Lists</h4><p>Create custom shelves.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-bell"></i><h4>Smart Notifications</h4><p>Get alerts for new books.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-chart-pie"></i><h4>Reading Analytics</h4><p>Insights into your habits.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-share-alt"></i><h4>Social Features</h4><p>Follow friends and share.</p></div>
+                <div class="missing-feature-card"><i class="fas fa-mobile-alt"></i><h4>Mobile App</h4><p>Read anywhere.</p></div>
               </div>
             </div>
           </div>
@@ -2716,11 +2101,10 @@
         }
 
         function getLibraryPageContent() {
-            var stats = DigitalLibrary.getLibraryStats();
             return `
           <div class="page-header">
             <h1><i class="fas fa-book-open"></i> Digital Library</h1>
-            <p class="page-subtitle">Browse ${stats.totalBooks} books. Read, review, and discover new favorites!</p>
+            <p class="page-subtitle">Browse all books. Read, review, and discover new favorites!</p>
           </div>
           <div class="search-section">
             <div class="search-container">
@@ -2771,7 +2155,6 @@
               </div>
             </div>
           </div>
-
           ${currentUser.role === 'admin' ? `
             <div class="admin-panel">
               <h3><i class="fas fa-user-shield"></i> Admin Controls</h3>
@@ -2782,90 +2165,532 @@
               </div>
             </div>
           ` : ''}
-
           <div id="booksContainer"></div>
         `;
         }
 
         // ============================================================
-        //  BOOKS LOADING / SEARCH
+        //  FIRESTORE DATA LAYER
+        // ============================================================
+        function getAllBooks() {
+            return new Promise(function(resolve, reject) {
+                db.collection('books').orderBy('dateAdded', 'desc').get()
+                    .then(function(snapshot) {
+                        var books = [];
+                        snapshot.forEach(function(doc) {
+                            var data = doc.data();
+                            data.id = doc.id;
+                            books.push(data);
+                        });
+                        resolve(books);
+                    })
+                    .catch(reject);
+            });
+        }
+
+        function getBook(id) {
+            return new Promise(function(resolve, reject) {
+                db.collection('books').doc(id).get()
+                    .then(function(doc) {
+                        if (doc.exists) { var data = doc.data();
+                            data.id = doc.id;
+                            resolve(data); } else resolve(null);
+                    })
+                    .catch(reject);
+            });
+        }
+
+        function saveBook(book) {
+            var id = book.id || book._id;
+            delete book._id;
+            if (id) {
+                return db.collection('books').doc(id).set(book, { merge: true });
+            } else {
+                return db.collection('books').add(book);
+            }
+        }
+
+        function deleteBookDoc(id) {
+            return db.collection('books').doc(id).delete();
+        }
+
+        function getUserByEmail(email) {
+            return new Promise(function(resolve, reject) {
+                db.collection('users').where('email', '==', email).limit(1).get()
+                    .then(function(snapshot) {
+                        if (snapshot.empty) resolve(null);
+                        else { var d = snapshot.docs[0];
+                            var u = d.data();
+                            u.id = d.id;
+                            resolve(u); }
+                    })
+                    .catch(reject);
+            });
+        }
+
+        function saveUserDoc(user) {
+            var id = user.id || user._id;
+            delete user._id;
+            if (id) {
+                return db.collection('users').doc(id).set(user, { merge: true });
+            } else {
+                return db.collection('users').add(user);
+            }
+        }
+
+        function getUsersList() {
+            return new Promise(function(resolve, reject) {
+                db.collection('users').get()
+                    .then(function(snapshot) {
+                        var users = [];
+                        snapshot.forEach(function(doc) {
+                            var u = doc.data();
+                            u.id = doc.id;
+                            users.push(u);
+                        });
+                        resolve(users);
+                    })
+                    .catch(reject);
+            });
+        }
+
+        function getBookReviews(bookId) {
+            return new Promise(function(resolve, reject) {
+                db.collection('reviews').where('bookId', '==', bookId).orderBy('date', 'desc').get()
+                    .then(function(snapshot) {
+                        var reviews = [];
+                        snapshot.forEach(function(doc) {
+                            var r = doc.data();
+                            r.id = doc.id;
+                            reviews.push(r);
+                        });
+                        resolve(reviews);
+                    })
+                    .catch(reject);
+            });
+        }
+
+        function addReviewDoc(review) {
+            return db.collection('reviews').add(review);
+        }
+
+        function hasUserReviewed(bookId, userId) {
+            return new Promise(function(resolve, reject) {
+                db.collection('reviews').where('bookId', '==', bookId).where('userId', '==', userId).limit(1).get()
+                    .then(function(snapshot) { resolve(!snapshot.empty); })
+                    .catch(reject);
+            });
+        }
+
+        function toggleLikeDoc(bookId, userId) {
+            return new Promise(function(resolve, reject) {
+                var id = bookId + '_' + userId;
+                db.collection('likes').doc(id).get()
+                    .then(function(doc) {
+                        if (doc.exists) {
+                            return db.collection('likes').doc(id).delete().then(function() { resolve(false); });
+                        } else {
+                            return db.collection('likes').doc(id).set({ bookId: bookId, userId: userId,
+                                    timestamp: new Date().toISOString() })
+                                .then(function() { resolve(true); });
+                        }
+                    })
+                    .catch(reject);
+            });
+        }
+
+        function hasUserLiked(bookId, userId) {
+            return new Promise(function(resolve, reject) {
+                db.collection('likes').doc(bookId + '_' + userId).get()
+                    .then(function(doc) { resolve(doc.exists); })
+                    .catch(reject);
+            });
+        }
+
+        function getBookProgress(bookId, userId) {
+            return new Promise(function(resolve, reject) {
+                db.collection('readingProgress').doc(bookId + '_' + userId).get()
+                    .then(function(doc) {
+                        if (doc.exists) resolve(doc.data().progress || 0);
+                        else resolve(0);
+                    })
+                    .catch(reject);
+            });
+        }
+
+        function updateProgressDoc(bookId, userId, progress) {
+            var id = bookId + '_' + userId;
+            return db.collection('readingProgress').doc(id).set({
+                bookId: bookId,
+                userId: userId,
+                progress: progress,
+                lastUpdated: new Date().toISOString()
+            }, { merge: true });
+        }
+
+        function addBookmarkDoc(bookId, userId, note) {
+            return db.collection('bookmarks').add({
+                bookId: bookId,
+                userId: userId,
+                note: note || '',
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        function recordDownloadDoc(bookId, userId) {
+            return db.collection('downloads').add({
+                bookId: bookId,
+                userId: userId,
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        function getLibraryStats() {
+            return new Promise(function(resolve, reject) {
+                var stats = { totalBooks: 0, totalUsers: 0, totalReviews: 0, totalLikes: 0, totalDownloads: 0,
+                    storageUsed: 0, storageLimit: 500 * 1024 * 1024 * 1024 };
+                Promise.all([
+                    db.collection('books').get().then(s => stats.totalBooks = s.size),
+                    db.collection('users').get().then(s => stats.totalUsers = s.size),
+                    db.collection('reviews').get().then(s => stats.totalReviews = s.size),
+                    db.collection('likes').get().then(s => stats.totalLikes = s.size),
+                    db.collection('downloads').get().then(s => stats.totalDownloads = s.size)
+                ]).then(function() {
+                    stats.storagePercent = (stats.storageUsed / stats.storageLimit * 100).toFixed(2);
+                    resolve(stats);
+                }).catch(reject);
+            });
+        }
+
+        function getRecommendedBooks(userId, allBooks) {
+            return new Promise(function(resolve) {
+                if (!userId || !allBooks || !allBooks.length) { resolve(allBooks.slice(0, 3)); return; }
+                db.collection('likes').where('userId', '==', userId).get()
+                    .then(function(snapshot) {
+                        var likedIds = [];
+                        snapshot.forEach(function(doc) { likedIds.push(doc.data().bookId); });
+                        if (!likedIds.length) { resolve(allBooks.slice(0, 3)); return; }
+                        var catCounts = {};
+                        var likedBooks = allBooks.filter(b => likedIds.includes(b.id));
+                        likedBooks.forEach(function(b) {
+                            if (b.category) catCounts[b.category] = (catCounts[b.category] || 0) + 1;
+                        });
+                        var recs = [];
+                        allBooks.forEach(function(b) {
+                            if (!likedIds.includes(b.id)) {
+                                var score = catCounts[b.category] || 0;
+                                recs.push({ book: b, score: score });
+                            }
+                        });
+                        recs.sort(function(a, b) { return b.score - a.score || (b.book.likesCount || 0) - (a.book
+                                .likesCount || 0); });
+                        resolve(recs.slice(0, 3).map(r => r.book));
+                    })
+                    .catch(function() { resolve(allBooks.slice(0, 3)); });
+            });
+        }
+
+        // ============================================================
+        //  REAL‑TIME LISTENERS
+        // ============================================================
+        function setupRealtimeListeners() {
+            if (unsubBooks) unsubBooks();
+            unsubBooks = db.collection('books').orderBy('dateAdded', 'desc')
+                .onSnapshot(function(snapshot) {
+                    var books = [];
+                    snapshot.forEach(function(doc) {
+                        var d = doc.data();
+                        d.id = doc.id;
+                        books.push(d);
+                    });
+                    window._allBooks = books;
+                    if (currentPage === 'library') loadBooks();
+                    if (currentPage === 'home') {
+                        updateHomeStatsAndContent(books);
+                    }
+                    setSyncStatus(true);
+                }, function(err) {
+                    console.warn('Books listener error:', err);
+                    setSyncStatus(false);
+                });
+
+            if (unsubReviews) unsubReviews();
+            unsubReviews = db.collection('reviews').orderBy('date', 'desc')
+                .onSnapshot(function() {
+                    if (currentPage === 'home') updateHomeStatsAndContent(window._allBooks || []);
+                }, function(err) { console.warn('Reviews listener error:', err); });
+
+            if (unsubLikes) unsubLikes();
+            unsubLikes = db.collection('likes')
+                .onSnapshot(function() {
+                    if (currentPage === 'home') updateHomeStatsAndContent(window._allBooks || []);
+                }, function(err) { console.warn('Likes listener error:', err); });
+
+            if (unsubProgress) unsubProgress();
+            if (currentUser.isLoggedIn) {
+                unsubProgress = db.collection('readingProgress').where('userId', '==', currentUser.id)
+                    .onSnapshot(function() {
+                        if (currentPage === 'home') updateHomeStatsAndContent(window._allBooks || []);
+                    }, function(err) { console.warn('Progress listener error:', err); });
+            }
+        }
+
+        // ============================================================
+        //  HOME STATS & CONTENT UPDATE
+        // ============================================================
+        function updateHomeStatsAndContent(books) {
+            if (!books) books = window._allBooks || [];
+            getLibraryStats().then(function(stats) {
+                var sBooks = document.getElementById('statBooks');
+                var sUsers = document.getElementById('statUsers');
+                var sReviews = document.getElementById('statReviews');
+                var sStorage = document.getElementById('statStorage');
+                if (sBooks) sBooks.textContent = stats.totalBooks;
+                if (sUsers) sUsers.textContent = stats.totalUsers;
+                if (sReviews) sReviews.textContent = stats.totalReviews;
+                if (sStorage) sStorage.textContent = formatBytes(stats.storageUsed);
+            }).catch(function() {});
+
+            var recentGrid = document.getElementById('recentGrid');
+            if (recentGrid) {
+                var recent = books.slice(0, 4);
+                if (recent.length) {
+                    recentGrid.innerHTML = recent.map(function(b) {
+                        return `
+                    <div class="recent-book-card" onclick="openBookDetails('${b.id}')">
+                      <h4>${b.title}</h4>
+                      <p style="color:var(--neon-green);font-size:0.9rem;">${b.author}</p>
+                      <div style="margin:0.5rem 0;">${getRatingStars(b.averageRating || 0)}</div>
+                      <button class="btn" onclick="event.stopPropagation();openPdfViewer('${b.id}')" style="padding:5px 10px;font-size:0.8rem;"><i class="fas fa-book-open"></i> Read Now</button>
+                    </div>
+                  `;
+                    }).join('');
+                } else {
+                    recentGrid.innerHTML =
+                        '<div class="empty-state" style="padding:1rem;"><i class="fas fa-book"></i><p>No books yet. Check back soon!</p></div>';
+                }
+            }
+
+            var recGrid = document.getElementById('recommendedGrid');
+            if (recGrid && currentUser.isLoggedIn) {
+                getRecommendedBooks(currentUser.id, books).then(function(recs) {
+                    if (recs.length) {
+                        recGrid.innerHTML = recs.map(function(b) {
+                            return `
+                        <div class="recent-book-card" onclick="openBookDetails('${b.id}')">
+                          <h4>${b.title}</h4>
+                          <p style="color:var(--neon-green);font-size:0.9rem;">${b.author}</p>
+                          <div style="margin:0.5rem 0;">${getRatingStars(b.averageRating || 0)}</div>
+                          <button class="btn" onclick="event.stopPropagation();openPdfViewer('${b.id}')" style="padding:5px 10px;font-size:0.8rem;"><i class="fas fa-book-open"></i> Read Now</button>
+                        </div>
+                      `;
+                        }).join('');
+                    } else {
+                        recGrid.innerHTML = '<div style="color:var(--text-gray);padding:1rem;">No recommendations yet. Start reading!</div>';
+                    }
+                }).catch(function() {});
+            }
+
+            if (currentUser.isLoggedIn) {
+                updateUserDashboard();
+            }
+        }
+
+        // ============================================================
+        //  USER DASHBOARD
+        // ============================================================
+        function updateUserDashboard() {
+            if (!currentUser.isLoggedIn) return;
+            var uid = currentUser.id;
+            db.collection('likes').where('userId', '==', uid).get().then(function(s) {
+                document.getElementById('uLiked').textContent = s.size;
+            }).catch(function() {});
+            db.collection('downloads').where('userId', '==', uid).get().then(function(s) {
+                document.getElementById('uDownloaded').textContent = s.size;
+            }).catch(function() {});
+            db.collection('reviews').where('userId', '==', uid).get().then(function(s) {
+                document.getElementById('uReviewed').textContent = s.size;
+            }).catch(function() {});
+            db.collection('users').doc(uid).get().then(function(doc) {
+                if (doc.exists) {
+                    var reg = doc.data().registrationDate;
+                    if (reg) {
+                        var days = Math.floor((Date.now() - new Date(reg).getTime()) / (1000 * 60 * 60 * 24));
+                        document.getElementById('uAge').textContent = days || 0;
+                    }
+                }
+            }).catch(function() {});
+
+            db.collection('readingProgress').where('userId', '==', uid).orderBy('lastUpdated', 'desc').limit(10).get()
+                .then(function(snapshot) {
+                    var shelf = document.getElementById('continueReadingShelf');
+                    if (!shelf) return;
+                    var items = [];
+                    snapshot.forEach(function(doc) {
+                        var d = doc.data();
+                        items.push(d);
+                    });
+                    if (items.length) {
+                        var books = window._allBooks || [];
+                        var html = '';
+                        items.forEach(function(item) {
+                            var b = books.find(bb => bb.id === item.bookId);
+                            if (b) {
+                                html += `
+                              <div class="shelf-book" onclick="openPdfViewer('${b.id}')">
+                                <h4 style="font-size:0.9rem;">${b.title}</h4>
+                                <div class="book-progress"><div class="progress-fill" style="width:${item.progress}%"></div></div>
+                                <div style="font-size:0.8rem;color:var(--neon-green);text-align:center;margin-top:0.5rem;">${item.progress}% Complete</div>
+                              </div>
+                            `;
+                            }
+                        });
+                        shelf.innerHTML = html || '<div style="color:var(--text-gray);">No books in progress.</div>';
+                    } else {
+                        shelf.innerHTML = '<div style="color:var(--text-gray);">No books in progress. Start reading!</div>';
+                    }
+                }).catch(function() {});
+        }
+
+        // ============================================================
+        //  BOOKS LOADING / SEARCH (for Library page)
         // ============================================================
         function loadBooks() {
             var container = document.getElementById('booksContainer');
             if (!container) return;
-            showLoading('Loading books...');
-            setTimeout(function() {
-                try {
-                    var searchInput = document.getElementById('mainSearch');
-                    var query = searchInput ? searchInput.value || '' : '';
-                    var filters = getCurrentFilters();
-                    var books = DigitalLibrary.searchBooks(query, filters);
+            var allBooks = window._allBooks || [];
+            var searchInput = document.getElementById('mainSearch');
+            var query = searchInput ? searchInput.value || '' : '';
+            var filters = getCurrentFilters();
+            var books = filterBooks(allBooks, query, filters);
+            if (!books.length) {
+                container.innerHTML =
+                    `
+                <div class="empty-state">
+                  <i class="fas fa-book"></i>
+                  <h3>No books found</h3>
+                  <p>Try different search terms or filters</p>
+                  ${currentUser.role === 'admin' ? `<button class="btn btn-primary" onclick="openAddBookModal()" style="margin-top:1rem;"><i class="fas fa-plus"></i> Add First Book</button>` : ''}
+                </div>`;
+                return;
+            }
+            var html = '<div class="books-grid">';
+            for (var b of books) {
+                var progress = 0;
+                html += `
+              <div class="book-card" id="book-${b.id}">
+                <div class="book-cover">
+                  <i class="fas fa-book"></i>
+                  ${b.hasPdf ? '<div class="pdf-badge">PDF</div>' : ''}
+                  ${isNewBook(b.dateAdded) ? '<div class="new-badge">NEW</div>' : ''}
+                </div>
+                <h3 class="book-title">${b.title}</h3>
+                <div class="book-author"><i class="fas fa-user-pen"></i> ${b.author}</div>
+                <div class="book-category"><i class="fas fa-tag"></i> ${b.category}</div>
+                ${b.averageRating ? `<div class="book-rating">${getRatingStars(b.averageRating)} <span style="color:var(--text-gray);font-size:0.8rem;">(${b.reviewsCount||0} reviews)</span></div>` : ''}
+                <div class="book-description">${b.description || 'No description available.'}</div>
+                <div class="book-meta">
+                  <div class="likes-count"><i class="fas fa-heart"></i> <span id="likeCount-${b.id}">${b.likesCount||0}</span> <span style="margin-left:10px;"><i class="fas fa-download"></i> ${b.downloadsCount||0}</span></div>
+                  <div><i class="fas fa-calendar"></i> ${formatDate(b.dateAdded)}</div>
+                </div>
+                <div class="book-actions">
+                  <button class="action-btn read-btn" onclick="openBookDetails('${b.id}')"><i class="fas fa-book-open"></i> Details</button>
+                  ${currentUser.isLoggedIn ? `
+                    <button class="action-btn like-btn" onclick="toggleLike('${b.id}')" id="likeBtn-${b.id}"><i class="fas fa-heart"></i> <span id="likeLabel-${b.id}">Like</span></button>
+                    <button class="action-btn download-btn" onclick="downloadBook('${b.id}')"><i class="fas fa-download"></i> Read</button>
+                  ` : `
+                    <button class="action-btn like-btn" onclick="showLoginRequired()"><i class="fas fa-heart"></i> Like</button>
+                    <button class="action-btn download-btn" onclick="showLoginRequired()"><i class="fas fa-download"></i> Read</button>
+                  `}
+                  ${currentUser.role === 'admin' ? `
+                    <button class="action-btn edit-btn" onclick="openEditBookModal('${b.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="action-btn delete-btn" onclick="deleteBook('${b.id}')"><i class="fas fa-trash"></i></button>
+                  ` : ''}
+                </div>
+              </div>
+            `;
+            }
+            html += '</div>';
+            container.innerHTML = html;
 
-                    if (!books.length) {
-                        container.innerHTML =
-                            `
-                        <div class="empty-state">
-                          <i class="fas fa-book"></i>
-                          <h3>No books found</h3>
-                          <p>Try different search terms or filters</p>
-                          ${currentUser.role === 'admin' ? `<button class="btn btn-primary" onclick="openAddBookModal()" style="margin-top:1rem;"><i class="fas fa-plus"></i> Add First Book</button>` : ''}
-                        </div>`;
-                        hideLoading();
-                        return;
-                    }
-
-                    var html = '<div class="books-grid">';
-                    for (var b of books) {
-                        var isLiked = currentUser.isLoggedIn ? DigitalLibrary.hasUserLikedBook(b.id, currentUser.id) :
-                        false;
-                        var progress = currentUser.isLoggedIn ? DigitalLibrary.getBookProgress(b.id, currentUser.id) :
-                        0;
-                        html += `
-                  <div class="book-card" id="book-${b.id}">
-                    <div class="book-cover">
-                      <i class="fas fa-book"></i>
-                      ${b.hasPdf ? '<div class="pdf-badge">PDF</div>' : ''}
-                      ${isNewBook(b.dateAdded) ? '<div class="new-badge">NEW</div>' : ''}
-                    </div>
-                    <h3 class="book-title">${b.title}</h3>
-                    <div class="book-author"><i class="fas fa-user-pen"></i> ${b.author}</div>
-                    <div class="book-category"><i class="fas fa-tag"></i> ${b.category}</div>
-                    ${b.averageRating ? `<div class="book-rating">${getRatingStars(b.averageRating)} <span style="color:var(--text-gray);font-size:0.8rem;">(${b.reviewsCount||0} reviews)</span></div>` : ''}
-                    <div class="book-description">${b.description || 'No description available.'}</div>
-                    ${progress > 0 ? `
-                      <div class="book-progress"><div class="progress-fill" style="width:${progress}%"></div></div>
-                      <div style="font-size:0.8rem;color:var(--neon-green);text-align:center;">${progress}% Read</div>
-                    ` : ''}
-                    <div class="book-meta">
-                      <div class="likes-count"><i class="fas fa-heart"></i> ${b.likesCount||0} <span style="margin-left:10px;"><i class="fas fa-download"></i> ${b.downloadsCount||0}</span></div>
-                      <div><i class="fas fa-calendar"></i> ${formatDate(b.dateAdded)}</div>
-                    </div>
-                    <div class="book-actions">
-                      <button class="action-btn read-btn" onclick="openBookDetails(${b.id})"><i class="fas fa-book-open"></i> Details</button>
-                      ${currentUser.isLoggedIn ? `
-                        <button class="action-btn like-btn ${isLiked?'liked':''}" onclick="toggleLike(${b.id})" id="likeBtn-${b.id}"><i class="fas fa-heart"></i> ${isLiked?'Liked':'Like'}</button>
-                        <button class="action-btn download-btn" onclick="downloadBook(${b.id})"><i class="fas fa-download"></i> Read</button>
-                      ` : `
-                        <button class="action-btn like-btn" onclick="showLoginRequired()"><i class="fas fa-heart"></i> Like</button>
-                        <button class="action-btn download-btn" onclick="showLoginRequired()"><i class="fas fa-download"></i> Read</button>
-                      `}
-                      ${currentUser.role === 'admin' ? `
-                        <button class="action-btn edit-btn" onclick="openEditBookModal(${b.id})"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn delete-btn" onclick="deleteBook(${b.id})"><i class="fas fa-trash"></i></button>
-                      ` : ''}
-                    </div>
-                  </div>
-                `;
-                    }
-                    html += '</div>';
-                    container.innerHTML = html;
-                } catch (e) {
-                    container.innerHTML =
-                        `<div class="alert-error" style="padding:2rem;text-align:center;"><i class="fas fa-exclamation-triangle"></i><h3>Error loading books</h3><p>${e.message}</p></div>`;
-                } finally {
-                    hideLoading();
+            if (currentUser.isLoggedIn) {
+                for (var b of books) {
+                    (function(bid) {
+                        hasUserLiked(bid, currentUser.id).then(function(liked) {
+                            var btn = document.getElementById('likeBtn-' + bid);
+                            var label = document.getElementById('likeLabel-' + bid);
+                            if (btn && label) {
+                                if (liked) { btn.classList.add('liked');
+                                    label.textContent = 'Liked'; } else { btn.classList.remove('liked');
+                                    label.textContent = 'Like'; }
+                            }
+                        }).catch(function() {});
+                    })(b.id);
+                    (function(bid) {
+                        getBookProgress(bid, currentUser.id).then(function(p) {
+                            if (p > 0) {
+                                var card = document.getElementById('book-' + bid);
+                                if (card) {
+                                    var existing = card.querySelector('.book-progress');
+                                    if (!existing) {
+                                        var div = document.createElement('div');
+                                        div.className = 'book-progress';
+                                        div.innerHTML =
+                                            `<div class="progress-fill" style="width:${p}%"></div>`;
+                                        var meta = card.querySelector('.book-meta');
+                                        if (meta) meta.parentNode.insertBefore(div, meta);
+                                        var label2 = document.createElement('div');
+                                        label2.style.cssText =
+                                            'font-size:0.8rem;color:var(--neon-green);text-align:center;';
+                                        label2.textContent = p + '% Read';
+                                        meta.parentNode.insertBefore(label2, meta);
+                                    }
+                                }
+                            }
+                        }).catch(function() {});
+                    })(b.id);
                 }
-            }, 300);
+            }
+
+            var info = document.getElementById('searchResultsInfo');
+            var count = document.getElementById('resultsCount');
+            if (info && count) {
+                if (query || filters.category) {
+                    info.style.display = 'block';
+                    var msg = books.length + ' result' + (books.length !== 1 ? 's' : '');
+                    if (query) msg += ' for "' + query + '"';
+                    if (filters.category) msg += ' in "' + filters.category + '"';
+                    count.textContent = msg;
+                } else {
+                    info.style.display = 'none';
+                }
+            }
+        }
+
+        function filterBooks(books, query, filters) {
+            if (!books) return [];
+            var terms = query ? query.toLowerCase().split(/\s+/) : [];
+            var filtered = [];
+            for (var b of books) {
+                var include = true;
+                if (terms.length) {
+                    var txt = (b.title + ' ' + b.author + ' ' + b.category + ' ' + (b.description || '')).toLowerCase();
+                    for (var t of terms) { if (txt.indexOf(t) === -1) { include = false; break; } }
+                }
+                if (include && filters && filters.category && b.category !== filters.category) include = false;
+                if (include) filtered.push(b);
+            }
+            var sort = (filters && filters.sortBy) || 'newest';
+            var map = {
+                newest: (a, b) => new Date(b.dateAdded) - new Date(a.dateAdded),
+                oldest: (a, b) => new Date(a.dateAdded) - new Date(b.dateAdded),
+                title_asc: (a, b) => (a.title || '').localeCompare(b.title || ''),
+                title_desc: (a, b) => (b.title || '').localeCompare(a.title || ''),
+                popularity: (a, b) => (b.likesCount || 0) - (a.likesCount || 0),
+                rating: (a, b) => (b.averageRating || 0) - (a.averageRating || 0)
+            };
+            filtered.sort(map[sort] || map.newest);
+            return filtered;
         }
 
         function getCurrentFilters() {
@@ -2880,80 +2705,18 @@
         function handleSearchInput(query) {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(function() {
-                showLoading('Searching...');
-                setTimeout(function() {
-                    try {
-                        loadBooks();
-                        var info = document.getElementById('searchResultsInfo');
-                        var count = document.getElementById('resultsCount');
-                        if (info && count) {
-                            var cards = document.querySelectorAll('.book-card').length;
-                            if (query) {
-                                info.style.display = 'block';
-                                count.textContent = cards + ' result' + (cards !== 1 ? 's' : '') + ' found for "<strong>' +
-                                    query + '</strong>"';
-                            } else {
-                                info.style.display = 'none';
-                            }
-                        }
-                    } catch (e) {} finally { hideLoading(); }
-                }, 300);
-            }, 500);
+                loadBooks();
+            }, 300);
         }
 
-        function applyFilters() { handleSearchInput(document.getElementById('mainSearch').value || ''); }
+        function applyFilters() { loadBooks(); }
 
         function searchByCategory(cat) {
             var s = document.getElementById('mainSearch');
             var c = document.getElementById('filterCategory');
             if (s) s.value = '';
             if (c) c.value = cat;
-            // Force a search with the category filter
-            var filters = getCurrentFilters();
-            var books = DigitalLibrary.searchBooks('', filters);
-            var container = document.getElementById('booksContainer');
-            if (container) {
-                var html = '<div class="books-grid">';
-                for (var b of books) {
-                    var isLiked = currentUser.isLoggedIn ? DigitalLibrary.hasUserLikedBook(b.id, currentUser.id) : false;
-                    var progress = currentUser.isLoggedIn ? DigitalLibrary.getBookProgress(b.id, currentUser.id) : 0;
-                    html += `
-                <div class="book-card" id="book-${b.id}">
-                  <div class="book-cover"><i class="fas fa-book"></i>${b.hasPdf ? '<div class="pdf-badge">PDF</div>' : ''}${isNewBook(b.dateAdded) ? '<div class="new-badge">NEW</div>' : ''}</div>
-                  <h3 class="book-title">${b.title}</h3>
-                  <div class="book-author"><i class="fas fa-user-pen"></i> ${b.author}</div>
-                  <div class="book-category"><i class="fas fa-tag"></i> ${b.category}</div>
-                  ${b.averageRating ? `<div class="book-rating">${getRatingStars(b.averageRating)} <span style="color:var(--text-gray);font-size:0.8rem;">(${b.reviewsCount||0} reviews)</span></div>` : ''}
-                  <div class="book-description">${b.description || 'No description available.'}</div>
-                  ${progress > 0 ? `<div class="book-progress"><div class="progress-fill" style="width:${progress}%"></div></div><div style="font-size:0.8rem;color:var(--neon-green);text-align:center;">${progress}% Read</div>` : ''}
-                  <div class="book-meta"><div class="likes-count"><i class="fas fa-heart"></i> ${b.likesCount||0} <span style="margin-left:10px;"><i class="fas fa-download"></i> ${b.downloadsCount||0}</span></div><div><i class="fas fa-calendar"></i> ${formatDate(b.dateAdded)}</div></div>
-                  <div class="book-actions">
-                    <button class="action-btn read-btn" onclick="openBookDetails(${b.id})"><i class="fas fa-book-open"></i> Details</button>
-                    ${currentUser.isLoggedIn ? `
-                      <button class="action-btn like-btn ${isLiked?'liked':''}" onclick="toggleLike(${b.id})" id="likeBtn-${b.id}"><i class="fas fa-heart"></i> ${isLiked?'Liked':'Like'}</button>
-                      <button class="action-btn download-btn" onclick="downloadBook(${b.id})"><i class="fas fa-download"></i> Read</button>
-                    ` : `
-                      <button class="action-btn like-btn" onclick="showLoginRequired()"><i class="fas fa-heart"></i> Like</button>
-                      <button class="action-btn download-btn" onclick="showLoginRequired()"><i class="fas fa-download"></i> Read</button>
-                    `}
-                    ${currentUser.role === 'admin' ? `
-                      <button class="action-btn edit-btn" onclick="openEditBookModal(${b.id})"><i class="fas fa-edit"></i></button>
-                      <button class="action-btn delete-btn" onclick="deleteBook(${b.id})"><i class="fas fa-trash"></i></button>
-                    ` : ''}
-                  </div>
-                </div>
-              `;
-                }
-                html += '</div>';
-                container.innerHTML = html;
-            }
-            var info = document.getElementById('searchResultsInfo');
-            var count = document.getElementById('resultsCount');
-            if (info && count) {
-                info.style.display = 'block';
-                count.textContent = books.length + ' result' + (books.length !== 1 ? 's' : '') + ' in category "' + cat +
-                    '"';
-            }
+            loadBooks();
         }
 
         function clearSearch() {
@@ -2973,150 +2736,161 @@
         // ============================================================
         function toggleLike(bookId) {
             if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
-            try {
-                var liked = DigitalLibrary.likeBook(bookId, currentUser.id);
+            toggleLikeDoc(bookId, currentUser.id).then(function(liked) {
                 var btn = document.getElementById('likeBtn-' + bookId);
-                if (btn) {
-                    if (liked) {
-                        btn.classList.add('liked');
-                        btn.innerHTML = '<i class="fas fa-heart"></i> Liked';
-                        var card = document.getElementById('book-' + bookId);
-                        if (card) {
-                            var lc = card.querySelector('.likes-count');
-                            if (lc) {
-                                var m = (lc.textContent || '').match(/\d+/);
-                                var cur = m ? parseInt(m[0]) : 0;
-                                lc.innerHTML = '<i class="fas fa-heart"></i> ' + (cur + 1);
-                            }
-                        }
-                        showAlert('Book added to favorites!', 'success');
-                    } else {
-                        btn.classList.remove('liked');
-                        btn.innerHTML = '<i class="fas fa-heart"></i> Like';
-                        var card = document.getElementById('book-' + bookId);
-                        if (card) {
-                            var lc = card.querySelector('.likes-count');
-                            if (lc) {
-                                var m = (lc.textContent || '').match(/\d+/);
-                                var cur = m ? parseInt(m[0]) : 0;
-                                lc.innerHTML = '<i class="fas fa-heart"></i> ' + Math.max(0, cur - 1);
-                            }
-                        }
-                        showAlert('Removed from favorites', 'info');
-                    }
+                var label = document.getElementById('likeLabel-' + bookId);
+                var count = document.getElementById('likeCount-' + bookId);
+                if (btn && label) {
+                    if (liked) { btn.classList.add('liked');
+                        label.textContent = 'Liked'; } else { btn.classList.remove('liked');
+                        label.textContent = 'Like'; }
                 }
-            } catch (e) { showAlert('Error: ' + e.message, 'error'); }
+                db.collection('likes').where('bookId', '==', bookId).get().then(function(s) {
+                    if (count) count.textContent = s.size;
+                }).catch(function() {});
+                showAlert(liked ? 'Book added to favorites!' : 'Removed from favorites', liked ? 'success' : 'info');
+            }).catch(function(err) {
+                showAlert('Error: ' + err.message, 'error');
+            });
         }
 
         // ============================================================
-        //  PDF VIEWER with IndexedDB support
+        //  PDF VIEWER with Firebase Storage
         // ============================================================
         function openPdfViewer(bookId) {
             if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
-            try {
-                var book = DigitalLibrary.getBook(bookId);
+            showLoading('Loading PDF...');
+            getBook(bookId).then(function(book) {
                 if (!book) throw new Error('Book not found');
                 if (!book.hasPdf) throw new Error('No PDF available');
-
                 currentPdfBook = book;
                 document.getElementById('pdfViewerTitle').textContent = book.title;
+                if (pdfBlobUrl) { URL.revokeObjectURL(pdfBlobUrl);
+                    pdfBlobUrl = null; }
 
-                // Clean up previous blob URL
-                if (pdfBlobUrl) {
-                    URL.revokeObjectURL(pdfBlobUrl);
-                    pdfBlobUrl = null;
-                }
-
-                showLoading('Loading PDF...');
-
-                // Check if this is an uploaded PDF (has pdfId)
-                if (book.pdfId) {
-                    PDFStore.getPDF(book.pdfId).then(function(pdfData) {
-                        if (!pdfData) {
-                            hideLoading();
-                            throw new Error('PDF data not found in storage. Please re-upload the PDF.');
-                        }
-                        // Create blob from ArrayBuffer
-                        var blob = new Blob([pdfData], { type: 'application/pdf' });
+                var cacheKey = 'pdf_' + bookId + (book.pdfId ? '_' + book.pdfId : '');
+                PDFStore.getPDF(cacheKey).then(function(cached) {
+                    if (cached) {
+                        var blob = new Blob([cached], { type: 'application/pdf' });
                         var url = URL.createObjectURL(blob);
                         pdfBlobUrl = url;
                         document.getElementById('pdfFrame').src = url;
                         document.getElementById('pdfViewer').style.display = 'flex';
-                        var progress = DigitalLibrary.getBookProgress(bookId, currentUser.id);
-                        document.getElementById('readingProgressSlider').value = progress;
-                        document.getElementById('currentProgress').textContent = progress + '%';
+                        getBookProgress(bookId, currentUser.id).then(function(p) {
+                            document.getElementById('readingProgressSlider').value = p;
+                            document.getElementById('currentProgress').textContent = p + '%';
+                        }).catch(function() {});
                         hideLoading();
                         showAlert('Opening "' + book.title + '"', 'info');
-                    }).catch(function(err) {
+                        return;
+                    }
+                    if (book.pdfId) {
+                        var storageRef = storage.ref('pdfs/' + book.pdfId);
+                        storageRef.getDownloadURL().then(function(url) {
+                            fetch(url).then(function(res) {
+                                if (!res.ok) throw new Error('Failed to fetch PDF');
+                                return res.arrayBuffer();
+                            }).then(function(buffer) {
+                                PDFStore.savePDF(cacheKey, buffer).catch(function() {});
+                                var blob = new Blob([buffer], { type: 'application/pdf' });
+                                var objUrl = URL.createObjectURL(blob);
+                                pdfBlobUrl = objUrl;
+                                document.getElementById('pdfFrame').src = objUrl;
+                                document.getElementById('pdfViewer').style.display =
+                                'flex';
+                                getBookProgress(bookId, currentUser.id).then(function(
+                                p) {
+                                    document.getElementById('readingProgressSlider')
+                                        .value = p;
+                                    document.getElementById('currentProgress')
+                                        .textContent = p + '%';
+                                }).catch(function() {});
+                                hideLoading();
+                                showAlert('Opening "' + book.title + '"', 'info');
+                            }).catch(function(err) {
+                                hideLoading();
+                                showAlert('Error loading PDF: ' + err.message,
+                                'error');
+                            });
+                        }).catch(function(err) {
+                            hideLoading();
+                            showAlert('Error getting PDF: ' + err.message, 'error');
+                        });
+                    } else {
                         hideLoading();
-                        showAlert('Error loading PDF: ' + err.message, 'error');
-                    });
-                } else if (book.pdfUrl) {
-                    // External URL fallback
-                    document.getElementById('pdfFrame').src = book.pdfUrl;
-                    document.getElementById('pdfViewer').style.display = 'flex';
-                    var progress = DigitalLibrary.getBookProgress(bookId, currentUser.id);
-                    document.getElementById('readingProgressSlider').value = progress;
-                    document.getElementById('currentProgress').textContent = progress + '%';
-                    hideLoading();
-                    showAlert('Opening "' + book.title + '"', 'info');
-                } else {
-                    hideLoading();
-                    throw new Error('No PDF source available');
-                }
-            } catch (e) {
+                        showAlert('No PDF source available', 'error');
+                    }
+                }).catch(function() {
+                    if (book.pdfId) {
+                        var storageRef = storage.ref('pdfs/' + book.pdfId);
+                        storageRef.getDownloadURL().then(function(url) {
+                            fetch(url).then(function(res) { return res.arrayBuffer(); })
+                                .then(function(buffer) {
+                                    var cacheKey2 = 'pdf_' + bookId + (book.pdfId ?
+                                        '_' + book.pdfId : '');
+                                    PDFStore.savePDF(cacheKey2, buffer).catch(function() {});
+                                    var blob = new Blob([buffer], { type: 'application/pdf' });
+                                    var objUrl = URL.createObjectURL(blob);
+                                    pdfBlobUrl = objUrl;
+                                    document.getElementById('pdfFrame').src = objUrl;
+                                    document.getElementById('pdfViewer').style.display =
+                                        'flex';
+                                    getBookProgress(bookId, currentUser.id).then(function(
+                                    p) {
+                                        document.getElementById('readingProgressSlider')
+                                            .value = p;
+                                        document.getElementById('currentProgress')
+                                            .textContent = p + '%';
+                                    }).catch(function() {});
+                                    hideLoading();
+                                    showAlert('Opening "' + book.title + '"', 'info');
+                                }).catch(function(err) {
+                                    hideLoading();
+                                    showAlert('Error loading PDF: ' + err.message,
+                                    'error');
+                                });
+                        }).catch(function(err) {
+                            hideLoading();
+                            showAlert('Error getting PDF: ' + err.message, 'error');
+                        });
+                    } else {
+                        hideLoading();
+                        showAlert('No PDF source available', 'error');
+                    }
+                });
+            }).catch(function(err) {
                 hideLoading();
-                showAlert('Error: ' + e.message, 'error');
-            }
+                showAlert('Error: ' + err.message, 'error');
+            });
         }
 
         function closePdfViewer() {
             document.getElementById('pdfViewer').style.display = 'none';
             document.getElementById('pdfFrame').src = 'about:blank';
-            if (pdfBlobUrl) {
-                URL.revokeObjectURL(pdfBlobUrl);
-                pdfBlobUrl = null;
-            }
+            if (pdfBlobUrl) { URL.revokeObjectURL(pdfBlobUrl);
+                pdfBlobUrl = null; }
             currentPdfBook = null;
         }
 
         function downloadCurrentPdf() {
             if (!currentPdfBook) return;
-            try {
-                DigitalLibrary.recordDownload(currentPdfBook.id, currentUser.id);
-
-                // If it's an uploaded PDF with pdfId
-                if (currentPdfBook.pdfId) {
-                    PDFStore.getPDF(currentPdfBook.pdfId).then(function(pdfData) {
-                        if (!pdfData) {
-                            showAlert('PDF data not found', 'error');
-                            return;
-                        }
-                        var blob = new Blob([pdfData], { type: 'application/pdf' });
-                        var url = URL.createObjectURL(blob);
-                        var link = document.createElement('a');
-                        link.href = url;
-                        link.download = currentPdfBook.title.replace(/[^a-z0-9]/gi, '_') + '.pdf';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        URL.revokeObjectURL(url);
-                        showAlert('Downloading "' + currentPdfBook.title + '"', 'success');
-                    }).catch(function(err) {
-                        showAlert('Download failed: ' + err.message, 'error');
-                    });
-                } else if (currentPdfBook.pdfUrl) {
+            recordDownloadDoc(currentPdfBook.id, currentUser.id).catch(function() {});
+            if (currentPdfBook.pdfId) {
+                var storageRef = storage.ref('pdfs/' + currentPdfBook.pdfId);
+                storageRef.getDownloadURL().then(function(url) {
                     var link = document.createElement('a');
-                    link.href = currentPdfBook.pdfUrl;
+                    link.href = url;
                     link.download = currentPdfBook.title.replace(/[^a-z0-9]/gi, '_') + '.pdf';
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
                     showAlert('Downloading "' + currentPdfBook.title + '"', 'success');
-                } else {
-                    showAlert('No PDF source to download', 'error');
-                }
-            } catch (e) { showAlert('Download failed: ' + e.message, 'error'); }
+                }).catch(function(err) {
+                    showAlert('Download failed: ' + err.message, 'error');
+                });
+            } else {
+                showAlert('No PDF source to download', 'error');
+            }
         }
 
         function updateProgressSlider(value) {
@@ -3126,20 +2900,22 @@
         function updateReadingProgress() {
             if (!currentPdfBook || !currentUser.isLoggedIn) return;
             var p = parseInt(document.getElementById('readingProgressSlider').value);
-            try {
-                DigitalLibrary.updateReadingProgress(currentPdfBook.id, currentUser.id, p);
+            updateProgressDoc(currentPdfBook.id, currentUser.id, p).then(function() {
                 showAlert('Progress saved: ' + p + '%', 'success');
-            } catch (e) { showAlert('Error: ' + e.message, 'error'); }
+            }).catch(function(err) {
+                showAlert('Error: ' + err.message, 'error');
+            });
         }
 
         function addBookmark() {
             if (!currentPdfBook || !currentUser.isLoggedIn) return;
             var note = prompt('Add a note (optional):');
             if (note === null) return;
-            try {
-                DigitalLibrary.addBookmark(currentPdfBook.id, currentUser.id, note);
+            addBookmarkDoc(currentPdfBook.id, currentUser.id, note).then(function() {
                 showAlert('Bookmark added!', 'success');
-            } catch (e) { showAlert('Error: ' + e.message, 'error'); }
+            }).catch(function(err) {
+                showAlert('Error: ' + err.message, 'error');
+            });
         }
 
         // ============================================================
@@ -3147,25 +2923,28 @@
         // ============================================================
         function openReviewModal(bookId) {
             if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
-            var book = DigitalLibrary.getBook(bookId);
-            if (!book) return;
-            currentReviewBookId = bookId;
-            document.getElementById('reviewBookTitle').textContent = 'Review: ' + book.title;
-            document.getElementById('selectedRating').value = 0;
-            document.getElementById('reviewText').value = '';
-            var stars = document.querySelectorAll('#starRating .star');
-            stars.forEach(function(s) { s.classList.remove('active'); });
-            stars.forEach(function(s) {
-                s.onclick = function() {
-                    var val = parseInt(this.getAttribute('data-value'));
-                    document.getElementById('selectedRating').value = val;
-                    stars.forEach(function(ss, idx) {
-                        if (idx < val) ss.classList.add('active');
-                        else ss.classList.remove('active');
-                    });
-                };
+            getBook(bookId).then(function(book) {
+                if (!book) return;
+                currentReviewBookId = bookId;
+                document.getElementById('reviewBookTitle').textContent = 'Review: ' + book.title;
+                document.getElementById('selectedRating').value = 0;
+                document.getElementById('reviewText').value = '';
+                var stars = document.querySelectorAll('#starRating .star');
+                stars.forEach(function(s) { s.classList.remove('active'); });
+                stars.forEach(function(s) {
+                    s.onclick = function() {
+                        var val = parseInt(this.getAttribute('data-value'));
+                        document.getElementById('selectedRating').value = val;
+                        stars.forEach(function(ss, idx) {
+                            if (idx < val) ss.classList.add('active');
+                            else ss.classList.remove('active');
+                        });
+                    };
+                });
+                document.getElementById('reviewModal').style.display = 'flex';
+            }).catch(function(err) {
+                showAlert('Error: ' + err.message, 'error');
             });
-            document.getElementById('reviewModal').style.display = 'flex';
         }
 
         function submitReview() {
@@ -3174,18 +2953,20 @@
             var text = document.getElementById('reviewText').value.trim();
             if (!rating) { showAlert('Please select a rating', 'error'); return; }
             if (!text) { showAlert('Please write a review', 'error'); return; }
-            try {
-                DigitalLibrary.addReview({
-                    bookId: currentReviewBookId,
-                    userId: currentUser.id,
-                    userName: currentUser.name,
-                    rating: rating,
-                    review: text
-                });
+            addReviewDoc({
+                bookId: currentReviewBookId,
+                userId: currentUser.id,
+                userName: currentUser.name,
+                rating: rating,
+                review: text,
+                date: new Date().toISOString()
+            }).then(function() {
                 closeModal('reviewModal');
                 showAlert('Review submitted!', 'success');
                 if (currentPage === 'library') loadBooks();
-            } catch (e) { showAlert('Error: ' + e.message, 'error'); }
+            }).catch(function(err) {
+                showAlert('Error: ' + err.message, 'error');
+            });
         }
 
         // ============================================================
@@ -3193,31 +2974,23 @@
         // ============================================================
         function downloadBook(bookId) {
             if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
-            try {
-                var book = DigitalLibrary.getBook(bookId);
-                if (!book) throw new Error('Book not found');
-                if (!book.hasPdf) throw new Error('No PDF available');
-                DigitalLibrary.recordDownload(bookId, currentUser.id);
-                openPdfViewer(bookId);
-            } catch (e) { showAlert('Error: ' + e.message, 'error'); }
+            recordDownloadDoc(bookId, currentUser.id).catch(function() {});
+            openPdfViewer(bookId);
         }
 
         // ============================================================
-        //  BOOK CRUD (ADMIN) with PDF upload
+        //  BOOK CRUD (ADMIN) with Firebase Storage
         // ============================================================
         function handleAddBook(e) {
             e.preventDefault();
             if (currentUser.role !== 'admin') { showAlert('Admin access required', 'error'); return; }
-
             var title = document.getElementById('bookTitle').value.trim();
             var author = document.getElementById('bookAuthor').value.trim();
             var category = document.getElementById('bookCategory').value;
             var description = document.getElementById('bookDescription').value.trim();
             var fileInput = document.getElementById('bookPdfFile');
-
             if (!title || !author || !category) { showAlert('Please fill all required fields', 'error'); return; }
             if (!fileInput.files || !fileInput.files.length) { showAlert('Please select a PDF file', 'error'); return; }
-
             var file = fileInput.files[0];
             if (file.size > 50 * 1024 * 1024) {
                 showAlert('File too large. Maximum size is 50MB.', 'error');
@@ -3227,114 +3000,103 @@
                 showAlert('Please upload a valid PDF file.', 'error');
                 return;
             }
-
-            showLoading('Uploading PDF...');
-
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    var arrayBuffer = e.target.result;
-                    var bookId = Date.now();
-                    var pdfId = 'pdf_' + bookId;
-
-                    // Save PDF to IndexedDB
-                    PDFStore.savePDF(pdfId, arrayBuffer).then(function() {
-                        var book = {
-                            id: bookId,
-                            title: title,
-                            author: author,
-                            category: category,
-                            description: description || 'A ' + category.toLowerCase() + ' book about ' + title,
-                            hasPdf: true,
-                            pdfUrl: null,
-                            pdfId: pdfId,
-                            dateAdded: new Date().toISOString(),
-                            addedBy: currentUser.name,
-                            likesCount: 0,
-                            downloadsCount: 0,
-                            reviewsCount: 0,
-                            averageRating: 0,
-                            fileSize: DigitalLibrary.formatBytes(file.size),
-                            isbn: 'ISBN-' + Date.now().toString().slice(-10),
-                            pages: Math.floor(Math.random() * 500) + 100,
-                            year: new Date().getFullYear() - Math.floor(Math.random() * 10),
-                            isUploaded: true
-                        };
-                        DigitalLibrary.saveBook(book);
+            showLoading('Uploading to Firebase...');
+            var pdfId = 'pdf_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+            var storageRef = storage.ref('pdfs/' + pdfId);
+            var uploadTask = storageRef.put(file);
+            uploadTask.on('state_changed',
+                function(snapshot) {
+                    var pct = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    showUploadProgress('uploadProgress', 'uploadProgressFill', pct);
+                },
+                function(err) {
+                    hideLoading();
+                    hideUploadProgress('uploadProgress');
+                    showAlert('Upload failed: ' + err.message, 'error');
+                },
+                function() {
+                    var newBook = {
+                        title: title,
+                        author: author,
+                        category: category,
+                        description: description || 'A ' + category.toLowerCase() + ' book about ' + title,
+                        hasPdf: true,
+                        pdfId: pdfId,
+                        dateAdded: new Date().toISOString(),
+                        addedBy: currentUser.name,
+                        likesCount: 0,
+                        downloadsCount: 0,
+                        reviewsCount: 0,
+                        averageRating: 0,
+                        fileSize: formatBytes(file.size),
+                        isbn: 'ISBN-' + Date.now().toString().slice(-10),
+                        pages: Math.floor(Math.random() * 500) + 100,
+                        year: new Date().getFullYear() - Math.floor(Math.random() * 10),
+                        isUploaded: true
+                    };
+                    saveBook(newBook).then(function(docRef) {
                         document.getElementById('addBookForm').reset();
                         document.getElementById('fileNameDisplay').textContent = 'No file selected';
                         document.getElementById('fileSizeDisplay').textContent = '';
                         closeModal('addBookModal');
+                        hideUploadProgress('uploadProgress');
                         hideLoading();
                         showAlert('✅ "' + title + '" added successfully with PDF!', 'success');
                         if (currentPage === 'library') loadBooks();
                     }).catch(function(err) {
                         hideLoading();
-                        showAlert('Error saving PDF: ' + err.message, 'error');
+                        hideUploadProgress('uploadProgress');
+                        showAlert('Error saving book: ' + err.message, 'error');
                     });
-                } catch (err) {
-                    hideLoading();
-                    showAlert('Error: ' + err.message, 'error');
                 }
-            };
-            reader.onerror = function() {
-                hideLoading();
-                showAlert('Failed to read file', 'error');
-            };
-            reader.readAsArrayBuffer(file);
+            );
         }
 
         function openEditBookModal(bookId) {
             if (currentUser.role !== 'admin') { showAlert('Admin access required', 'error'); return; }
-            var book = DigitalLibrary.getBook(bookId);
-            if (!book) { showAlert('Book not found', 'error'); return; }
-            document.getElementById('editBookId').value = book.id;
-            document.getElementById('editBookTitle').value = book.title;
-            document.getElementById('editBookAuthor').value = book.author;
-            document.getElementById('editBookCategory').value = book.category;
-            document.getElementById('editBookDescription').value = book.description || '';
-            document.getElementById('editFileNameDisplay').textContent = book.isUploaded ? 'Current: PDF uploaded' :
-                'Current: External URL';
-            document.getElementById('editFileSizeDisplay').textContent = book.fileSize || '';
-            document.getElementById('editBookModal').style.display = 'flex';
+            getBook(bookId).then(function(book) {
+                if (!book) { showAlert('Book not found', 'error'); return; }
+                document.getElementById('editBookId').value = book.id;
+                document.getElementById('editBookTitle').value = book.title;
+                document.getElementById('editBookAuthor').value = book.author;
+                document.getElementById('editBookCategory').value = book.category;
+                document.getElementById('editBookDescription').value = book.description || '';
+                document.getElementById('editFileNameDisplay').textContent = book.isUploaded ? 'Current: PDF uploaded' :
+                    'Current: External URL';
+                document.getElementById('editFileSizeDisplay').textContent = book.fileSize || '';
+                document.getElementById('editBookModal').style.display = 'flex';
+            }).catch(function(err) {
+                showAlert('Error: ' + err.message, 'error');
+            });
         }
 
         function handleEditBook(e) {
             e.preventDefault();
             if (currentUser.role !== 'admin') { showAlert('Admin access required', 'error'); return; }
-
             var id = document.getElementById('editBookId').value;
             var title = document.getElementById('editBookTitle').value.trim();
             var author = document.getElementById('editBookAuthor').value.trim();
             var category = document.getElementById('editBookCategory').value;
             var description = document.getElementById('editBookDescription').value.trim();
             var fileInput = document.getElementById('editBookPdfFile');
-
             if (!title || !author || !category) { showAlert('Please fill all required fields', 'error'); return; }
+            showLoading('Updating...');
 
-            try {
-                var book = DigitalLibrary.getBook(id);
+            getBook(id).then(function(book) {
                 if (!book) throw new Error('Book not found');
 
-                showLoading('Updating book...');
-
-                var updateBook = function(pdfId, fileSize) {
+                var updateBookData = function(pdfId, fileSize) {
                     book.title = title;
                     book.author = author;
                     book.category = category;
                     book.description = description || book.description;
                     if (pdfId) {
                         book.pdfId = pdfId;
-                        book.pdfUrl = null;
                         book.isUploaded = true;
                         book.fileSize = fileSize || book.fileSize;
                     }
                     book.dateAdded = book.dateAdded || new Date().toISOString();
-                    DigitalLibrary.saveBook(book);
-                    closeModal('editBookModal');
-                    hideLoading();
-                    showAlert('✅ "' + title + '" updated successfully!', 'success');
-                    if (currentPage === 'library') loadBooks();
+                    return saveBook(book);
                 };
 
                 if (fileInput.files && fileInput.files.length) {
@@ -3349,93 +3111,153 @@
                         showAlert('Please upload a valid PDF file.', 'error');
                         return;
                     }
-
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        try {
-                            var arrayBuffer = e.target.result;
-                            var pdfId = 'pdf_' + Date.now() + '_' + book.id;
-
-                            // Delete old PDF if exists
+                    var pdfId = 'pdf_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+                    var storageRef = storage.ref('pdfs/' + pdfId);
+                    var uploadTask = storageRef.put(file);
+                    uploadTask.on('state_changed',
+                        function(snapshot) {
+                            var pct = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            showUploadProgress('editUploadProgress', 'editUploadProgressFill', pct);
+                        },
+                        function(err) {
+                            hideLoading();
+                            hideUploadProgress('editUploadProgress');
+                            showAlert('Upload failed: ' + err.message, 'error');
+                        },
+                        function() {
                             if (book.pdfId) {
-                                PDFStore.deletePDF(book.pdfId).catch(function() {});
+                                storage.ref('pdfs/' + book.pdfId).delete().catch(function() {});
                             }
-
-                            PDFStore.savePDF(pdfId, arrayBuffer).then(function() {
-                                updateBook(pdfId, DigitalLibrary.formatBytes(file.size));
+                            updateBookData(pdfId, formatBytes(file.size)).then(function() {
+                                closeModal('editBookModal');
+                                hideUploadProgress('editUploadProgress');
+                                hideLoading();
+                                showAlert('✅ "' + title + '" updated successfully!', 'success');
+                                if (currentPage === 'library') loadBooks();
                             }).catch(function(err) {
                                 hideLoading();
-                                showAlert('Error saving PDF: ' + err.message, 'error');
+                                hideUploadProgress('editUploadProgress');
+                                showAlert('Error: ' + err.message, 'error');
                             });
-                        } catch (err) {
-                            hideLoading();
-                            showAlert('Error: ' + err.message, 'error');
                         }
-                    };
-                    reader.onerror = function() {
-                        hideLoading();
-                        showAlert('Failed to read file', 'error');
-                    };
-                    reader.readAsArrayBuffer(file);
+                    );
                 } else {
-                    // No new file, keep existing
-                    updateBook(null, null);
+                    updateBookData(null, null).then(function() {
+                        closeModal('editBookModal');
+                        hideLoading();
+                        showAlert('✅ "' + title + '" updated successfully!', 'success');
+                        if (currentPage === 'library') loadBooks();
+                    }).catch(function(err) {
+                        hideLoading();
+                        showAlert('Error: ' + err.message, 'error');
+                    });
                 }
-            } catch (err) {
+            }).catch(function(err) {
                 hideLoading();
                 showAlert('Error: ' + err.message, 'error');
-            }
+            });
         }
 
         function deleteBook(bookId) {
             if (currentUser.role !== 'admin') { showAlert('Admin access required', 'error'); return; }
             if (!confirm('Delete this book permanently?')) return;
-            try {
-                showLoading('Deleting...');
-                DigitalLibrary.deleteBook(bookId);
+            showLoading('Deleting...');
+            getBook(bookId).then(function(book) {
+                if (book && book.pdfId) {
+                    storage.ref('pdfs/' + book.pdfId).delete().catch(function() {});
+                }
+                return deleteBookDoc(bookId);
+            }).then(function() {
                 showAlert('Book removed', 'success');
-                loadBooks();
-            } catch (e) { showAlert('Error: ' + e.message, 'error'); } finally { hideLoading(); }
+                if (currentPage === 'library') loadBooks();
+                hideLoading();
+            }).catch(function(err) {
+                hideLoading();
+                showAlert('Error: ' + err.message, 'error');
+            });
         }
 
-        // File input handlers for add book
-        document.addEventListener('DOMContentLoaded', function() {
-            var addFileInput = document.getElementById('bookPdfFile');
-            if (addFileInput) {
-                addFileInput.addEventListener('change', function() {
-                    var display = document.getElementById('fileNameDisplay');
-                    var sizeDisplay = document.getElementById('fileSizeDisplay');
-                    if (this.files && this.files.length) {
-                        var f = this.files[0];
-                        display.textContent = f.name;
-                        sizeDisplay.textContent = '(' + DigitalLibrary.formatBytes(f.size) + ')';
-                    } else {
-                        display.textContent = 'No file selected';
-                        sizeDisplay.textContent = '';
-                    }
-                });
-            }
-
-            var editFileInput = document.getElementById('editBookPdfFile');
-            if (editFileInput) {
-                editFileInput.addEventListener('change', function() {
-                    var display = document.getElementById('editFileNameDisplay');
-                    var sizeDisplay = document.getElementById('editFileSizeDisplay');
-                    if (this.files && this.files.length) {
-                        var f = this.files[0];
-                        display.textContent = f.name + ' (will replace existing)';
-                        sizeDisplay.textContent = '(' + DigitalLibrary.formatBytes(f.size) + ')';
-                    } else {
-                        display.textContent = 'Keep existing PDF';
-                        sizeDisplay.textContent = '';
-                    }
-                });
-            }
-        });
-
         // ============================================================
-        //  USER AUTH
+        //  USER AUTH (Firebase Auth + Demo)
         // ============================================================
+        function demoLogin() {
+            // Use a pre‑created demo user in Firestore (no Firebase Auth needed)
+            var demoEmail = 'demo@electrolass.com';
+            var demoName = 'Demo User';
+            showLoading('Logging in with demo account...');
+            getUserByEmail(demoEmail).then(function(dbUser) {
+                if (dbUser) {
+                    // User exists, log them in
+                    currentUser = {
+                        isLoggedIn: true,
+                        role: dbUser.role || 'user',
+                        name: dbUser.name,
+                        email: dbUser.email,
+                        id: dbUser.id,
+                        likedBooks: dbUser.likedBooks || [],
+                        downloadedBooks: dbUser.downloadedBooks || [],
+                        reviewedBooks: dbUser.reviewedBooks || [],
+                        readingProgress: dbUser.readingProgress || {},
+                        accountStatus: dbUser.accountStatus || 'active'
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify({ email: currentUser.email,
+                        name: currentUser.name, role: currentUser.role, id: currentUser.id }));
+                    updateUserInterface();
+                    updateNavigation();
+                    closeModal('loginModal');
+                    showAlert('🎉 Logged in as Demo User', 'success');
+                    navigateTo('home');
+                    setupRealtimeListeners();
+                    hideLoading();
+                } else {
+                    // Create demo user doc
+                    var userData = {
+                        name: demoName,
+                        email: demoEmail,
+                        role: 'user',
+                        registrationDate: new Date().toISOString(),
+                        lastLogin: new Date().toISOString(),
+                        accountStatus: 'active',
+                        preferences: { theme: 'dark', notifications: true, language: 'en' }
+                    };
+                    saveUserDoc(userData).then(function(docRef) {
+                        return getUserByEmail(demoEmail);
+                    }).then(function(newUser) {
+                        if (newUser) {
+                            currentUser = {
+                                isLoggedIn: true,
+                                role: newUser.role || 'user',
+                                name: newUser.name,
+                                email: newUser.email,
+                                id: newUser.id,
+                                likedBooks: [],
+                                downloadedBooks: [],
+                                reviewedBooks: [],
+                                readingProgress: {},
+                                accountStatus: 'active'
+                            };
+                            localStorage.setItem('currentUser', JSON.stringify({ email: currentUser
+                                    .email, name: currentUser.name, role: currentUser.role,
+                                id: currentUser.id }));
+                            updateUserInterface();
+                            updateNavigation();
+                            closeModal('loginModal');
+                            showAlert('🎉 Demo account created and logged in', 'success');
+                            navigateTo('home');
+                            setupRealtimeListeners();
+                            hideLoading();
+                        }
+                    }).catch(function(err) {
+                        hideLoading();
+                        showAlert('Error creating demo account: ' + err.message, 'error');
+                    });
+                }
+            }).catch(function(err) {
+                hideLoading();
+                showAlert('Demo login failed: ' + err.message, 'error');
+            });
+        }
+
         function handleUserSignup(e) {
             e.preventDefault();
             var name = document.getElementById('signupName').value.trim();
@@ -3444,81 +3266,146 @@
             var confirm = document.getElementById('signupConfirmPassword').value;
             if (!name || !email || !pass || !confirm) { showAlert('Please fill all fields', 'error'); return; }
             if (pass !== confirm) { showAlert('Passwords do not match', 'error'); return; }
-            try {
-                showLoading('Creating account...');
-                var user = DigitalLibrary.registerUser({ name: name, email: email, password: pass });
-                currentUser = {
-                    isLoggedIn: true,
-                    role: user.role || 'user',
-                    name: user.name,
-                    email: email,
-                    id: user.id,
-                    lastLogin: user.lastLogin,
-                    likedBooks: user.likedBooks || [],
-                    downloadedBooks: user.downloadedBooks || [],
-                    reviewedBooks: user.reviewedBooks || [],
-                    readingProgress: user.readingProgress || {},
-                    accountStatus: user.accountStatus || 'active'
-                };
-                localStorage.setItem('currentUser', JSON.stringify({ email: currentUser.email, name: currentUser.name,
-                    role: currentUser.role, id: currentUser.id }));
-                updateUserInterface();
-                updateNavigation();
-                closeModal('signupModal');
-                showAlert('🎉 Welcome ' + name + '!', 'success');
-                navigateTo('home');
-            } catch (err) { showAlert('Error: ' + err.message, 'error'); } finally { hideLoading(); }
+            showLoading('Creating account...');
+            auth.createUserWithEmailAndPassword(email, pass)
+                .then(function(cred) {
+                    var user = cred.user;
+                    var userData = {
+                        name: name,
+                        email: email,
+                        role: 'user',
+                        registrationDate: new Date().toISOString(),
+                        lastLogin: new Date().toISOString(),
+                        accountStatus: 'active',
+                        preferences: { theme: 'dark', notifications: true, language: 'en' }
+                    };
+                    return saveUserDoc(userData).then(function() {
+                        currentUser = {
+                            isLoggedIn: true,
+                            role: 'user',
+                            name: name,
+                            email: email,
+                            id: user.uid,
+                            likedBooks: [],
+                            downloadedBooks: [],
+                            reviewedBooks: [],
+                            readingProgress: {},
+                            accountStatus: 'active'
+                        };
+                        localStorage.setItem('currentUser', JSON.stringify({ email: currentUser.email,
+                            name: currentUser.name, role: currentUser.role, id: currentUser.id }));
+                        updateUserInterface();
+                        updateNavigation();
+                        closeModal('signupModal');
+                        showAlert('🎉 Welcome ' + name + '!', 'success');
+                        navigateTo('home');
+                        setupRealtimeListeners();
+                        hideLoading();
+                    });
+                })
+                .catch(function(err) {
+                    hideLoading();
+                    // Show detailed Firebase error
+                    var msg = err.message;
+                    if (err.code === 'auth/email-already-in-use') msg = 'Email already registered.';
+                    else if (err.code === 'auth/weak-password') msg = 'Password is too weak.';
+                    else if (err.code === 'auth/invalid-email') msg = 'Invalid email address.';
+                    showAlert('Signup failed: ' + msg, 'error');
+                });
         }
 
         function handleUserLogin(e) {
             e.preventDefault();
             var email = document.getElementById('loginEmail').value.trim();
             var pass = document.getElementById('loginPassword').value;
-            try {
-                showLoading('Logging in...');
-                var user = DigitalLibrary.loginUser(email, pass);
-                currentUser = {
-                    isLoggedIn: true,
-                    role: user.role || 'user',
-                    name: user.name,
-                    email: email,
-                    id: user.id,
-                    lastLogin: user.lastLogin,
-                    likedBooks: user.likedBooks || [],
-                    downloadedBooks: user.downloadedBooks || [],
-                    reviewedBooks: user.reviewedBooks || [],
-                    readingProgress: user.readingProgress || {},
-                    accountStatus: user.accountStatus || 'active'
-                };
-                localStorage.setItem('currentUser', JSON.stringify({ email: currentUser.email, name: currentUser.name,
-                    role: currentUser.role, id: currentUser.id }));
-                updateUserInterface();
-                updateNavigation();
-                closeModal('loginModal');
-                showAlert('Welcome back, ' + user.name + '!', 'success');
-                navigateTo('home');
-            } catch (err) { showAlert('Login failed: ' + err.message, 'error'); } finally { hideLoading(); }
+            showLoading('Logging in...');
+            auth.signInWithEmailAndPassword(email, pass)
+                .then(function(cred) {
+                    var user = cred.user;
+                    return getUserByEmail(email).then(function(dbUser) {
+                        if (!dbUser) {
+                            var userData = {
+                                name: email.split('@')[0] || 'User',
+                                email: email,
+                                role: 'user',
+                                registrationDate: new Date().toISOString(),
+                                lastLogin: new Date().toISOString(),
+                                accountStatus: 'active',
+                                preferences: { theme: 'dark', notifications: true, language: 'en' }
+                            };
+                            return saveUserDoc(userData).then(function() {
+                                return getUserByEmail(email);
+                            });
+                        }
+                        return dbUser;
+                    });
+                })
+                .then(function(dbUser) {
+                    if (!dbUser) throw new Error('User data not found');
+                    currentUser = {
+                        isLoggedIn: true,
+                        role: dbUser.role || 'user',
+                        name: dbUser.name,
+                        email: dbUser.email,
+                        id: dbUser.id,
+                        likedBooks: dbUser.likedBooks || [],
+                        downloadedBooks: dbUser.downloadedBooks || [],
+                        reviewedBooks: dbUser.reviewedBooks || [],
+                        readingProgress: dbUser.readingProgress || {},
+                        accountStatus: dbUser.accountStatus || 'active'
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify({ email: currentUser.email,
+                        name: currentUser.name, role: currentUser.role, id: currentUser.id }));
+                    updateUserInterface();
+                    updateNavigation();
+                    closeModal('loginModal');
+                    showAlert('Welcome back, ' + currentUser.name + '!', 'success');
+                    navigateTo('home');
+                    setupRealtimeListeners();
+                    hideLoading();
+                })
+                .catch(function(err) {
+                    hideLoading();
+                    var msg = err.message;
+                    if (err.code === 'auth/user-not-found') msg = 'User not found. Please sign up.';
+                    else if (err.code === 'auth/wrong-password') msg = 'Incorrect password.';
+                    else if (err.code === 'auth/invalid-email') msg = 'Invalid email address.';
+                    else if (err.code === 'auth/too-many-requests') msg =
+                        'Too many failed attempts. Please try later.';
+                    showAlert('Login failed: ' + msg, 'error');
+                });
         }
 
         function logout() {
-            currentUser = {
-                isLoggedIn: false,
-                role: 'guest',
-                name: '',
-                email: '',
-                id: '',
-                lastLogin: null,
-                likedBooks: [],
-                downloadedBooks: [],
-                reviewedBooks: [],
-                readingProgress: {},
-                accountStatus: 'active'
-            };
-            localStorage.removeItem('currentUser');
-            updateUserInterface();
-            updateNavigation();
-            showAlert('Logged out', 'success');
-            navigateTo('home');
+            auth.signOut().then(function() {
+                currentUser = {
+                    isLoggedIn: false,
+                    role: 'guest',
+                    name: '',
+                    email: '',
+                    id: '',
+                    likedBooks: [],
+                    downloadedBooks: [],
+                    reviewedBooks: [],
+                    readingProgress: {},
+                    accountStatus: 'active'
+                };
+                localStorage.removeItem('currentUser');
+                if (unsubBooks) { unsubBooks();
+                    unsubBooks = null; }
+                if (unsubReviews) { unsubReviews();
+                    unsubReviews = null; }
+                if (unsubLikes) { unsubLikes();
+                    unsubLikes = null; }
+                if (unsubProgress) { unsubProgress();
+                    unsubProgress = null; }
+                updateUserInterface();
+                updateNavigation();
+                showAlert('Logged out', 'success');
+                navigateTo('home');
+            }).catch(function(err) {
+                showAlert('Logout error: ' + err.message, 'error');
+            });
         }
 
         function loadSavedUser() {
@@ -3527,60 +3414,120 @@
                 if (saved) {
                     var data = JSON.parse(saved);
                     if (data.email) {
-                        var dbUser = DigitalLibrary.getUserByEmail(data.email);
-                        if (dbUser) {
-                            currentUser = {
-                                isLoggedIn: true,
-                                role: dbUser.role || 'user',
-                                name: dbUser.name,
-                                email: dbUser.email,
-                                id: dbUser.id,
-                                lastLogin: dbUser.lastLogin,
-                                likedBooks: dbUser.likedBooks || [],
-                                downloadedBooks: dbUser.downloadedBooks || [],
-                                reviewedBooks: dbUser.reviewedBooks || [],
-                                readingProgress: dbUser.readingProgress || {},
-                                accountStatus: dbUser.accountStatus || 'active'
-                            };
-                            console.log('User restored:', currentUser.email);
-                            return;
-                        }
+                        getUserByEmail(data.email).then(function(dbUser) {
+                            if (dbUser) {
+                                currentUser = {
+                                    isLoggedIn: true,
+                                    role: dbUser.role || 'user',
+                                    name: dbUser.name,
+                                    email: dbUser.email,
+                                    id: dbUser.id,
+                                    likedBooks: dbUser.likedBooks || [],
+                                    downloadedBooks: dbUser.downloadedBooks || [],
+                                    reviewedBooks: dbUser.reviewedBooks || [],
+                                    readingProgress: dbUser.readingProgress || {},
+                                    accountStatus: dbUser.accountStatus || 'active'
+                                };
+                                updateUserInterface();
+                                updateNavigation();
+                                if (currentPage === 'home' || currentPage === 'library') {
+                                    loadPageContent(currentPage);
+                                }
+                                setupRealtimeListeners();
+                            }
+                        }).catch(function() {});
                     }
-                    localStorage.removeItem('currentUser');
                 }
             } catch (e) { localStorage.removeItem('currentUser'); }
         }
+
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                if (!currentUser.isLoggedIn) {
+                    loadSavedUser();
+                }
+            } else {
+                if (currentUser.isLoggedIn) {
+                    currentUser.isLoggedIn = false;
+                    localStorage.removeItem('currentUser');
+                    updateUserInterface();
+                    updateNavigation();
+                }
+            }
+        });
 
         // ============================================================
         //  BOOK DETAILS
         // ============================================================
         function openBookDetails(bookId) {
-            var book = DigitalLibrary.getBook(bookId);
-            if (!book) { showAlert('Book not found', 'error'); return; }
-            var reviews = DigitalLibrary.getBookReviews(bookId);
-            var hasReviewed = currentUser.isLoggedIn ? DigitalLibrary.hasUserReviewedBook(bookId, currentUser.id) : false;
-            var progress = currentUser.isLoggedIn ? DigitalLibrary.getBookProgress(bookId, currentUser.id) : 0;
+            showLoading('Loading book details...');
+            getBook(bookId).then(function(book) {
+                if (!book) { hideLoading();
+                    showAlert('Book not found', 'error'); return; }
+                var reviews = [];
+                getBookReviews(bookId).then(function(rv) {
+                    reviews = rv;
+                    var hasReviewed = false;
+                    if (currentUser.isLoggedIn) {
+                        hasUserReviewed(bookId, currentUser.id).then(function(hr) {
+                            hasReviewed = hr;
+                            renderBookDetails(book, reviews, hasReviewed);
+                            hideLoading();
+                        }).catch(function() {
+                            renderBookDetails(book, reviews, false);
+                            hideLoading();
+                        });
+                    } else {
+                        renderBookDetails(book, reviews, false);
+                        hideLoading();
+                    }
+                }).catch(function() {
+                    renderBookDetails(book, [], false);
+                    hideLoading();
+                });
+            }).catch(function(err) {
+                hideLoading();
+                showAlert('Error: ' + err.message, 'error');
+            });
+        }
 
+        function renderBookDetails(book, reviews, hasReviewed) {
+            var progress = 0;
+            if (currentUser.isLoggedIn) {
+                getBookProgress(book.id, currentUser.id).then(function(p) {
+                    progress = p;
+                    renderBookDetailsFull(book, reviews, hasReviewed, progress);
+                }).catch(function() {
+                    renderBookDetailsFull(book, reviews, hasReviewed, 0);
+                });
+            } else {
+                renderBookDetailsFull(book, reviews, hasReviewed, 0);
+            }
+        }
+
+        function renderBookDetailsFull(book, reviews, hasReviewed, progress) {
             var revHTML = '';
-            if (reviews.length) {
+            if (reviews && reviews.length) {
                 revHTML = `
               <div class="reviews-section">
                 <h4 style="color:var(--neon-green);margin-bottom:1rem;"><i class="fas fa-star"></i> Reviews (${reviews.length})</h4>
-                ${reviews.map(r => `
-                  <div class="review-card">
-                    <div class="review-header">
-                      <div><span class="review-user">${r.userName}</span><div class="review-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div></div>
-                      <div class="review-date">${formatDate(r.date)}</div>
+                ${reviews.map(function(r) {
+                  return `
+                    <div class="review-card">
+                      <div class="review-header">
+                        <div><span class="review-user">${r.userName}</span><div class="review-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div></div>
+                        <div class="review-date">${formatDate(r.date)}</div>
+                      </div>
+                      <div class="review-text">${r.review}</div>
                     </div>
-                    <div class="review-text">${r.review}</div>
-                  </div>
-                `).join('')}
+                  `;
+                }).join('')}
               </div>
             `;
             }
 
             var html = `
-            <div style="padding:1rem;background:rgba(255,255,255,0.05);border-radius:8px;max-width:600px;">
+            <div style="padding:1rem;background:rgba(255,255,255,0.05);border-radius:8px;max-width:600px;margin:0 auto;">
               <h3 style="color:var(--neon-green);margin-bottom:1rem;">${book.title}</h3>
               <p><strong>Author:</strong> ${book.author}</p>
               <p><strong>Category:</strong> ${book.category}</p>
@@ -3594,9 +3541,9 @@
               ${revHTML}
               <div style="margin-top:1.5rem;display:flex;gap:10px;flex-wrap:wrap;">
                 ${currentUser.isLoggedIn ? `
-                  <button class="btn btn-primary" onclick="openPdfViewer(${book.id})"><i class="fas fa-book-open"></i> Read Now</button>
-                  <button class="btn" onclick="toggleLike(${book.id})" style="background:var(--electric-orange);color:#fff;"><i class="fas fa-heart"></i> ${DigitalLibrary.hasUserLikedBook(book.id,currentUser.id)?'Unlike':'Like'}</button>
-                  ${!hasReviewed ? `<button class="btn" onclick="openReviewModal(${book.id})" style="background:var(--spark-purple);color:#fff;"><i class="fas fa-star"></i> Add Review</button>` : ''}
+                  <button class="btn btn-primary" onclick="openPdfViewer('${book.id}')"><i class="fas fa-book-open"></i> Read Now</button>
+                  <button class="btn" onclick="toggleLike('${book.id}')" style="background:var(--electric-orange);color:#fff;"><i class="fas fa-heart"></i> Like</button>
+                  ${!hasReviewed ? `<button class="btn" onclick="openReviewModal('${book.id}')" style="background:var(--spark-purple);color:#fff;"><i class="fas fa-star"></i> Add Review</button>` : ''}
                 ` : `
                   <button class="btn btn-primary" onclick="showLoginRequired()"><i class="fas fa-sign-in-alt"></i> Login to Access</button>
                 `}
@@ -3612,7 +3559,6 @@
         function openAddBookModal() {
             if (currentUser.role !== 'admin') { showAlert('Admin access required', 'error'); return; }
             document.getElementById('addBookModal').style.display = 'flex';
-            // Reset form
             document.getElementById('addBookForm').reset();
             document.getElementById('fileNameDisplay').textContent = 'No file selected';
             document.getElementById('fileSizeDisplay').textContent = '';
@@ -3645,36 +3591,18 @@
         // ============================================================
         function showUserProfile() {
             if (!currentUser.isLoggedIn) { openLoginModal(); return; }
-            var user = DigitalLibrary.getUserByEmail(currentUser.email);
-            var us = DigitalLibrary.getUserStats(currentUser.id);
             var html = `
-            <div style="padding:1rem;background:rgba(255,255,255,0.05);border-radius:8px;max-width:500px;">
+            <div style="padding:1rem;background:rgba(255,255,255,0.05);border-radius:8px;max-width:500px;margin:0 auto;">
               <h3 style="color:var(--neon-green);margin-bottom:1rem;"><i class="fas fa-user-circle"></i> Your Profile</h3>
               <p><strong>Name:</strong> ${currentUser.name}</p>
               <p><strong>Email:</strong> ${currentUser.email}</p>
               <p><strong>Role:</strong> ${currentUser.role === 'admin' ? 'Administrator' : 'Regular User'}</p>
-              <p><strong>Account Created:</strong> ${formatDate(user.registrationDate)}</p>
-              <p><strong>Last Login:</strong> ${formatDate(currentUser.lastLogin)}</p>
-              ${us ? `
-                <div style="margin-top:1.5rem;">
-                  <h4 style="color:var(--electric-orange);margin-bottom:0.5rem;">Your Statistics:</h4>
-                  <ul>
-                    <li>Liked Books: ${us.totalLiked}</li>
-                    <li>Books Downloaded: ${us.totalDownloaded}</li>
-                    <li>Reviews Written: ${us.totalReviewed}</li>
-                    <li>Bookmarks: ${us.bookmarksCount}</li>
-                    <li>Books in Progress: ${Object.keys(us.readingProgress||{}).length}</li>
-                    <li>Member for: ${us.accountAge} days</li>
-                  </ul>
-                </div>
-              ` : ''}
+              <p><strong>Account Status:</strong> ${currentUser.accountStatus}</p>
               <div style="margin-top:1.5rem;padding:1rem;background:rgba(0,255,204,0.1);border-radius:6px;">
-                <h4 style="color:var(--neon-green);margin-bottom:0.5rem;">Enhanced Features:</h4>
-                <p><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> PDF Viewer with progress tracking</p>
-                <p><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> Book reviews and ratings</p>
-                <p><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> Reading progress saving</p>
-                <p><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> Bookmark system</p>
-                <p><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> Personalized recommendations</p>
+                <h4 style="color:var(--neon-green);margin-bottom:0.5rem;">Sync Status</h4>
+                <p><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> All data is synced to the cloud</p>
+                <p><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> Access your library from any device</p>
+                <p><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> Real‑time updates across devices</p>
               </div>
             </div>
           `;
@@ -3683,20 +3611,27 @@
 
         function showStorageStats() {
             if (currentUser.role !== 'admin') { showAlert('Admin access required', 'error'); return; }
-            var stats = DigitalLibrary.getLibraryStats();
-            var msg =
-                `<strong>Library Storage:</strong><br><br>• Total: 500GB<br>• Used: ${DigitalLibrary.formatBytes(stats.storageUsed)}<br>• Available: ${DigitalLibrary.formatBytes(stats.storageLimit - stats.storageUsed)}<br>• Usage: ${stats.storagePercent}%`;
-            showAlert(msg, 'info');
+            getLibraryStats().then(function(stats) {
+                var msg =
+                    `<strong>Library Storage (Firebase):</strong><br><br>• Total: 500GB<br>• Used: ${formatBytes(stats.storageUsed)}<br>• Available: ${formatBytes(stats.storageLimit - stats.storageUsed)}<br>• Usage: ${stats.storagePercent}%`;
+                showAlert(msg, 'info');
+            }).catch(function() {
+                showAlert('Could not fetch storage stats', 'error');
+            });
         }
 
         function showUserManagement() {
             if (currentUser.role !== 'admin') { showAlert('Admin access required', 'error'); return; }
-            var users = DigitalLibrary.getUsers().filter(u => u.role === 'user');
-            var list = users.map(u => '• ' + u.name + ' (' + u.email + ') - Joined: ' + formatDate(u.registrationDate))
-                .join('<br>') || 'No regular users found.';
-            var msg =
-                `<strong>User Management (${users.length} regular users):</strong><br><br>${list}<br><br><small>Admin users: 1 (admin@electrolass.com)</small>`;
-            showAlert(msg, 'info');
+            getUsersList().then(function(users) {
+                var list = users.filter(u => u.role !== 'admin').map(function(u) {
+                    return '• ' + u.name + ' (' + u.email + ') - Joined: ' + formatDate(u.registrationDate);
+                }).join('<br>') || 'No regular users found.';
+                var msg =
+                    `<strong>User Management (${users.filter(u => u.role !== 'admin').length} regular users):</strong><br><br>${list}<br><br><small>Admin users: 1 (admin@electrolass.com)</small>`;
+                showAlert(msg, 'info');
+            }).catch(function() {
+                showAlert('Could not fetch users', 'error');
+            });
         }
 
         // ============================================================
@@ -3704,7 +3639,7 @@
         // ============================================================
         function showAlert(message, type) {
             var existing = document.querySelectorAll('.alert');
-            existing.forEach(el => el.remove());
+            existing.forEach(function(el) { el.remove(); });
             var div = document.createElement('div');
             div.className = 'alert alert-' + type;
             var iconMap = { success: 'check-circle', error: 'exclamation-circle', warning: 'exclamation-triangle',
@@ -3718,7 +3653,7 @@
             </div>
           `;
             document.body.appendChild(div);
-            setTimeout(() => { if (div.parentElement) div.remove(); }, 8000);
+            setTimeout(function() { if (div.parentElement) div.remove(); }, 10000);
         }
 
         function showLoading(msg) {
@@ -3740,60 +3675,71 @@
 
         function switchTab(tabName, btn) {
             var contents = document.querySelectorAll('.tab-content');
-            contents.forEach(c => c.classList.remove('active'));
+            contents.forEach(function(c) { c.classList.remove('active'); });
             var buttons = document.querySelectorAll('.tab-btn');
-            buttons.forEach(b => b.classList.remove('active'));
+            buttons.forEach(function(b) { b.classList.remove('active'); });
             var selected = document.getElementById(tabName + 'Tab');
             if (selected) selected.classList.add('active');
             if (btn) btn.classList.add('active');
+            if (tabName === 'dashboard' && currentUser.isLoggedIn) {
+                setTimeout(updateUserDashboard, 100);
+            }
+        }
+
+        function showUploadProgress(elementId, fillId, percent) {
+            var container = document.getElementById(elementId);
+            var fill = document.getElementById(fillId);
+            if (container) container.classList.add('active');
+            if (fill) fill.style.width = Math.min(100, percent) + '%';
+        }
+
+        function hideUploadProgress(elementId) {
+            var container = document.getElementById(elementId);
+            if (container) container.classList.remove('active');
         }
 
         // ============================================================
         //  INIT
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM ready – initializing...');
-            showLoading('Initializing Digital Library...');
+            console.log('DOM ready – initializing Electro-LASS with Firebase...');
+            showLoading('Connecting to Firebase...');
 
-            // Initialize IndexedDB first
             PDFStore.init().then(function() {
                 console.log('IndexedDB ready');
-                try {
-                    DigitalLibrary.init();
-                    loadSavedUser();
-                    updateUserInterface();
-                    updateNavigation();
-                    var hash = window.location.hash.replace('#', '');
-                    navigateTo(hash === 'library' ? 'library' : 'home');
-                } catch (e) {
-                    console.error('Init error:', e);
-                    showAlert('Initialization error: ' + e.message, 'error');
-                } finally {
-                    hideLoading();
-                }
+                loadSavedUser();
+                updateUserInterface();
+                updateNavigation();
+                var hash = window.location.hash.replace('#', '');
+                navigateTo(hash === 'library' ? 'library' : 'home');
+                setTimeout(setupRealtimeListeners, 500);
+                window.addEventListener('online', function() { setSyncStatus(true);
+                    showAlert('Back online. Syncing...', 'success'); });
+                window.addEventListener('offline', function() { setSyncStatus(false);
+                    showAlert('You are offline. Changes will sync when you reconnect.', 'warning'); });
+                setSyncStatus(navigator.onLine);
+                hideLoading();
             }).catch(function(err) {
                 console.error('IndexedDB init error:', err);
-                showAlert('Storage error: ' + err.message + '. Please try again.', 'error');
+                showAlert('Storage error: ' + err.message, 'error');
                 hideLoading();
             });
         });
 
-        // Close modals on overlay click
         window.addEventListener('click', function(e) {
             if (e.target.classList.contains('modal')) e.target.style.display = 'none';
         });
-        // Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+                document.querySelectorAll('.modal').forEach(function(m) { m.style.display = 'none'; });
                 closePdfViewer();
             }
         });
-        // Hash change
         window.addEventListener('hashchange', function() {
             var h = window.location.hash.replace('#', '');
             if (h === 'home' || h === 'library') navigateTo(h);
         });
     </script>
+
 </body>
 </html>
