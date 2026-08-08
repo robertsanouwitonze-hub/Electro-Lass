@@ -16,6 +16,10 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js">
     </script>
 
+    <!-- Supabase JS v2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
+
     <style>
         /* ===== BASE STYLES (same as before – trimmed for brevity) ===== */
         :root {
@@ -1322,7 +1326,7 @@
                 </div>
                 <div class="storage-meter"><div class="storage-used" id="storageMeter"></div></div>
                 <small style="color:var(--text-gray);display:block;margin-top:5px;">
-                    <i class="fas fa-info-circle"></i> Upload PDF up to 50MB (via Cloudinary)
+                    <i class="fas fa-info-circle"></i> Upload PDF up to 50MB (via Supabase)
                 </small>
             </div>
             <form id="addBookForm" onsubmit="handleAddBook(event)" style="margin-top:1rem;">
@@ -1364,11 +1368,11 @@
                         <span class="file-size" id="fileSizeDisplay"></span>
                     </div>
                     <div class="upload-progress" id="uploadProgress">
-                        <span>Uploading to Cloudinary...</span>
+                        <span>Uploading to Supabase...</span>
                         <div class="progress-bar"><div class="fill" id="uploadProgressFill"></div></div>
                     </div>
                     <small style="color:var(--text-gray);font-size:0.8rem;display:block;margin-top:5px;">
-                        <i class="fas fa-cloud-upload-alt"></i> Uploaded via Cloudinary (secure, fast)
+                        <i class="fas fa-cloud-upload-alt"></i> Uploaded via Supabase (secure, fast)
                     </small>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block" id="submitBookBtn">
@@ -1423,7 +1427,7 @@
                         <span class="file-size" id="editFileSizeDisplay"></span>
                     </div>
                     <div class="upload-progress" id="editUploadProgress">
-                        <span>Uploading to Cloudinary...</span>
+                        <span>Uploading to Supabase...</span>
                         <div class="progress-bar"><div class="fill" id="editUploadProgressFill"></div></div>
                     </div>
                     <small style="color:var(--text-gray);font-size:0.8rem;display:block;margin-top:5px;">
@@ -1627,6 +1631,17 @@
 
         db.enablePersistence({ synchronizeTabs: true })
             .catch(function(err) { console.warn('Firestore persistence:', err.code); });
+
+        // ============================================================
+        //  SUPABASE INIT (replaces Cloudinary)
+        // ============================================================
+        const SUPABASE_URL = "https://uxddtkxgmtgykhppfgfe.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_jK7GeiS_aMszjKIIKIDXpA_48NkBSc8";
+
+        const supabaseClient = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
 
         // ============================================================
         //  INDEXEDDB – PDF CACHE (for Firebase Storage fallback)
@@ -2664,7 +2679,7 @@
         }
 
         // ============================================================
-        //  PDF VIEWER – Opens in new tab (Cloudinary URL first, Firebase fallback)
+        //  PDF VIEWER – Opens in new tab (Supabase URL first, Firebase fallback)
         // ============================================================
         function openPdfViewer(bookId) {
             if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
@@ -2683,7 +2698,7 @@
                     showAlert('Opening "' + book.title + '" in new tab', 'info');
                 }
 
-                // 1. If we have a Cloudinary URL (pdfUrl), use it
+                // 1. If we have a Supabase/Cloudinary URL (pdfUrl), use it
                 if (book.pdfUrl) {
                     openUrl(book.pdfUrl);
                     return;
@@ -2769,7 +2784,7 @@
         }
 
         // ============================================================
-        //  BOOK CRUD (ADMIN) – Cloudinary upload (unchanged)
+        //  BOOK CRUD (ADMIN) – Supabase upload
         // ============================================================
         function handleAddBook(e) {
             e.preventDefault();
@@ -2791,31 +2806,45 @@
                 return;
             }
 
-            showLoading('Uploading to Cloudinary...');
+            showLoading('Uploading to Supabase...');
 
-            var formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', 'Electro-lass');
+            // Build a safe file path: pdfs/timestamp_filename
+            var safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+            var filePath = 'pdfs/' + Date.now() + '_' + safeName;
 
-            fetch('https://api.cloudinary.com/v1_1/dbftx1vrf/raw/upload', {
-                    method: 'POST',
-                    body: formData
+            // Show upload progress
+            showUploadProgress('uploadProgress', 'uploadProgressFill', 0);
+
+            supabaseClient.storage
+                .from('Books')
+                .upload(filePath, file, {
+                    contentType: 'application/pdf',
+                    upsert: false
                 })
-                .then(function(response) {
-                    if (!response.ok) {
-                        throw new Error('Cloudinary upload failed: ' + response.status);
-                    }
-                    return response.json();
-                })
-                .then(function(data) {
+                .then(function(result) {
+                    var error = result.error;
+                    var data = result.data;
+                    if (error) throw error;
+
+                    // Update progress to 100%
+                    showUploadProgress('uploadProgress', 'uploadProgressFill', 100);
+
+                    // Get public URL
+                    var publicUrlData = supabaseClient.storage
+                        .from('Books')
+                        .getPublicUrl(filePath);
+
+                    var pdfUrl = publicUrlData.data.publicUrl;
+
                     var newBook = {
                         title: title,
                         author: author,
                         category: category,
                         description: description || 'A ' + category.toLowerCase() + ' book about ' + title,
                         hasPdf: true,
-                        pdfUrl: data.secure_url,
-                        pdfId: null,
+                        pdfUrl: pdfUrl,
+                        storagePath: filePath, // store path for later deletion
+                        pdfId: null, // keep null for Supabase-uploaded books
                         dateAdded: new Date().toISOString(),
                         addedBy: currentUser.name,
                         likesCount: 0,
@@ -2845,8 +2874,8 @@
                 .catch(function(err) {
                     hideLoading();
                     hideUploadProgress('uploadProgress');
-                    console.error('Cloudinary upload error:', err);
-                    showAlert('Upload failed: ' + err.message, 'error');
+                    console.error('Supabase upload error:', err);
+                    showAlert('PDF upload failed: ' + err.message, 'error');
                 });
         }
 
@@ -2859,7 +2888,7 @@
                 document.getElementById('editBookAuthor').value = book.author;
                 document.getElementById('editBookCategory').value = book.category;
                 document.getElementById('editBookDescription').value = book.description || '';
-                document.getElementById('editFileNameDisplay').textContent = book.pdfUrl ? 'Current: Cloudinary PDF' :
+                document.getElementById('editFileNameDisplay').textContent = book.pdfUrl ? 'Current: Supabase PDF' :
                     'Current: Firebase Storage PDF';
                 document.getElementById('editFileSizeDisplay').textContent = book.fileSize || '';
                 document.getElementById('editBookModal').style.display = 'flex';
@@ -2883,13 +2912,14 @@
             getBook(id).then(function(book) {
                 if (!book) throw new Error('Book not found');
 
-                var updateBookData = function(pdfUrl, fileSize) {
+                var updateBookData = function(pdfUrl, storagePath, fileSize) {
                     book.title = title;
                     book.author = author;
                     book.category = category;
                     book.description = description || book.description;
                     if (pdfUrl) {
                         book.pdfUrl = pdfUrl;
+                        book.storagePath = storagePath || null;
                         book.pdfId = null;
                         book.isUploaded = true;
                         book.fileSize = fileSize || book.fileSize;
@@ -2911,23 +2941,41 @@
                         return;
                     }
 
-                    showLoading('Uploading new PDF to Cloudinary...');
-                    var formData = new FormData();
-                    formData.append('file', file);
-                    formData.append('upload_preset', 'Electro-lass');
+                    showLoading('Uploading new PDF to Supabase...');
 
-                    fetch('https://api.cloudinary.com/v1_1/dbftx1vrf/raw/upload', {
-                            method: 'POST',
-                            body: formData
+                    var safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+                    var filePath = 'pdfs/' + Date.now() + '_' + safeName;
+
+                    showUploadProgress('editUploadProgress', 'editUploadProgressFill', 0);
+
+                    supabaseClient.storage
+                        .from('Books')
+                        .upload(filePath, file, {
+                            contentType: 'application/pdf',
+                            upsert: false
                         })
-                        .then(function(response) {
-                            if (!response.ok) {
-                                throw new Error('Cloudinary upload failed: ' + response.status);
+                        .then(function(result) {
+                            var error = result.error;
+                            if (error) throw error;
+
+                            showUploadProgress('editUploadProgress', 'editUploadProgressFill', 100);
+
+                            var publicUrlData = supabaseClient.storage
+                                .from('Books')
+                                .getPublicUrl(filePath);
+                            var pdfUrl = publicUrlData.data.publicUrl;
+
+                            // If the old book had a Supabase storagePath, delete the old file
+                            if (book.storagePath) {
+                                supabaseClient.storage
+                                    .from('Books')
+                                    .remove([book.storagePath])
+                                    .catch(function(err) {
+                                        console.warn('Old Supabase file delete error:', err);
+                                    });
                             }
-                            return response.json();
-                        })
-                        .then(function(data) {
-                            return updateBookData(data.secure_url, formatBytes(file.size));
+
+                            return updateBookData(pdfUrl, filePath, formatBytes(file.size));
                         })
                         .then(function() {
                             closeModal('editBookModal');
@@ -2939,11 +2987,11 @@
                         .catch(function(err) {
                             hideLoading();
                             hideUploadProgress('editUploadProgress');
-                            console.error('Cloudinary upload error:', err);
-                            showAlert('Upload failed: ' + err.message, 'error');
+                            console.error('Supabase upload error:', err);
+                            showAlert('PDF upload failed: ' + err.message, 'error');
                         });
                 } else {
-                    updateBookData(null, null).then(function() {
+                    updateBookData(null, null, null).then(function() {
                         closeModal('editBookModal');
                         hideLoading();
                         showAlert('✅ "' + title + '" updated successfully!', 'success');
@@ -2964,9 +3012,22 @@
             if (!confirm('Delete this book permanently?')) return;
             showLoading('Deleting...');
             getBook(bookId).then(function(book) {
+                // 1. Delete from Supabase if storagePath exists
+                if (book && book.storagePath) {
+                    supabaseClient.storage
+                        .from('Books')
+                        .remove([book.storagePath])
+                        .catch(function(err) {
+                            console.warn('Supabase delete error:', err);
+                        });
+                }
+
+                // 2. Fallback: delete from Firebase Storage if pdfId exists (legacy)
                 if (book && book.pdfId) {
                     storage.ref('pdfs/' + book.pdfId).delete().catch(function() {});
                 }
+
+                // 3. Delete Firestore document
                 return deleteBookDoc(bookId);
             }).then(function() {
                 showAlert('Book removed', 'success');
@@ -3490,7 +3551,7 @@
         //  INIT
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM ready – initializing Electro-LASS with Firebase...');
+            console.log('DOM ready – initializing Electro-LASS with Firebase + Supabase...');
             showLoading('Connecting to Firebase...');
 
             PDFStore.init().then(function() {
