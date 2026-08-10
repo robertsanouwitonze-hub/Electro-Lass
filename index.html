@@ -117,6 +117,11 @@
             background: rgba(0, 255, 204, 0.1);
             border-radius: 50px;
             border: 1px solid rgba(0, 255, 204, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .user-info:hover {
+            background: rgba(0, 255, 204, 0.2);
         }
         .admin-badge {
             background: linear-gradient(135deg, #ff3860, var(--electric-orange));
@@ -881,6 +886,11 @@
             font-size: 0.9rem;
             color: var(--text-gray);
         }
+        .stat-card .stat-icon {
+            font-size: 2rem;
+            color: var(--electric-orange);
+            margin-bottom: 0.5rem;
+        }
 
         .dashboard-section {
             background: linear-gradient(135deg, rgba(7, 23, 140, 0.3), rgba(157, 0, 255, 0.2));
@@ -1238,6 +1248,112 @@
             animation: pulse 1.5s ease-in-out infinite;
         }
 
+        /* Admin Dashboard stats grid */
+        .admin-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .admin-stat-card {
+            background: linear-gradient(135deg, rgba(7, 23, 140, 0.3), rgba(157, 0, 255, 0.2));
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .admin-stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--electric-orange);
+        }
+        .admin-stat-card .stat-icon {
+            font-size: 2.2rem;
+            color: var(--electric-orange);
+            margin-bottom: 0.5rem;
+        }
+        .admin-stat-card .stat-number {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--neon-green);
+        }
+        .admin-stat-card .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            margin-top: 0.3rem;
+        }
+
+        /* Profile page */
+        .profile-card {
+            background: linear-gradient(135deg, rgba(7, 23, 140, 0.3), rgba(157, 0, 255, 0.2));
+            border-radius: var(--border-radius);
+            padding: 2.5rem;
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--electric-orange), var(--spark-purple));
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            color: white;
+            border: 4px solid rgba(0, 255, 204, 0.3);
+        }
+        .profile-name {
+            font-size: 2rem;
+            color: var(--neon-green);
+            margin-bottom: 0.5rem;
+        }
+        .profile-email {
+            color: var(--text-gray);
+            margin-bottom: 1rem;
+        }
+        .profile-role {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        .profile-role.user {
+            background: rgba(0, 255, 204, 0.15);
+            color: var(--neon-green);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+        }
+        .profile-role.admin {
+            background: rgba(255, 56, 96, 0.15);
+            color: #ff3860;
+            border: 1px solid rgba(255, 56, 96, 0.3);
+        }
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .profile-stat {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        .profile-stat .num {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--neon-green);
+        }
+        .profile-stat .label {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+        }
+
         @media (max-width: 768px) {
             .nav-container {
                 flex-direction: column;
@@ -1263,6 +1379,9 @@
             }
             .modal-content {
                 padding: 1.5rem;
+            }
+            .profile-stats {
+                grid-template-columns: 1fr;
             }
         }
         @keyframes highlight {
@@ -1293,7 +1412,7 @@
             </a>
             <nav class="main-nav" id="mainNav"></nav>
             <div class="user-panel">
-                <div class="user-info" id="userInfo">
+                <div class="user-info" id="userInfo" onclick="if(currentUser.isLoggedIn) navigateTo('profile')">
                     <i class="fas fa-user-circle"></i>
                     <span id="userStatus">Guest</span>
                     <div id="adminBadge" class="admin-badge" style="display:none;">
@@ -1612,7 +1731,7 @@
 
     <script>
         // ============================================================
-        //  FIREBASE CONFIG & INIT (unchanged)
+        //  FIREBASE CONFIG & INIT
         // ============================================================
         var firebaseConfig = {
             apiKey: "AIzaSyDedupt8sEx-fyv57NPEhkpCnR74miLoS0",
@@ -1633,7 +1752,7 @@
             .catch(function(err) { console.warn('Firestore persistence:', err.code); });
 
         // ============================================================
-        //  SUPABASE INIT (replaces Cloudinary)
+        //  SUPABASE INIT
         // ============================================================
         const SUPABASE_URL = "https://uxddtkxgmtgykhppfgfe.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jK7GeiS_aMszjKIIKIDXpA_48NkBSc8";
@@ -1644,7 +1763,7 @@
         );
 
         // ============================================================
-        //  INDEXEDDB – PDF CACHE (for Firebase Storage fallback)
+        //  INDEXEDDB – PDF CACHE
         // ============================================================
         var PDFStore = {
             db: null,
@@ -1692,7 +1811,7 @@
         };
 
         // ============================================================
-        //  GLOBAL STATE (unchanged)
+        //  GLOBAL STATE
         // ============================================================
         var currentUser = {
             isLoggedIn: false,
@@ -1718,7 +1837,7 @@
         var unsubProgress = null;
 
         // ============================================================
-        //  HELPERS (unchanged)
+        //  HELPERS
         // ============================================================
         function checkPasswordStrength(password) {
             var bar = document.getElementById('passwordStrength');
@@ -1786,14 +1905,19 @@
         }
 
         // ============================================================
-        //  NAVIGATION (unchanged)
+        //  NAVIGATION
         // ============================================================
         function navigateTo(page) {
             if (!page) page = 'home';
             currentPage = page;
             window.location.hash = page;
-            document.title = page === 'home' ? 'Electro-LASS Digital Library' :
-                page.charAt(0).toUpperCase() + page.slice(1) + ' | Electro-LASS';
+            var titles = {
+                home: 'Electro-LASS Digital Library',
+                library: 'Library | Electro-LASS',
+                profile: 'Profile | Electro-LASS',
+                'admin-dashboard': 'Admin Dashboard | Electro-LASS'
+            };
+            document.title = titles[page] || 'Electro-LASS';
             updateNavigation();
             loadPageContent(page);
         }
@@ -1805,9 +1929,14 @@
                 try {
                     if (page === 'home') container.innerHTML = getHomePageContent();
                     else if (page === 'library') container.innerHTML = getLibraryPageContent();
+                    else if (page === 'profile') container.innerHTML = getProfilePageContent();
+                    else if (page === 'admin-dashboard') container.innerHTML = getAdminDashboardContent();
                     else container.innerHTML = '<div class="alert-error">Page not found</div>';
+
                     if (page === 'library') loadBooks();
                     if (page === 'home') updateHomeStatsAndContent();
+                    if (page === 'admin-dashboard') loadAdminStats();
+                    if (page === 'profile') loadProfileData();
                 } catch (e) {
                     container.innerHTML = '<div class="alert-error">Error loading page: ' + e.message + '</div>';
                 } finally {
@@ -1823,10 +1952,19 @@
                 '<a class="nav-link ' + (currentPage === 'home' ? 'active' : '') + '" onclick="navigateTo(\'home\');return false;"><i class="fas fa-home"></i> Home</a>';
             html +=
                 '<a class="nav-link ' + (currentPage === 'library' ? 'active' : '') + '" onclick="navigateTo(\'library\');return false;"><i class="fas fa-book"></i> Library</a>';
-            if (!currentUser.isLoggedIn) {
+
+            if (currentUser.isLoggedIn) {
+                html +=
+                    '<a class="nav-link ' + (currentPage === 'profile' ? 'active' : '') + '" onclick="navigateTo(\'profile\');return false;"><i class="fas fa-user"></i> Profile</a>';
+                if (currentUser.role === 'admin') {
+                    html +=
+                        '<a class="nav-link ' + (currentPage === 'admin-dashboard' ? 'active' : '') + '" onclick="navigateTo(\'admin-dashboard\');return false;"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</a>';
+                }
+            } else {
                 html +=
                     '<a class="nav-link" onclick="openLoginModal();return false;"><i class="fas fa-sign-in-alt"></i> Login</a>';
             }
+
             nav.innerHTML = html;
             updateUserInterface();
         }
@@ -1856,10 +1994,12 @@
         }
 
         // ============================================================
-        //  PAGE CONTENT (unchanged)
+        //  PAGE CONTENT
         // ============================================================
         function getHomePageContent() {
             var isAdmin = currentUser.role === 'admin';
+            var isLoggedIn = currentUser.isLoggedIn;
+
             return `
           <div class="page-header">
             <h1>Welcome to Electro-LASS Digital Library</h1>
@@ -1867,13 +2007,13 @@
           </div>
           <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('overview', this)">Overview</button>
-            <button class="tab-btn" onclick="switchTab('dashboard', this)">My Dashboard</button>
+            ${isLoggedIn ? `<button class="tab-btn" onclick="switchTab('dashboard', this)">My Dashboard</button>` : ''}
             <button class="tab-btn" onclick="switchTab('team', this)">Our Team</button>
             <button class="tab-btn" onclick="switchTab('help', this)">Help &amp; Support</button>
             ${isAdmin ? `<button class="tab-btn" onclick="switchTab('missing', this)">Coming Soon</button>` : ''}
           </div>
           <div id="overviewTab" class="tab-content active">
-            ${!currentUser.isLoggedIn ? `
+            ${!isLoggedIn ? `
               <div class="dashboard-section">
                 <h2><i class="fas fa-book-reader"></i> Access Our Digital Library</h2>
                 <p>Browse all books as a guest, or sign up to unlock enhanced features!</p>
@@ -1889,18 +2029,27 @@
                 <p>Your library syncs across all your devices.</p>
                 <div class="admin-actions">
                   <button class="btn btn-primary" onclick="navigateTo('library')"><i class="fas fa-book"></i> Browse Books</button>
-                  ${currentUser.role === 'admin' ? `<button class="btn" onclick="openAddBookModal()" style="background:var(--neon-green);color:var(--dark-bg);"><i class="fas fa-plus"></i> Add New Book</button>` : ''}
-                  <button class="btn" onclick="showUserProfile()" style="background:var(--spark-purple);color:#fff;"><i class="fas fa-user"></i> My Profile</button>
+                  ${isAdmin ? `<button class="btn" onclick="openAddBookModal()" style="background:var(--neon-green);color:var(--dark-bg);"><i class="fas fa-plus"></i> Add New Book</button>` : ''}
+                  <button class="btn" onclick="navigateTo('profile')" style="background:var(--spark-purple);color:#fff;"><i class="fas fa-user"></i> My Profile</button>
                 </div>
               </div>
             `}
-            <div class="stats-container" id="statsContainer">
-              <div class="stat-card"><div class="stat-number" id="statBooks">—</div><div class="stat-label">Total Books</div></div>
-              <div class="stat-card"><div class="stat-number" id="statUsers">—</div><div class="stat-label">Active Users</div></div>
-              <div class="stat-card"><div class="stat-number" id="statReviews">—</div><div class="stat-label">Reviews</div></div>
-              <div class="stat-card"><div class="stat-number" id="statStorage">—</div><div class="stat-label">Storage Used</div></div>
-            </div>
-            ${currentUser.isLoggedIn ? `
+
+            ${isAdmin ? `
+              <div class="stats-container">
+                <div class="stat-card"><div class="stat-number" id="statBooks">—</div><div class="stat-label"><i class="fas fa-book"></i> Total Books</div></div>
+                <div class="stat-card"><div class="stat-number" id="statUsers">—</div><div class="stat-label"><i class="fas fa-users"></i> Total Users</div></div>
+                <div class="stat-card"><div class="stat-number" id="statReviews">—</div><div class="stat-label"><i class="fas fa-star"></i> Reviews</div></div>
+                <div class="stat-card"><div class="stat-number" id="statStorage">—</div><div class="stat-label"><i class="fas fa-database"></i> Storage Used</div></div>
+              </div>
+            ` : isLoggedIn ? `
+              <div style="text-align:center;padding:1rem;margin:1rem 0;background:rgba(0,255,204,0.05);border-radius:8px;border:1px solid rgba(0,255,204,0.1);">
+                <i class="fas fa-chart-line" style="font-size:2rem;color:var(--neon-green);margin-bottom:0.5rem;display:block;"></i>
+                <p style="color:var(--text-gray);">📊 Visit your <strong style="color:var(--neon-green);cursor:pointer;" onclick="switchTab('dashboard', document.querySelector('.tab-btn:nth-child(2)'))">Dashboard</strong> for personal stats.</p>
+              </div>
+            ` : ''}
+
+            ${isLoggedIn ? `
               <div class="recent-books" id="recommendedContainer">
                 <h2><i class="fas fa-lightbulb"></i> Recommended For You</h2>
                 <p>Based on your reading preferences</p>
@@ -1913,40 +2062,35 @@
               <div class="recent-books-grid" id="recentGrid"></div>
             </div>
           </div>
+
+          ${isLoggedIn ? `
           <div id="dashboardTab" class="tab-content">
-            ${currentUser.isLoggedIn ? `
-              <div class="dashboard-section">
-                <h2><i class="fas fa-tachometer-alt"></i> My Dashboard</h2>
-                <div class="user-stats-grid" id="userStatsGrid">
-                  <div class="user-stat-card"><div class="stat-number" id="uLiked">—</div><div class="stat-label">Liked Books</div></div>
-                  <div class="user-stat-card"><div class="stat-number" id="uDownloaded">—</div><div class="stat-label">Downloads</div></div>
-                  <div class="user-stat-card"><div class="stat-number" id="uReviewed">—</div><div class="stat-label">Reviews</div></div>
-                  <div class="user-stat-card"><div class="stat-number" id="uAge">—</div><div class="stat-label">Days as Member</div></div>
-                </div>
-                <div id="continueReadingContainer">
-                  <h3 style="color:var(--neon-green);margin:2rem 0 1rem 0;"><i class="fas fa-bookmark"></i> Continue Reading</h3>
-                  <div class="book-shelf" id="continueReadingShelf"></div>
-                </div>
-                ${currentUser.role === 'admin' ? `
-                  <div class="admin-panel" style="margin-top:2rem;">
-                    <h4><i class="fas fa-user-shield"></i> Admin Quick Actions</h4>
-                    <div class="admin-actions">
-                      <button class="btn btn-primary" onclick="openAddBookModal()"><i class="fas fa-plus"></i> Add Book</button>
-                      <button class="btn" onclick="showUserManagement()" style="background:var(--spark-purple);color:#fff;"><i class="fas fa-users"></i> Manage Users</button>
-                      <button class="btn" onclick="showStorageStats()" style="background:var(--electric-orange);color:#fff;"><i class="fas fa-database"></i> Storage Stats</button>
-                    </div>
+            <div class="dashboard-section">
+              <h2><i class="fas fa-tachometer-alt"></i> My Dashboard</h2>
+              <div class="user-stats-grid" id="userStatsGrid">
+                <div class="user-stat-card"><div class="stat-number" id="uLiked">—</div><div class="stat-label">❤️ Liked Books</div></div>
+                <div class="user-stat-card"><div class="stat-number" id="uDownloaded">—</div><div class="stat-label">⬇️ Downloads</div></div>
+                <div class="user-stat-card"><div class="stat-number" id="uReviewed">—</div><div class="stat-label">⭐ Reviews</div></div>
+                <div class="user-stat-card"><div class="stat-number" id="uAge">—</div><div class="stat-label">📅 Days as Member</div></div>
+              </div>
+              <div id="continueReadingContainer">
+                <h3 style="color:var(--neon-green);margin:2rem 0 1rem 0;"><i class="fas fa-bookmark"></i> Continue Reading</h3>
+                <div class="book-shelf" id="continueReadingShelf"></div>
+              </div>
+              ${currentUser.role === 'admin' ? `
+                <div class="admin-panel" style="margin-top:2rem;">
+                  <h4><i class="fas fa-user-shield"></i> Admin Quick Actions</h4>
+                  <div class="admin-actions">
+                    <button class="btn btn-primary" onclick="openAddBookModal()"><i class="fas fa-plus"></i> Add Book</button>
+                    <button class="btn" onclick="navigateTo('admin-dashboard')" style="background:var(--spark-purple);color:#fff;"><i class="fas fa-tachometer-alt"></i> Full Dashboard</button>
+                    <button class="btn" onclick="showStorageStats()" style="background:var(--electric-orange);color:#fff;"><i class="fas fa-database"></i> Storage Stats</button>
                   </div>
-                ` : ''}
-              </div>
-            ` : `
-              <div class="empty-state">
-                <i class="fas fa-sign-in-alt"></i>
-                <h3>Please Login to View Dashboard</h3>
-                <p>Sign in to access your personalized dashboard</p>
-                <button class="btn btn-primary" onclick="openLoginModal()" style="margin-top:1rem;"><i class="fas fa-sign-in-alt"></i> Login</button>
-              </div>
-            `}
+                </div>
+              ` : ''}
+            </div>
           </div>
+          ` : ''}
+
           <div id="teamTab" class="tab-content">
             <div class="team-section">
               <h2><i class="fas fa-users"></i> Meet Our Team</h2>
@@ -1967,6 +2111,7 @@
               </div>
             </div>
           </div>
+
           <div id="helpTab" class="tab-content">
             <div class="help-section">
               <h2><i class="fas fa-question-circle"></i> Help &amp; Support</h2>
@@ -1999,6 +2144,7 @@
               </div>
             </div>
           </div>
+
           ${isAdmin ? `
           <div id="missingTab" class="tab-content">
             <div class="help-section" style="border-color:var(--neon-green);">
@@ -2025,6 +2171,7 @@
         }
 
         function getLibraryPageContent() {
+            var isAdmin = currentUser.role === 'admin';
             return `
           <div class="page-header">
             <h1><i class="fas fa-book-open"></i> Digital Library</h1>
@@ -2079,12 +2226,12 @@
               </div>
             </div>
           </div>
-          ${currentUser.role === 'admin' ? `
+          ${isAdmin ? `
             <div class="admin-panel">
               <h3><i class="fas fa-user-shield"></i> Admin Controls</h3>
               <div class="admin-actions">
                 <button class="btn btn-primary" onclick="openAddBookModal()"><i class="fas fa-plus"></i> Add New Book</button>
-                <button class="btn" onclick="showUserManagement()" style="background:var(--spark-purple);color:#fff;"><i class="fas fa-users"></i> Manage Users</button>
+                <button class="btn" onclick="navigateTo('admin-dashboard')" style="background:var(--spark-purple);color:#fff;"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</button>
                 <button class="btn" onclick="showStorageStats()" style="background:var(--electric-orange);color:#fff;"><i class="fas fa-database"></i> Storage Stats</button>
               </div>
             </div>
@@ -2093,8 +2240,78 @@
         `;
         }
 
+        function getProfilePageContent() {
+            if (!currentUser.isLoggedIn) {
+                return `<div class="empty-state"><i class="fas fa-sign-in-alt"></i><h3>Please Login</h3><p>You need to be logged in to view your profile.</p><button class="btn btn-primary" onclick="openLoginModal()" style="margin-top:1rem;">Login</button></div>`;
+            }
+            var isAdmin = currentUser.role === 'admin';
+            return `
+          <div class="page-header">
+            <h1><i class="fas fa-user-circle"></i> My Profile</h1>
+            <p class="page-subtitle">Manage your account and view your activity</p>
+          </div>
+          <div class="profile-card">
+            <div class="profile-avatar"><i class="fas fa-user"></i></div>
+            <div class="profile-name">${currentUser.name}</div>
+            <div class="profile-email"><i class="fas fa-envelope"></i> ${currentUser.email}</div>
+            <span class="profile-role ${isAdmin ? 'admin' : 'user'}">${isAdmin ? '👑 Administrator' : '📖 Reader'}</span>
+            <div class="profile-stats">
+              <div class="profile-stat"><div class="num" id="pLiked">—</div><div class="label">❤️ Liked</div></div>
+              <div class="profile-stat"><div class="num" id="pDownloaded">—</div><div class="label">⬇️ Downloaded</div></div>
+              <div class="profile-stat"><div class="num" id="pReviewed">—</div><div class="label">⭐ Reviews</div></div>
+            </div>
+            <div style="margin-top:1.5rem;padding:1rem;background:rgba(0,255,204,0.05);border-radius:8px;border:1px solid rgba(0,255,204,0.1);">
+              <p style="color:var(--text-gray);font-size:0.9rem;"><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> Account: <strong style="color:var(--neon-green);">${currentUser.accountStatus}</strong></p>
+              <p style="color:var(--text-gray);font-size:0.9rem;"><i class="fas fa-sync" style="color:var(--neon-green);"></i> All data synced to cloud</p>
+            </div>
+            <div style="margin-top:1.5rem;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="navigateTo('library')"><i class="fas fa-book"></i> Browse Library</button>
+              ${isAdmin ? `<button class="btn" onclick="navigateTo('admin-dashboard')" style="background:var(--spark-purple);color:#fff;"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</button>` : ''}
+            </div>
+          </div>
+        `;
+        }
+
+        function getAdminDashboardContent() {
+            if (currentUser.role !== 'admin') {
+                return `<div class="empty-state"><i class="fas fa-user-shield"></i><h3>Access Denied</h3><p>This page is for administrators only.</p></div>`;
+            }
+            return `
+          <div class="page-header">
+            <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+            <p class="page-subtitle">Manage your library, users, and content</p>
+          </div>
+
+          <div class="admin-stats-grid" id="adminStatsGrid">
+            <div class="admin-stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-number" id="adTotalUsers">—</div><div class="stat-label">👥 Total Users</div></div>
+            <div class="admin-stat-card"><div class="stat-icon"><i class="fas fa-book"></i></div><div class="stat-number" id="adTotalBooks">—</div><div class="stat-label">📚 Total Books</div></div>
+            <div class="admin-stat-card"><div class="stat-icon"><i class="fas fa-database"></i></div><div class="stat-number" id="adStorageUsed">—</div><div class="stat-label">💾 Storage Used</div></div>
+            <div class="admin-stat-card"><div class="stat-icon"><i class="fas fa-heart"></i></div><div class="stat-number" id="adTotalLikes">—</div><div class="stat-label">❤️ Total Likes</div></div>
+            <div class="admin-stat-card"><div class="stat-icon"><i class="fas fa-download"></i></div><div class="stat-number" id="adTotalDownloads">—</div><div class="stat-label">⬇️ Total Downloads</div></div>
+            <div class="admin-stat-card"><div class="stat-icon"><i class="fas fa-star"></i></div><div class="stat-number" id="adTotalReviews">—</div><div class="stat-label">⭐ Total Reviews</div></div>
+          </div>
+
+          <div class="dashboard-section">
+            <h2><i class="fas fa-tools"></i> Management Actions</h2>
+            <div class="admin-actions" style="display:flex;gap:12px;flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="openAddBookModal()"><i class="fas fa-plus"></i> ➕ Add Book</button>
+              <button class="btn" onclick="showUserManagement()" style="background:var(--spark-purple);color:#fff;"><i class="fas fa-users"></i> 👥 Manage Users</button>
+              <button class="btn" onclick="showStorageStats()" style="background:var(--electric-orange);color:#fff;"><i class="fas fa-database"></i> 💾 Storage Stats</button>
+              <button class="btn" onclick="navigateTo('library')" style="background:var(--neon-green);color:var(--dark-bg);"><i class="fas fa-book"></i> 📚 Manage Books</button>
+            </div>
+          </div>
+
+          <div class="dashboard-section">
+            <h2><i class="fas fa-clock"></i> Recent Activity</h2>
+            <div id="recentActivity">
+              <p style="color:var(--text-gray);">Loading recent activity...</p>
+            </div>
+          </div>
+        `;
+        }
+
         // ============================================================
-        //  FIRESTORE DATA LAYER (unchanged)
+        //  FIRESTORE DATA LAYER
         // ============================================================
         function getAllBooks() {
             return new Promise(function(resolve, reject) {
@@ -2315,7 +2532,7 @@
         }
 
         // ============================================================
-        //  REAL‑TIME LISTENERS (unchanged)
+        //  REAL‑TIME LISTENERS
         // ============================================================
         function setupRealtimeListeners() {
             if (unsubBooks) unsubBooks();
@@ -2332,6 +2549,7 @@
                     if (currentPage === 'home') {
                         updateHomeStatsAndContent(books);
                     }
+                    if (currentPage === 'admin-dashboard') loadAdminStats();
                     setSyncStatus(true);
                 }, function(err) {
                     console.warn('Books listener error:', err);
@@ -2342,12 +2560,14 @@
             unsubReviews = db.collection('reviews').orderBy('date', 'desc')
                 .onSnapshot(function() {
                     if (currentPage === 'home') updateHomeStatsAndContent(window._allBooks || []);
+                    if (currentPage === 'admin-dashboard') loadAdminStats();
                 }, function(err) { console.warn('Reviews listener error:', err); });
 
             if (unsubLikes) unsubLikes();
             unsubLikes = db.collection('likes')
                 .onSnapshot(function() {
                     if (currentPage === 'home') updateHomeStatsAndContent(window._allBooks || []);
+                    if (currentPage === 'admin-dashboard') loadAdminStats();
                 }, function(err) { console.warn('Likes listener error:', err); });
 
             if (unsubProgress) unsubProgress();
@@ -2360,20 +2580,25 @@
         }
 
         // ============================================================
-        //  HOME STATS & CONTENT UPDATE (unchanged)
+        //  HOME STATS & CONTENT UPDATE
         // ============================================================
         function updateHomeStatsAndContent(books) {
             if (!books) books = window._allBooks || [];
-            getLibraryStats().then(function(stats) {
-                var sBooks = document.getElementById('statBooks');
-                var sUsers = document.getElementById('statUsers');
-                var sReviews = document.getElementById('statReviews');
-                var sStorage = document.getElementById('statStorage');
-                if (sBooks) sBooks.textContent = stats.totalBooks;
-                if (sUsers) sUsers.textContent = stats.totalUsers;
-                if (sReviews) sReviews.textContent = stats.totalReviews;
-                if (sStorage) sStorage.textContent = formatBytes(stats.storageUsed);
-            }).catch(function() {});
+            var isAdmin = currentUser.role === 'admin';
+
+            // Only update admin stats if admin
+            if (isAdmin) {
+                getLibraryStats().then(function(stats) {
+                    var sBooks = document.getElementById('statBooks');
+                    var sUsers = document.getElementById('statUsers');
+                    var sReviews = document.getElementById('statReviews');
+                    var sStorage = document.getElementById('statStorage');
+                    if (sBooks) sBooks.textContent = stats.totalBooks;
+                    if (sUsers) sUsers.textContent = stats.totalUsers;
+                    if (sReviews) sReviews.textContent = stats.totalReviews;
+                    if (sStorage) sStorage.textContent = formatBytes(stats.storageUsed);
+                }).catch(function() {});
+            }
 
             var recentGrid = document.getElementById('recentGrid');
             if (recentGrid) {
@@ -2421,26 +2646,30 @@
         }
 
         // ============================================================
-        //  USER DASHBOARD (unchanged)
+        //  USER DASHBOARD
         // ============================================================
         function updateUserDashboard() {
             if (!currentUser.isLoggedIn) return;
             var uid = currentUser.id;
             db.collection('likes').where('userId', '==', uid).get().then(function(s) {
-                document.getElementById('uLiked').textContent = s.size;
+                var el = document.getElementById('uLiked');
+                if (el) el.textContent = s.size;
             }).catch(function() {});
             db.collection('downloads').where('userId', '==', uid).get().then(function(s) {
-                document.getElementById('uDownloaded').textContent = s.size;
+                var el = document.getElementById('uDownloaded');
+                if (el) el.textContent = s.size;
             }).catch(function() {});
             db.collection('reviews').where('userId', '==', uid).get().then(function(s) {
-                document.getElementById('uReviewed').textContent = s.size;
+                var el = document.getElementById('uReviewed');
+                if (el) el.textContent = s.size;
             }).catch(function() {});
             db.collection('users').doc(uid).get().then(function(doc) {
                 if (doc.exists) {
                     var reg = doc.data().registrationDate;
                     if (reg) {
                         var days = Math.floor((Date.now() - new Date(reg).getTime()) / (1000 * 60 * 60 * 24));
-                        document.getElementById('uAge').textContent = days || 0;
+                        var el = document.getElementById('uAge');
+                        if (el) el.textContent = days || 0;
                     }
                 }
             }).catch(function() {});
@@ -2477,7 +2706,69 @@
         }
 
         // ============================================================
-        //  BOOKS LOADING / SEARCH (unchanged)
+        //  PROFILE DATA
+        // ============================================================
+        function loadProfileData() {
+            if (!currentUser.isLoggedIn) return;
+            var uid = currentUser.id;
+            db.collection('likes').where('userId', '==', uid).get().then(function(s) {
+                var el = document.getElementById('pLiked');
+                if (el) el.textContent = s.size;
+            }).catch(function() {});
+            db.collection('downloads').where('userId', '==', uid).get().then(function(s) {
+                var el = document.getElementById('pDownloaded');
+                if (el) el.textContent = s.size;
+            }).catch(function() {});
+            db.collection('reviews').where('userId', '==', uid).get().then(function(s) {
+                var el = document.getElementById('pReviewed');
+                if (el) el.textContent = s.size;
+            }).catch(function() {});
+        }
+
+        // ============================================================
+        //  ADMIN DASHBOARD STATS
+        // ============================================================
+        function loadAdminStats() {
+            if (currentUser.role !== 'admin') return;
+            getLibraryStats().then(function(stats) {
+                var els = {
+                    adTotalUsers: stats.totalUsers,
+                    adTotalBooks: stats.totalBooks,
+                    adTotalLikes: stats.totalLikes,
+                    adTotalDownloads: stats.totalDownloads,
+                    adTotalReviews: stats.totalReviews,
+                    adStorageUsed: formatBytes(stats.storageUsed)
+                };
+                for (var key in els) {
+                    var el = document.getElementById(key);
+                    if (el) el.textContent = els[key];
+                }
+                // also update the storage meter in add book modal
+                var used = document.getElementById('storageUsed');
+                var pct = document.getElementById('storagePercent');
+                var meter = document.getElementById('storageMeter');
+                if (used) used.textContent = formatBytes(stats.storageUsed);
+                if (pct) pct.textContent = stats.storagePercent + '%';
+                if (meter) meter.style.width = Math.min(100, parseFloat(stats.storagePercent)) + '%';
+
+                // recent activity placeholder
+                var activity = document.getElementById('recentActivity');
+                if (activity) {
+                    activity.innerHTML = `
+                <p style="color:var(--text-gray);"><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> ${stats.totalBooks} books in library</p>
+                <p style="color:var(--text-gray);"><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> ${stats.totalUsers} registered users</p>
+                <p style="color:var(--text-gray);"><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> ${stats.totalLikes} total likes</p>
+                <p style="color:var(--text-gray);"><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> ${stats.totalDownloads} downloads</p>
+                <p style="color:var(--text-gray);"><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> ${stats.totalReviews} reviews written</p>
+              `;
+                }
+            }).catch(function(err) {
+                console.warn('Admin stats error:', err);
+            });
+        }
+
+        // ============================================================
+        //  BOOKS LOADING / SEARCH
         // ============================================================
         function loadBooks() {
             var container = document.getElementById('booksContainer');
@@ -2656,7 +2947,7 @@
         }
 
         // ============================================================
-        //  LIKE (unchanged)
+        //  LIKE
         // ============================================================
         function toggleLike(bookId) {
             if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
@@ -2679,7 +2970,7 @@
         }
 
         // ============================================================
-        //  PDF VIEWER – Opens in new tab (Supabase URL first, Firebase fallback)
+        //  PDF VIEWER – Opens in new tab
         // ============================================================
         function openPdfViewer(bookId) {
             if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
@@ -2688,23 +2979,19 @@
                 if (!book) throw new Error('Book not found');
                 if (!book.hasPdf) throw new Error('No PDF available');
 
-                // Record download
                 recordDownloadDoc(bookId, currentUser.id).catch(function() {});
 
-                // Function to actually open the URL in a new tab
                 function openUrl(url) {
                     window.open(url, '_blank');
                     hideLoading();
                     showAlert('Opening "' + book.title + '" in new tab', 'info');
                 }
 
-                // 1. If we have a Supabase/Cloudinary URL (pdfUrl), use it
                 if (book.pdfUrl) {
                     openUrl(book.pdfUrl);
                     return;
                 }
 
-                // 2. Fallback: Firebase Storage (pdfId)
                 if (book.pdfId) {
                     var storageRef = storage.ref('pdfs/' + book.pdfId);
                     storageRef.getDownloadURL().then(function(url) {
@@ -2724,7 +3011,7 @@
         }
 
         // ============================================================
-        //  REVIEW (unchanged)
+        //  REVIEW
         // ============================================================
         function openReviewModal(bookId) {
             if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
@@ -2775,11 +3062,10 @@
         }
 
         // ============================================================
-        //  DOWNLOAD / READ (now just opens in new tab)
+        //  DOWNLOAD / READ
         // ============================================================
         function downloadBook(bookId) {
             if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
-            // This will be handled inside openPdfViewer, which records download
             openPdfViewer(bookId);
         }
 
@@ -2808,11 +3094,9 @@
 
             showLoading('Uploading to Supabase...');
 
-            // Build a safe file path: pdfs/timestamp_filename
             var safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
             var filePath = 'pdfs/' + Date.now() + '_' + safeName;
 
-            // Show upload progress
             showUploadProgress('uploadProgress', 'uploadProgressFill', 0);
 
             supabaseClient.storage
@@ -2823,13 +3107,10 @@
                 })
                 .then(function(result) {
                     var error = result.error;
-                    var data = result.data;
                     if (error) throw error;
 
-                    // Update progress to 100%
                     showUploadProgress('uploadProgress', 'uploadProgressFill', 100);
 
-                    // Get public URL
                     var publicUrlData = supabaseClient.storage
                         .from('Books')
                         .getPublicUrl(filePath);
@@ -2843,8 +3124,8 @@
                         description: description || 'A ' + category.toLowerCase() + ' book about ' + title,
                         hasPdf: true,
                         pdfUrl: pdfUrl,
-                        storagePath: filePath, // store path for later deletion
-                        pdfId: null, // keep null for Supabase-uploaded books
+                        storagePath: filePath,
+                        pdfId: null,
                         dateAdded: new Date().toISOString(),
                         addedBy: currentUser.name,
                         likesCount: 0,
@@ -2867,9 +3148,8 @@
                     hideUploadProgress('uploadProgress');
                     hideLoading();
                     showAlert('✅ "' + title + '" added successfully with PDF!', 'success');
-                    if (currentPage === 'library') {
-                        loadBooks();
-                    }
+                    if (currentPage === 'library') loadBooks();
+                    if (currentPage === 'admin-dashboard') loadAdminStats();
                 })
                 .catch(function(err) {
                     hideLoading();
@@ -2965,7 +3245,6 @@
                                 .getPublicUrl(filePath);
                             var pdfUrl = publicUrlData.data.publicUrl;
 
-                            // If the old book had a Supabase storagePath, delete the old file
                             if (book.storagePath) {
                                 supabaseClient.storage
                                     .from('Books')
@@ -2983,6 +3262,7 @@
                             hideLoading();
                             showAlert('✅ "' + title + '" updated successfully!', 'success');
                             if (currentPage === 'library') loadBooks();
+                            if (currentPage === 'admin-dashboard') loadAdminStats();
                         })
                         .catch(function(err) {
                             hideLoading();
@@ -2996,6 +3276,7 @@
                         hideLoading();
                         showAlert('✅ "' + title + '" updated successfully!', 'success');
                         if (currentPage === 'library') loadBooks();
+                        if (currentPage === 'admin-dashboard') loadAdminStats();
                     }).catch(function(err) {
                         hideLoading();
                         showAlert('Error: ' + err.message, 'error');
@@ -3012,7 +3293,6 @@
             if (!confirm('Delete this book permanently?')) return;
             showLoading('Deleting...');
             getBook(bookId).then(function(book) {
-                // 1. Delete from Supabase if storagePath exists
                 if (book && book.storagePath) {
                     supabaseClient.storage
                         .from('Books')
@@ -3021,17 +3301,14 @@
                             console.warn('Supabase delete error:', err);
                         });
                 }
-
-                // 2. Fallback: delete from Firebase Storage if pdfId exists (legacy)
                 if (book && book.pdfId) {
                     storage.ref('pdfs/' + book.pdfId).delete().catch(function() {});
                 }
-
-                // 3. Delete Firestore document
                 return deleteBookDoc(bookId);
             }).then(function() {
                 showAlert('Book removed', 'success');
                 if (currentPage === 'library') loadBooks();
+                if (currentPage === 'admin-dashboard') loadAdminStats();
                 hideLoading();
             }).catch(function(err) {
                 hideLoading();
@@ -3040,7 +3317,7 @@
         }
 
         // ============================================================
-        //  USER AUTH (unchanged)
+        //  USER AUTH
         // ============================================================
         function demoLogin() {
             var demoEmail = 'demo@user.com';
@@ -3279,7 +3556,8 @@
                                 };
                                 updateUserInterface();
                                 updateNavigation();
-                                if (currentPage === 'home' || currentPage === 'library') {
+                                if (currentPage === 'home' || currentPage === 'library' || currentPage ===
+                                    'profile' || currentPage === 'admin-dashboard') {
                                     loadPageContent(currentPage);
                                 }
                                 setupRealtimeListeners();
@@ -3306,7 +3584,7 @@
         });
 
         // ============================================================
-        //  BOOK DETAILS (unchanged)
+        //  BOOK DETAILS
         // ============================================================
         function openBookDetails(bookId) {
             showLoading('Loading book details...');
@@ -3403,7 +3681,7 @@
         }
 
         // ============================================================
-        //  MODALS (unchanged)
+        //  MODALS
         // ============================================================
         function openAddBookModal() {
             if (currentUser.role !== 'admin') { showAlert('Admin access required', 'error'); return; }
@@ -3436,33 +3714,13 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         // ============================================================
-        //  USER PROFILE / ADMIN UTILITIES (unchanged)
+        //  ADMIN UTILITIES
         // ============================================================
-        function showUserProfile() {
-            if (!currentUser.isLoggedIn) { openLoginModal(); return; }
-            var html = `
-            <div style="padding:1rem;background:rgba(255,255,255,0.05);border-radius:8px;max-width:500px;margin:0 auto;">
-              <h3 style="color:var(--neon-green);margin-bottom:1rem;"><i class="fas fa-user-circle"></i> Your Profile</h3>
-              <p><strong>Name:</strong> ${currentUser.name}</p>
-              <p><strong>Email:</strong> ${currentUser.email}</p>
-              <p><strong>Role:</strong> ${currentUser.role === 'admin' ? 'Administrator' : 'Regular User'}</p>
-              <p><strong>Account Status:</strong> ${currentUser.accountStatus}</p>
-              <div style="margin-top:1.5rem;padding:1rem;background:rgba(0,255,204,0.1);border-radius:6px;">
-                <h4 style="color:var(--neon-green);margin-bottom:0.5rem;">Sync Status</h4>
-                <p><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> All data is synced to the cloud</p>
-                <p><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> Access your library from any device</p>
-                <p><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> Real‑time updates across devices</p>
-              </div>
-            </div>
-          `;
-            showAlert(html, 'info');
-        }
-
         function showStorageStats() {
             if (currentUser.role !== 'admin') { showAlert('Admin access required', 'error'); return; }
             getLibraryStats().then(function(stats) {
                 var msg =
-                    `<strong>Library Storage (Firebase):</strong><br><br>• Total: 500GB<br>• Used: ${formatBytes(stats.storageUsed)}<br>• Available: ${formatBytes(stats.storageLimit - stats.storageUsed)}<br>• Usage: ${stats.storagePercent}%`;
+                    `<strong>Library Storage:</strong><br><br>• Total: 500GB<br>• Used: ${formatBytes(stats.storageUsed)}<br>• Available: ${formatBytes(stats.storageLimit - stats.storageUsed)}<br>• Usage: ${stats.storagePercent}%<br><br>📊 <strong>Library Stats:</strong><br>• Books: ${stats.totalBooks}<br>• Users: ${stats.totalUsers}<br>• Likes: ${stats.totalLikes}<br>• Downloads: ${stats.totalDownloads}<br>• Reviews: ${stats.totalReviews}`;
                 showAlert(msg, 'info');
             }).catch(function() {
                 showAlert('Could not fetch storage stats', 'error');
@@ -3476,7 +3734,7 @@
                     return '• ' + u.name + ' (' + u.email + ') - Joined: ' + formatDate(u.registrationDate);
                 }).join('<br>') || 'No regular users found.';
                 var msg =
-                    `<strong>User Management (${users.filter(u => u.role !== 'admin').length} regular users):</strong><br><br>${list}<br><br><small>Admin users: 1 (admin@electrolass.com)</small>`;
+                    `<strong>👥 User Management (${users.filter(u => u.role !== 'admin').length} regular users):</strong><br><br>${list}<br><br><small>👑 Admin users: 1 (admin@electrolass.com)</small>`;
                 showAlert(msg, 'info');
             }).catch(function() {
                 showAlert('Could not fetch users', 'error');
@@ -3484,7 +3742,7 @@
         }
 
         // ============================================================
-        //  UI HELPERS (unchanged)
+        //  UI HELPERS
         // ============================================================
         function showAlert(message, type) {
             var existing = document.querySelectorAll('.alert');
@@ -3502,7 +3760,7 @@
             </div>
           `;
             document.body.appendChild(div);
-            setTimeout(function() { if (div.parentElement) div.remove(); }, 10000);
+            setTimeout(function() { if (div.parentElement) div.remove(); }, 12000);
         }
 
         function showLoading(msg) {
@@ -3560,7 +3818,9 @@
                 updateUserInterface();
                 updateNavigation();
                 var hash = window.location.hash.replace('#', '');
-                navigateTo(hash === 'library' ? 'library' : 'home');
+                var validPages = ['home', 'library', 'profile', 'admin-dashboard'];
+                var target = validPages.includes(hash) ? hash : 'home';
+                navigateTo(target);
                 setTimeout(setupRealtimeListeners, 500);
                 window.addEventListener('online', function() { setSyncStatus(true);
                     showAlert('Back online. Syncing...', 'success'); });
@@ -3585,7 +3845,8 @@
         });
         window.addEventListener('hashchange', function() {
             var h = window.location.hash.replace('#', '');
-            if (h === 'home' || h === 'library') navigateTo(h);
+            var valid = ['home', 'library', 'profile', 'admin-dashboard'];
+            if (valid.includes(h)) navigateTo(h);
         });
     </script>
 
