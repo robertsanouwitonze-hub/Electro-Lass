@@ -15,13 +15,15 @@
     </script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js">
     </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js">
+    </script>
 
     <!-- Supabase JS v2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
     </script>
 
     <style>
-        /* ===== BASE STYLES (same as before – trimmed for brevity) ===== */
+        /* ===== BASE STYLES (preserved) ===== */
         :root {
             --electro-blue: #07178c;
             --electric-orange: #ff7200;
@@ -383,6 +385,32 @@
         }
         .btn-demo:hover {
             background: linear-gradient(135deg, #ffca28, #ffa726);
+        }
+        .btn-google {
+            background: #fff;
+            color: #333;
+            border: 1px solid #ddd;
+            margin-top: 0.5rem;
+        }
+        .btn-google:hover {
+            background: #f5f5f5;
+            border-color: #ccc;
+        }
+        .btn-google i {
+            color: #ea4335;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+        }
+        .btn-outline:hover {
+            background: rgba(0, 255, 204, 0.1);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
         }
 
         .search-section {
@@ -1248,7 +1276,6 @@
             animation: pulse 1.5s ease-in-out infinite;
         }
 
-        /* Admin Dashboard stats grid */
         .admin-stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1283,7 +1310,6 @@
             margin-top: 0.3rem;
         }
 
-        /* Profile page */
         .profile-card {
             background: linear-gradient(135deg, rgba(7, 23, 140, 0.3), rgba(157, 0, 255, 0.2));
             border-radius: var(--border-radius);
@@ -1354,6 +1380,99 @@
             color: var(--text-gray);
         }
 
+        /* ===== NEW: OTP Verification UI ===== */
+        .otp-input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        .otp-input-group input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(0, 255, 204, 0.3);
+            border-radius: 10px;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            caret-color: var(--neon-green);
+        }
+        .otp-input-group input:focus {
+            outline: none;
+            border-color: var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+        }
+        .otp-input-group input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .otp-timer {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            margin: 1rem 0;
+        }
+        .otp-timer strong {
+            color: var(--neon-green);
+            font-size: 1.3rem;
+        }
+        .otp-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        .otp-actions .btn {
+            justify-content: center;
+        }
+
+        .feedback-form textarea {
+            min-height: 120px;
+        }
+        .feedback-success {
+            text-align: center;
+            padding: 2rem;
+        }
+        .feedback-success i {
+            font-size: 4rem;
+            color: var(--neon-green);
+            margin-bottom: 1rem;
+        }
+
+        .forgot-password-link {
+            color: var(--neon-green);
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 0.5rem;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+        .forgot-password-link:hover {
+            color: var(--electric-orange);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            color: var(--text-gray);
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
         @media (max-width: 768px) {
             .nav-container {
                 flex-direction: column;
@@ -1382,6 +1501,11 @@
             }
             .profile-stats {
                 grid-template-columns: 1fr;
+            }
+            .otp-input-group input {
+                width: 40px;
+                height: 50px;
+                font-size: 1.4rem;
             }
         }
         @keyframes highlight {
@@ -1625,7 +1749,9 @@
         </div>
     </div>
 
-    <!-- Login -->
+    <!-- ===== NEW / UPGRADED MODALS ===== -->
+
+    <!-- Login Modal (UPGRADED with Google + Forgot Password) -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
@@ -1643,13 +1769,24 @@
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
+                    <button type="button" class="forgot-password-link" onclick="openForgotPasswordModal()">
+                        <i class="fas fa-key"></i> Forgot password?
+                    </button>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">
                     <i class="fas fa-sign-in-alt"></i> Sign In
                 </button>
+
+                <div class="divider">or</div>
+
+                <button type="button" class="btn btn-google btn-block" onclick="handleGoogleLogin()">
+                    <i class="fab fa-google"></i> Continue with Google
+                </button>
+
                 <button type="button" class="btn btn-demo btn-block" onclick="demoLogin()">
                     <i class="fas fa-user-astronaut"></i> Use Demo Account
                 </button>
+
                 <div style="text-align:center;margin-top:1rem;">
                     <span style="color:var(--text-gray);">Don't have an account? </span>
                     <button type="button" class="btn" onclick="openSignupModal()" style="background:none;color:var(--neon-green);padding:5px;">
@@ -1660,7 +1797,7 @@
         </div>
     </div>
 
-    <!-- Signup -->
+    <!-- Signup Modal (UPGRADED) -->
     <div class="modal" id="signupModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('signupModal')">&times;</button>
@@ -1677,7 +1814,7 @@
                     <label>Email Address</label>
                     <input type="email" id="signupEmail" placeholder="user@example.com" required />
                     <small style="color:var(--text-gray);font-size:0.8rem;">
-                        <i class="fas fa-envelope"></i> We'll never share your email
+                        <i class="fas fa-envelope"></i> We'll send a verification code to this email
                     </small>
                 </div>
                 <div class="form-group">
@@ -1723,6 +1860,80 @@
         </div>
     </div>
 
+    <!-- ===== NEW: OTP Verification Modal ===== -->
+    <div class="modal" id="verifyOTPModal">
+        <div class="modal-content" style="max-width:480px;">
+            <button class="modal-close" onclick="closeVerifyOTP()">&times;</button>
+            <h2><i class="fas fa-envelope-open-text"></i> Verify Your Email</h2>
+            <p style="color:var(--text-gray);margin-bottom:0.5rem;">
+                We sent a verification code to:
+            </p>
+            <p style="color:var(--neon-green);font-weight:600;font-size:1.1rem;margin-bottom:1.5rem;" id="otpEmailDisplay">
+                user@example.com
+            </p>
+
+            <div class="otp-input-group" id="otpInputGroup">
+                <input type="text" maxlength="1" class="otp-digit" data-index="0" autofocus />
+                <input type="text" maxlength="1" class="otp-digit" data-index="1" />
+                <input type="text" maxlength="1" class="otp-digit" data-index="2" />
+                <input type="text" maxlength="1" class="otp-digit" data-index="3" />
+                <input type="text" maxlength="1" class="otp-digit" data-index="4" />
+                <input type="text" maxlength="1" class="otp-digit" data-index="5" />
+            </div>
+
+            <div id="otpError" style="color:#ff3860;text-align:center;font-size:0.9rem;min-height:1.5rem;"></div>
+            <div id="otpSuccess" style="color:var(--neon-green);text-align:center;font-size:0.9rem;min-height:1.5rem;"></div>
+
+            <div class="otp-timer">
+                Code expires in: <strong id="otpTimerDisplay">10:00</strong>
+            </div>
+
+            <div class="otp-actions">
+                <button class="btn btn-primary btn-block" id="verifyOTPBtn" onclick="verifyOTP()">
+                    <i class="fas fa-check-circle"></i> Verify Email
+                </button>
+                <button class="btn btn-outline btn-block" id="resendOTPBtn" onclick="resendOTP()">
+                    <i class="fas fa-redo"></i> Resend Code
+                </button>
+                <div id="resendCooldown" style="text-align:center;font-size:0.85rem;color:var(--text-gray);display:none;">
+                    Resend available in <span id="resendCountdown">60</span> seconds
+                </div>
+            </div>
+
+            <div style="text-align:center;margin-top:1.5rem;border-top:1px solid rgba(255,255,255,0.05);padding-top:1rem;">
+                <button class="btn" onclick="logout()" style="background:none;color:var(--text-gray);padding:5px;">
+                    <i class="fas fa-sign-out-alt"></i> Logout & try different account
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== NEW: Forgot Password Modal ===== -->
+    <div class="modal" id="forgotPasswordModal">
+        <div class="modal-content" style="max-width:450px;">
+            <button class="modal-close" onclick="closeModal('forgotPasswordModal')">&times;</button>
+            <h2><i class="fas fa-key"></i> Reset Password</h2>
+            <p style="color:var(--text-gray);margin-bottom:1.5rem;">
+                Enter your email address and we'll send you a password reset link.
+            </p>
+            <form id="forgotPasswordForm" onsubmit="handleForgotPassword(event)">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="resetEmail" placeholder="Enter your email" required />
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-paper-plane"></i> Send Reset Link
+                </button>
+                <div style="text-align:center;margin-top:1rem;">
+                    <button type="button" class="btn" onclick="closeModal('forgotPasswordModal');openLoginModal();" style="background:none;color:var(--neon-green);padding:5px;">
+                        <i class="fas fa-arrow-left"></i> Back to Login
+                    </button>
+                </div>
+            </form>
+            <div id="resetResult" style="margin-top:1rem;text-align:center;"></div>
+        </div>
+    </div>
+
     <!-- Loading -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
@@ -1731,7 +1942,7 @@
 
     <script>
         // ============================================================
-        //  FIREBASE CONFIG & INIT
+        //  FIREBASE CONFIG & INIT (preserved)
         // ============================================================
         var firebaseConfig = {
             apiKey: "AIzaSyDedupt8sEx-fyv57NPEhkpCnR74miLoS0",
@@ -1747,12 +1958,14 @@
         var auth = firebase.auth();
         var db = firebase.firestore();
         var storage = firebase.storage();
+        var functions = firebase.functions();
 
+        // Enable offline persistence
         db.enablePersistence({ synchronizeTabs: true })
             .catch(function(err) { console.warn('Firestore persistence:', err.code); });
 
         // ============================================================
-        //  SUPABASE INIT
+        //  SUPABASE INIT (preserved)
         // ============================================================
         const SUPABASE_URL = "https://uxddtkxgmtgykhppfgfe.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jK7GeiS_aMszjKIIKIDXpA_48NkBSc8";
@@ -1763,7 +1976,7 @@
         );
 
         // ============================================================
-        //  INDEXEDDB – PDF CACHE
+        //  INDEXEDDB – PDF CACHE (preserved)
         // ============================================================
         var PDFStore = {
             db: null,
@@ -1811,7 +2024,7 @@
         };
 
         // ============================================================
-        //  GLOBAL STATE
+        //  GLOBAL STATE (preserved + extended)
         // ============================================================
         var currentUser = {
             isLoggedIn: false,
@@ -1823,7 +2036,8 @@
             downloadedBooks: [],
             reviewedBooks: [],
             readingProgress: {},
-            accountStatus: 'active'
+            accountStatus: 'active',
+            isVerified: false // NEW: tracks verification status
         };
         var currentPage = 'home';
         var searchTimeout = null;
@@ -1836,8 +2050,18 @@
         var unsubLikes = null;
         var unsubProgress = null;
 
+        // OTP state
+        var otpTimerInterval = null;
+        var otpExpirySeconds = 600; // 10 minutes
+        var otpRemainingSeconds = 600;
+        var otpResendCooldown = 60;
+        var otpResendRemaining = 0;
+        var otpResendTimer = null;
+        var pendingVerificationEmail = '';
+        var pendingVerificationUserId = '';
+
         // ============================================================
-        //  HELPERS
+        //  HELPERS (preserved + extended)
         // ============================================================
         function checkPasswordStrength(password) {
             var bar = document.getElementById('passwordStrength');
@@ -1864,8 +2088,8 @@
         }
 
         function formatDate(ds) {
-            try { return new Date(ds).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
-            catch (e) { return 'Unknown date'; }
+            try { return new Date(ds).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); } catch (
+            e) { return 'Unknown date'; }
         }
 
         function getRatingStars(rating) {
@@ -1905,7 +2129,7 @@
         }
 
         // ============================================================
-        //  NAVIGATION
+        //  NAVIGATION (preserved)
         // ============================================================
         function navigateTo(page) {
             if (!page) page = 'home';
@@ -1937,6 +2161,11 @@
                     if (page === 'home') updateHomeStatsAndContent();
                     if (page === 'admin-dashboard') loadAdminStats();
                     if (page === 'profile') loadProfileData();
+
+                    // Auto-bind feedback form if on help tab
+                    if (page === 'home') {
+                        setTimeout(bindFeedbackForm, 500);
+                    }
                 } catch (e) {
                     container.innerHTML = '<div class="alert-error">Error loading page: ' + e.message + '</div>';
                 } finally {
@@ -1953,14 +2182,14 @@
             html +=
                 '<a class="nav-link ' + (currentPage === 'library' ? 'active' : '') + '" onclick="navigateTo(\'library\');return false;"><i class="fas fa-book"></i> Library</a>';
 
-            if (currentUser.isLoggedIn) {
+            if (currentUser.isLoggedIn && currentUser.isVerified) {
                 html +=
                     '<a class="nav-link ' + (currentPage === 'profile' ? 'active' : '') + '" onclick="navigateTo(\'profile\');return false;"><i class="fas fa-user"></i> Profile</a>';
                 if (currentUser.role === 'admin') {
                     html +=
                         '<a class="nav-link ' + (currentPage === 'admin-dashboard' ? 'active' : '') + '" onclick="navigateTo(\'admin-dashboard\');return false;"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</a>';
                 }
-            } else {
+            } else if (!currentUser.isLoggedIn) {
                 html +=
                     '<a class="nav-link" onclick="openLoginModal();return false;"><i class="fas fa-sign-in-alt"></i> Login</a>';
             }
@@ -1974,7 +2203,7 @@
             var status = document.getElementById('userStatus');
             var logoutBtn = document.getElementById('logoutBtn');
             var badge = document.getElementById('adminBadge');
-            if (currentUser.isLoggedIn) {
+            if (currentUser.isLoggedIn && currentUser.isVerified) {
                 var name = currentUser.name.split(' ')[0] || currentUser.email.split('@')[0];
                 status.textContent = name;
                 if (currentUser.role === 'admin') {
@@ -1985,6 +2214,11 @@
                     info.querySelector('i').className = 'fas fa-user-check';
                 }
                 logoutBtn.style.display = 'block';
+            } else if (currentUser.isLoggedIn && !currentUser.isVerified) {
+                status.textContent = 'Unverified';
+                badge.style.display = 'none';
+                info.querySelector('i').className = 'fas fa-user-clock';
+                logoutBtn.style.display = 'block';
             } else {
                 status.textContent = 'Guest';
                 badge.style.display = 'none';
@@ -1994,11 +2228,52 @@
         }
 
         // ============================================================
-        //  PAGE CONTENT
+        //  PAGE CONTENT (preserved, with Help tab upgraded)
         // ============================================================
         function getHomePageContent() {
             var isAdmin = currentUser.role === 'admin';
             var isLoggedIn = currentUser.isLoggedIn;
+            var isVerified = currentUser.isVerified;
+
+            var helpFormHtml = `
+            <div class="help-section" id="feedbackSection">
+              <h2><i class="fas fa-comment-dots"></i> Help & Feedback</h2>
+              <p class="page-subtitle">Send us your questions, suggestions, or report a problem.</p>
+              <form id="feedbackForm" onsubmit="submitFeedback(event)" class="feedback-form" style="max-width:600px;margin:1.5rem auto 0;">
+                <div class="form-group">
+                  <label>Your Name</label>
+                  <input type="text" id="feedbackName" placeholder="Your name" required />
+                </div>
+                <div class="form-group">
+                  <label>Your Email</label>
+                  <input type="email" id="feedbackEmail" placeholder="Your email" required />
+                </div>
+                <div class="form-group">
+                  <label>Category</label>
+                  <select id="feedbackCategory" required>
+                    <option value="">Select a category</option>
+                    <option value="Problem / Bug">🐛 Problem / Bug</option>
+                    <option value="Suggestion">💡 Suggestion</option>
+                    <option value="Question">❓ Question</option>
+                    <option value="Account / Login Problem">🔐 Account / Login Problem</option>
+                    <option value="Book / Library Problem">📚 Book / Library Problem</option>
+                    <option value="Other">📝 Other</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Message</label>
+                  <textarea id="feedbackMessage" placeholder="Describe your issue or suggestion in detail..." rows="5" required maxlength="5000"></textarea>
+                  <small style="color:var(--text-gray);font-size:0.8rem;display:block;margin-top:4px;">
+                    <span id="feedbackCharCount">0</span> / 5000 characters
+                  </small>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" id="feedbackSubmitBtn">
+                  <i class="fas fa-paper-plane"></i> Send Feedback
+                </button>
+                <div id="feedbackResult" style="margin-top:1rem;text-align:center;"></div>
+              </form>
+            </div>
+          `;
 
             return `
           <div class="page-header">
@@ -2007,7 +2282,7 @@
           </div>
           <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('overview', this)">Overview</button>
-            ${isLoggedIn ? `<button class="tab-btn" onclick="switchTab('dashboard', this)">My Dashboard</button>` : ''}
+            ${isLoggedIn && isVerified ? `<button class="tab-btn" onclick="switchTab('dashboard', this)">My Dashboard</button>` : ''}
             <button class="tab-btn" onclick="switchTab('team', this)">Our Team</button>
             <button class="tab-btn" onclick="switchTab('help', this)">Help &amp; Support</button>
             ${isAdmin ? `<button class="tab-btn" onclick="switchTab('missing', this)">Coming Soon</button>` : ''}
@@ -2023,7 +2298,7 @@
                   <button class="btn" onclick="openSignupModal()" style="background:var(--spark-purple);color:#fff;"><i class="fas fa-user-plus"></i> Sign Up Free</button>
                 </div>
               </div>
-            ` : `
+            ` : isVerified ? `
               <div class="dashboard-section">
                 <h2><i class="fas fa-book-open"></i> Welcome back, ${currentUser.name}!</h2>
                 <p>Your library syncs across all your devices.</p>
@@ -2031,6 +2306,15 @@
                   <button class="btn btn-primary" onclick="navigateTo('library')"><i class="fas fa-book"></i> Browse Books</button>
                   ${isAdmin ? `<button class="btn" onclick="openAddBookModal()" style="background:var(--neon-green);color:var(--dark-bg);"><i class="fas fa-plus"></i> Add New Book</button>` : ''}
                   <button class="btn" onclick="navigateTo('profile')" style="background:var(--spark-purple);color:#fff;"><i class="fas fa-user"></i> My Profile</button>
+                </div>
+              </div>
+            ` : `
+              <div class="dashboard-section" style="border-color:#ff3860;">
+                <h2><i class="fas fa-exclamation-triangle" style="color:#ff3860;"></i> Verify Your Email</h2>
+                <p>Please check your email for the verification code we sent.</p>
+                <div class="admin-actions">
+                  <button class="btn btn-primary" onclick="openVerifyOTP('${currentUser.email}')"><i class="fas fa-envelope"></i> Verify Now</button>
+                  <button class="btn" onclick="resendOTP()" style="background:var(--electric-orange);color:#fff;"><i class="fas fa-redo"></i> Resend Code</button>
                 </div>
               </div>
             `}
@@ -2042,14 +2326,14 @@
                 <div class="stat-card"><div class="stat-number" id="statReviews">—</div><div class="stat-label"><i class="fas fa-star"></i> Reviews</div></div>
                 <div class="stat-card"><div class="stat-number" id="statStorage">—</div><div class="stat-label"><i class="fas fa-database"></i> Storage Used</div></div>
               </div>
-            ` : isLoggedIn ? `
+            ` : isLoggedIn && isVerified ? `
               <div style="text-align:center;padding:1rem;margin:1rem 0;background:rgba(0,255,204,0.05);border-radius:8px;border:1px solid rgba(0,255,204,0.1);">
                 <i class="fas fa-chart-line" style="font-size:2rem;color:var(--neon-green);margin-bottom:0.5rem;display:block;"></i>
                 <p style="color:var(--text-gray);">📊 Visit your <strong style="color:var(--neon-green);cursor:pointer;" onclick="switchTab('dashboard', document.querySelector('.tab-btn:nth-child(2)'))">Dashboard</strong> for personal stats.</p>
               </div>
             ` : ''}
 
-            ${isLoggedIn ? `
+            ${isLoggedIn && isVerified ? `
               <div class="recent-books" id="recommendedContainer">
                 <h2><i class="fas fa-lightbulb"></i> Recommended For You</h2>
                 <p>Based on your reading preferences</p>
@@ -2063,7 +2347,7 @@
             </div>
           </div>
 
-          ${isLoggedIn ? `
+          ${isLoggedIn && isVerified ? `
           <div id="dashboardTab" class="tab-content">
             <div class="dashboard-section">
               <h2><i class="fas fa-tachometer-alt"></i> My Dashboard</h2>
@@ -2143,6 +2427,7 @@
                 </div>
               </div>
             </div>
+            ${helpFormHtml}
           </div>
 
           ${isAdmin ? `
@@ -2241,7 +2526,7 @@
         }
 
         function getProfilePageContent() {
-            if (!currentUser.isLoggedIn) {
+            if (!currentUser.isLoggedIn || !currentUser.isVerified) {
                 return `<div class="empty-state"><i class="fas fa-sign-in-alt"></i><h3>Please Login</h3><p>You need to be logged in to view your profile.</p><button class="btn btn-primary" onclick="openLoginModal()" style="margin-top:1rem;">Login</button></div>`;
             }
             var isAdmin = currentUser.role === 'admin';
@@ -2262,6 +2547,7 @@
             </div>
             <div style="margin-top:1.5rem;padding:1rem;background:rgba(0,255,204,0.05);border-radius:8px;border:1px solid rgba(0,255,204,0.1);">
               <p style="color:var(--text-gray);font-size:0.9rem;"><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> Account: <strong style="color:var(--neon-green);">${currentUser.accountStatus}</strong></p>
+              <p style="color:var(--text-gray);font-size:0.9rem;"><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> Verified: <strong style="color:var(--neon-green);">✅ Yes</strong></p>
               <p style="color:var(--text-gray);font-size:0.9rem;"><i class="fas fa-sync" style="color:var(--neon-green);"></i> All data synced to cloud</p>
             </div>
             <div style="margin-top:1.5rem;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
@@ -2311,7 +2597,7 @@
         }
 
         // ============================================================
-        //  FIRESTORE DATA LAYER
+        //  FIRESTORE DATA LAYER (preserved)
         // ============================================================
         function getAllBooks() {
             return new Promise(function(resolve, reject) {
@@ -2532,7 +2818,7 @@
         }
 
         // ============================================================
-        //  REAL‑TIME LISTENERS
+        //  REAL‑TIME LISTENERS (preserved)
         // ============================================================
         function setupRealtimeListeners() {
             if (unsubBooks) unsubBooks();
@@ -2571,7 +2857,7 @@
                 }, function(err) { console.warn('Likes listener error:', err); });
 
             if (unsubProgress) unsubProgress();
-            if (currentUser.isLoggedIn) {
+            if (currentUser.isLoggedIn && currentUser.isVerified) {
                 unsubProgress = db.collection('readingProgress').where('userId', '==', currentUser.id)
                     .onSnapshot(function() {
                         if (currentPage === 'home') updateHomeStatsAndContent(window._allBooks || []);
@@ -2580,13 +2866,12 @@
         }
 
         // ============================================================
-        //  HOME STATS & CONTENT UPDATE
+        //  HOME STATS & CONTENT UPDATE (preserved)
         // ============================================================
         function updateHomeStatsAndContent(books) {
             if (!books) books = window._allBooks || [];
             var isAdmin = currentUser.role === 'admin';
 
-            // Only update admin stats if admin
             if (isAdmin) {
                 getLibraryStats().then(function(stats) {
                     var sBooks = document.getElementById('statBooks');
@@ -2621,7 +2906,7 @@
             }
 
             var recGrid = document.getElementById('recommendedGrid');
-            if (recGrid && currentUser.isLoggedIn) {
+            if (recGrid && currentUser.isLoggedIn && currentUser.isVerified) {
                 getRecommendedBooks(currentUser.id, books).then(function(recs) {
                     if (recs.length) {
                         recGrid.innerHTML = recs.map(function(b) {
@@ -2640,16 +2925,16 @@
                 }).catch(function() {});
             }
 
-            if (currentUser.isLoggedIn) {
+            if (currentUser.isLoggedIn && currentUser.isVerified) {
                 updateUserDashboard();
             }
         }
 
         // ============================================================
-        //  USER DASHBOARD
+        //  USER DASHBOARD (preserved)
         // ============================================================
         function updateUserDashboard() {
-            if (!currentUser.isLoggedIn) return;
+            if (!currentUser.isLoggedIn || !currentUser.isVerified) return;
             var uid = currentUser.id;
             db.collection('likes').where('userId', '==', uid).get().then(function(s) {
                 var el = document.getElementById('uLiked');
@@ -2706,10 +2991,10 @@
         }
 
         // ============================================================
-        //  PROFILE DATA
+        //  PROFILE DATA (preserved)
         // ============================================================
         function loadProfileData() {
-            if (!currentUser.isLoggedIn) return;
+            if (!currentUser.isLoggedIn || !currentUser.isVerified) return;
             var uid = currentUser.id;
             db.collection('likes').where('userId', '==', uid).get().then(function(s) {
                 var el = document.getElementById('pLiked');
@@ -2726,7 +3011,7 @@
         }
 
         // ============================================================
-        //  ADMIN DASHBOARD STATS
+        //  ADMIN DASHBOARD STATS (preserved)
         // ============================================================
         function loadAdminStats() {
             if (currentUser.role !== 'admin') return;
@@ -2743,7 +3028,6 @@
                     var el = document.getElementById(key);
                     if (el) el.textContent = els[key];
                 }
-                // also update the storage meter in add book modal
                 var used = document.getElementById('storageUsed');
                 var pct = document.getElementById('storagePercent');
                 var meter = document.getElementById('storageMeter');
@@ -2751,7 +3035,6 @@
                 if (pct) pct.textContent = stats.storagePercent + '%';
                 if (meter) meter.style.width = Math.min(100, parseFloat(stats.storagePercent)) + '%';
 
-                // recent activity placeholder
                 var activity = document.getElementById('recentActivity');
                 if (activity) {
                     activity.innerHTML = `
@@ -2768,7 +3051,7 @@
         }
 
         // ============================================================
-        //  BOOKS LOADING / SEARCH
+        //  BOOKS LOADING / SEARCH (preserved)
         // ============================================================
         function loadBooks() {
             var container = document.getElementById('booksContainer');
@@ -2810,7 +3093,7 @@
                 </div>
                 <div class="book-actions">
                   <button class="action-btn read-btn" onclick="openBookDetails('${b.id}')"><i class="fas fa-book-open"></i> Details</button>
-                  ${currentUser.isLoggedIn ? `
+                  ${currentUser.isLoggedIn && currentUser.isVerified ? `
                     <button class="action-btn like-btn" onclick="toggleLike('${b.id}')" id="likeBtn-${b.id}"><i class="fas fa-heart"></i> <span id="likeLabel-${b.id}">Like</span></button>
                     <button class="action-btn download-btn" onclick="downloadBook('${b.id}')"><i class="fas fa-download"></i> Read</button>
                   ` : `
@@ -2828,7 +3111,7 @@
             html += '</div>';
             container.innerHTML = html;
 
-            if (currentUser.isLoggedIn) {
+            if (currentUser.isLoggedIn && currentUser.isVerified) {
                 for (var b of books) {
                     (function(bid) {
                         hasUserLiked(bid, currentUser.id).then(function(liked) {
@@ -2947,10 +3230,10 @@
         }
 
         // ============================================================
-        //  LIKE
+        //  LIKE (preserved)
         // ============================================================
         function toggleLike(bookId) {
-            if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
+            if (!currentUser.isLoggedIn || !currentUser.isVerified) { showLoginRequired(); return; }
             toggleLikeDoc(bookId, currentUser.id).then(function(liked) {
                 var btn = document.getElementById('likeBtn-' + bookId);
                 var label = document.getElementById('likeLabel-' + bookId);
@@ -2970,10 +3253,10 @@
         }
 
         // ============================================================
-        //  PDF VIEWER – Opens in new tab
+        //  PDF VIEWER (preserved)
         // ============================================================
         function openPdfViewer(bookId) {
-            if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
+            if (!currentUser.isLoggedIn || !currentUser.isVerified) { showLoginRequired(); return; }
             showLoading('Opening PDF...');
             getBook(bookId).then(function(book) {
                 if (!book) throw new Error('Book not found');
@@ -3011,10 +3294,10 @@
         }
 
         // ============================================================
-        //  REVIEW
+        //  REVIEW (preserved)
         // ============================================================
         function openReviewModal(bookId) {
-            if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
+            if (!currentUser.isLoggedIn || !currentUser.isVerified) { showLoginRequired(); return; }
             getBook(bookId).then(function(book) {
                 if (!book) return;
                 currentReviewBookId = bookId;
@@ -3040,7 +3323,7 @@
         }
 
         function submitReview() {
-            if (!currentUser.isLoggedIn || !currentReviewBookId) return;
+            if (!currentUser.isLoggedIn || !currentUser.isVerified || !currentReviewBookId) return;
             var rating = parseInt(document.getElementById('selectedRating').value);
             var text = document.getElementById('reviewText').value.trim();
             if (!rating) { showAlert('Please select a rating', 'error'); return; }
@@ -3062,15 +3345,15 @@
         }
 
         // ============================================================
-        //  DOWNLOAD / READ
+        //  DOWNLOAD / READ (preserved)
         // ============================================================
         function downloadBook(bookId) {
-            if (!currentUser.isLoggedIn) { showLoginRequired(); return; }
+            if (!currentUser.isLoggedIn || !currentUser.isVerified) { showLoginRequired(); return; }
             openPdfViewer(bookId);
         }
 
         // ============================================================
-        //  BOOK CRUD (ADMIN) – Supabase upload
+        //  BOOK CRUD (ADMIN) – Supabase upload (preserved)
         // ============================================================
         function handleAddBook(e) {
             e.preventDefault();
@@ -3317,8 +3600,607 @@
         }
 
         // ============================================================
-        //  USER AUTH
+        //  NEW: OTP VERIFICATION (Cloud Functions)
         // ============================================================
+
+        /**
+         * Call the Firebase Cloud Function to send a verification OTP.
+         */
+        function callSendOTP(email, userId) {
+            return new Promise(function(resolve, reject) {
+                var sendOTP = functions.httpsCallable('sendVerificationOTP');
+                sendOTP({ email: email, userId: userId })
+                    .then(function(result) {
+                        resolve(result.data);
+                    })
+                    .catch(function(err) {
+                        reject(err);
+                    });
+            });
+        }
+
+        /**
+         * Call the Firebase Cloud Function to verify the OTP.
+         */
+        function callVerifyOTP(email, userId, otp) {
+            return new Promise(function(resolve, reject) {
+                var verifyOTP = functions.httpsCallable('verifyOTP');
+                verifyOTP({ email: email, userId: userId, otp: otp })
+                    .then(function(result) {
+                        resolve(result.data);
+                    })
+                    .catch(function(err) {
+                        reject(err);
+                    });
+            });
+        }
+
+        /**
+         * Call the Firebase Cloud Function to resend the OTP.
+         */
+        function callResendOTP(email, userId) {
+            return new Promise(function(resolve, reject) {
+                var resendOTP = functions.httpsCallable('resendOTP');
+                resendOTP({ email: email, userId: userId })
+                    .then(function(result) {
+                        resolve(result.data);
+                    })
+                    .catch(function(err) {
+                        reject(err);
+                    });
+            });
+        }
+
+        /**
+         * Open the OTP verification modal.
+         */
+        function openVerifyOTP(email) {
+            if (!email) {
+                email = currentUser.email || pendingVerificationEmail;
+            }
+            if (!email) {
+                showAlert('No email address found for verification.', 'error');
+                return;
+            }
+            pendingVerificationEmail = email;
+            pendingVerificationUserId = currentUser.id || '';
+
+            // Reset OTP inputs
+            var inputs = document.querySelectorAll('.otp-digit');
+            inputs.forEach(function(inp) { inp.value = ''; });
+            document.getElementById('otpError').textContent = '';
+            document.getElementById('otpSuccess').textContent = '';
+            document.getElementById('otpEmailDisplay').textContent = email;
+
+            // Start timer
+            otpRemainingSeconds = otpExpirySeconds;
+            updateOTPTimerDisplay();
+            if (otpTimerInterval) clearInterval(otpTimerInterval);
+            otpTimerInterval = setInterval(function() {
+                otpRemainingSeconds--;
+                updateOTPTimerDisplay();
+                if (otpRemainingSeconds <= 0) {
+                    clearInterval(otpTimerInterval);
+                    otpTimerInterval = null;
+                    document.getElementById('otpError').textContent = '⏰ This verification code has expired. Please request a new code.';
+                    document.getElementById('verifyOTPBtn').disabled = true;
+                }
+            }, 1000);
+
+            // Enable verify button
+            document.getElementById('verifyOTPBtn').disabled = false;
+
+            // Show modal
+            document.getElementById('verifyOTPModal').style.display = 'flex';
+
+            // Focus first input
+            setTimeout(function() {
+                var first = document.querySelector('.otp-digit');
+                if (first) first.focus();
+            }, 300);
+
+            // Auto-send OTP if not already sent
+            if (!window._otpSent) {
+                sendOTPEmail(email);
+            }
+            window._otpSent = true;
+
+            // Reset resend cooldown UI
+            document.getElementById('resendCooldown').style.display = 'none';
+            document.getElementById('resendOTPBtn').disabled = false;
+            otpResendRemaining = 0;
+            if (otpResendTimer) {
+                clearInterval(otpResendTimer);
+                otpResendTimer = null;
+            }
+
+            // Bind OTP input auto-advance
+            bindOTPInputs();
+        }
+
+        function closeVerifyOTP() {
+            closeModal('verifyOTPModal');
+            if (otpTimerInterval) {
+                clearInterval(otpTimerInterval);
+                otpTimerInterval = null;
+            }
+            if (otpResendTimer) {
+                clearInterval(otpResendTimer);
+                otpResendTimer = null;
+            }
+            document.getElementById('verifyOTPBtn').disabled = false;
+            document.getElementById('resendOTPBtn').disabled = false;
+        }
+
+        function updateOTPTimerDisplay() {
+            var mins = Math.floor(otpRemainingSeconds / 60);
+            var secs = otpRemainingSeconds % 60;
+            document.getElementById('otpTimerDisplay').textContent =
+                String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+            if (otpRemainingSeconds <= 60) {
+                document.getElementById('otpTimerDisplay').style.color = '#ff3860';
+            } else {
+                document.getElementById('otpTimerDisplay').style.color = 'var(--neon-green)';
+            }
+        }
+
+        function bindOTPInputs() {
+            var inputs = document.querySelectorAll('.otp-digit');
+            inputs.forEach(function(inp, idx) {
+                // Remove old listeners to avoid duplicates
+                inp.removeEventListener('input', otpInputHandler);
+                inp.removeEventListener('keydown', otpKeydownHandler);
+                inp.addEventListener('input', otpInputHandler);
+                inp.addEventListener('keydown', otpKeydownHandler);
+                inp.dataset.index = idx;
+            });
+        }
+
+        function otpInputHandler(e) {
+            var inp = e.target;
+            var val = inp.value;
+            // Only allow digits
+            if (val && !/^\d$/.test(val)) {
+                inp.value = '';
+                return;
+            }
+            var idx = parseInt(inp.dataset.index);
+            if (val && idx < 5) {
+                var next = document.querySelector('.otp-digit[data-index="' + (idx + 1) + '"]');
+                if (next) next.focus();
+            }
+            // Clear error on input
+            document.getElementById('otpError').textContent = '';
+            document.getElementById('otpSuccess').textContent = '';
+            // Auto-submit when all 6 digits are filled
+            var allFilled = true;
+            var allInputs = document.querySelectorAll('.otp-digit');
+            allInputs.forEach(function(i) {
+                if (!i.value) allFilled = false;
+            });
+            if (allFilled) {
+                // Auto-verify after a short delay
+                setTimeout(verifyOTP, 300);
+            }
+        }
+
+        function otpKeydownHandler(e) {
+            if (e.key === 'Backspace') {
+                var inp = e.target;
+                if (!inp.value) {
+                    var idx = parseInt(inp.dataset.index);
+                    if (idx > 0) {
+                        var prev = document.querySelector('.otp-digit[data-index="' + (idx - 1) + '"]');
+                        if (prev) { prev.focus();
+                            prev.value = ''; }
+                    }
+                }
+            }
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                verifyOTP();
+            }
+        }
+
+        /**
+         * Send the OTP email via Cloud Function.
+         */
+        function sendOTPEmail(email) {
+            if (!email) {
+                showAlert('No email provided for verification.', 'error');
+                return;
+            }
+            var userId = currentUser.id || pendingVerificationUserId;
+            showLoading('Sending verification code...');
+            callSendOTP(email, userId)
+                .then(function(data) {
+                    hideLoading();
+                    if (data.success) {
+                        showAlert('✅ Verification code sent to ' + email, 'success');
+                        document.getElementById('otpError').textContent = '';
+                        // Reset timer
+                        otpRemainingSeconds = otpExpirySeconds;
+                        updateOTPTimerDisplay();
+                        if (otpTimerInterval) clearInterval(otpTimerInterval);
+                        otpTimerInterval = setInterval(function() {
+                            otpRemainingSeconds--;
+                            updateOTPTimerDisplay();
+                            if (otpRemainingSeconds <= 0) {
+                                clearInterval(otpTimerInterval);
+                                otpTimerInterval = null;
+                                document.getElementById('otpError').textContent =
+                                    '⏰ This verification code has expired. Please request a new code.';
+                                document.getElementById('verifyOTPBtn').disabled = true;
+                            }
+                        }, 1000);
+                        document.getElementById('verifyOTPBtn').disabled = false;
+                    } else {
+                        showAlert('Failed to send code: ' + (data.error || 'Unknown error'), 'error');
+                    }
+                })
+                .catch(function(err) {
+                    hideLoading();
+                    console.error('sendOTP error:', err);
+                    showAlert('Failed to send verification code: ' + err.message, 'error');
+                });
+        }
+
+        /**
+         * Verify the OTP entered by the user.
+         */
+        function verifyOTP() {
+            var inputs = document.querySelectorAll('.otp-digit');
+            var otp = '';
+            inputs.forEach(function(inp) { otp += inp.value; });
+            if (otp.length !== 6) {
+                document.getElementById('otpError').textContent = 'Please enter all 6 digits.';
+                return;
+            }
+            document.getElementById('otpError').textContent = '';
+            document.getElementById('otpSuccess').textContent = '';
+            document.getElementById('verifyOTPBtn').disabled = true;
+            showLoading('Verifying...');
+
+            var email = pendingVerificationEmail || currentUser.email;
+            var userId = currentUser.id || pendingVerificationUserId;
+
+            callVerifyOTP(email, userId, otp)
+                .then(function(data) {
+                    hideLoading();
+                    if (data.success) {
+                        document.getElementById('otpSuccess').textContent = '✅ Email verified successfully!';
+                        document.getElementById('otpError').textContent = '';
+                        if (otpTimerInterval) {
+                            clearInterval(otpTimerInterval);
+                            otpTimerInterval = null;
+                        }
+                        // Update user state
+                        currentUser.isVerified = true;
+                        updateUserInterface();
+                        updateNavigation();
+                        showAlert('✅ Email verified successfully! Welcome to Electro-LASS!', 'success');
+                        setTimeout(function() {
+                            closeVerifyOTP();
+                            navigateTo('home');
+                            setupRealtimeListeners();
+                        }, 1000);
+                    } else {
+                        document.getElementById('otpError').textContent = '❌ ' + (data.error ||
+                            'Incorrect verification code.');
+                        document.getElementById('verifyOTPBtn').disabled = false;
+                    }
+                })
+                .catch(function(err) {
+                    hideLoading();
+                    document.getElementById('verifyOTPBtn').disabled = false;
+                    console.error('verifyOTP error:', err);
+                    var msg = err.message || 'Verification failed. Please try again.';
+                    if (err.message && err.message.includes('expired')) {
+                        msg = '⏰ This verification code has expired. Please request a new code.';
+                    }
+                    document.getElementById('otpError').textContent = '❌ ' + msg;
+                });
+        }
+
+        /**
+         * Resend the OTP.
+         */
+        function resendOTP() {
+            var email = pendingVerificationEmail || currentUser.email;
+            if (!email) {
+                showAlert('No email address found.', 'error');
+                return;
+            }
+
+            // Check cooldown
+            if (otpResendRemaining > 0) {
+                showAlert('Please wait ' + otpResendRemaining + ' seconds before resending.', 'warning');
+                return;
+            }
+
+            document.getElementById('resendOTPBtn').disabled = true;
+            showLoading('Sending new code...');
+
+            var userId = currentUser.id || pendingVerificationUserId;
+            callResendOTP(email, userId)
+                .then(function(data) {
+                    hideLoading();
+                    if (data.success) {
+                        showAlert('✅ New verification code sent to ' + email, 'success');
+                        document.getElementById('otpError').textContent = '';
+                        // Reset timer
+                        otpRemainingSeconds = otpExpirySeconds;
+                        updateOTPTimerDisplay();
+                        if (otpTimerInterval) clearInterval(otpTimerInterval);
+                        otpTimerInterval = setInterval(function() {
+                            otpRemainingSeconds--;
+                            updateOTPTimerDisplay();
+                            if (otpRemainingSeconds <= 0) {
+                                clearInterval(otpTimerInterval);
+                                otpTimerInterval = null;
+                                document.getElementById('otpError').textContent =
+                                    '⏰ This verification code has expired. Please request a new code.';
+                                document.getElementById('verifyOTPBtn').disabled = true;
+                            }
+                        }, 1000);
+                        document.getElementById('verifyOTPBtn').disabled = false;
+
+                        // Start resend cooldown
+                        otpResendRemaining = otpResendCooldown;
+                        document.getElementById('resendCooldown').style.display = 'block';
+                        document.getElementById('resendCountdown').textContent = otpResendRemaining;
+                        if (otpResendTimer) clearInterval(otpResendTimer);
+                        otpResendTimer = setInterval(function() {
+                            otpResendRemaining--;
+                            document.getElementById('resendCountdown').textContent = otpResendRemaining;
+                            if (otpResendRemaining <= 0) {
+                                clearInterval(otpResendTimer);
+                                otpResendTimer = null;
+                                document.getElementById('resendCooldown').style.display = 'none';
+                                document.getElementById('resendOTPBtn').disabled = false;
+                            }
+                        }, 1000);
+                    } else {
+                        showAlert('Failed to resend code: ' + (data.error || 'Unknown error'), 'error');
+                        document.getElementById('resendOTPBtn').disabled = false;
+                    }
+                })
+                .catch(function(err) {
+                    hideLoading();
+                    console.error('resendOTP error:', err);
+                    showAlert('Failed to resend code: ' + err.message, 'error');
+                    document.getElementById('resendOTPBtn').disabled = false;
+                });
+        }
+
+        // ============================================================
+        //  NEW: GOOGLE LOGIN
+        // ============================================================
+        function handleGoogleLogin() {
+            var provider = new firebase.auth.GoogleAuthProvider();
+            provider.setCustomParameters({
+                prompt: 'select_account'
+            });
+            showLoading('Connecting to Google...');
+            auth.signInWithPopup(provider)
+                .then(function(result) {
+                    var user = result.user;
+                    var email = user.email;
+                    var name = user.displayName || email.split('@')[0];
+                    return getUserByEmail(email).then(function(dbUser) {
+                        var role = 'user';
+                        // Preserve admin if already admin
+                        if (dbUser && dbUser.role === 'admin') {
+                            role = 'admin';
+                        }
+                        // Hard-coded admin check
+                        if (email === 'admin@electrolass.com') {
+                            role = 'admin';
+                        }
+                        var userData = {
+                            name: name,
+                            email: email,
+                            role: role,
+                            registrationDate: dbUser ? dbUser.registrationDate : new Date().toISOString(),
+                            lastLogin: new Date().toISOString(),
+                            accountStatus: 'active',
+                            isVerified: true, // Google users are auto-verified
+                            preferences: dbUser ? dbUser.preferences : { theme: 'dark',
+                            notifications: true, language: 'en' }
+                        };
+                        if (dbUser) {
+                            // Don't override existing data
+                            userData.likedBooks = dbUser.likedBooks || [];
+                            userData.downloadedBooks = dbUser.downloadedBooks || [];
+                            userData.reviewedBooks = dbUser.reviewedBooks || [];
+                            userData.readingProgress = dbUser.readingProgress || {};
+                            userData.registrationDate = dbUser.registrationDate || userData.registrationDate;
+                        }
+                        return saveUserDoc(userData).then(function() {
+                            return getUserByEmail(email);
+                        });
+                    });
+                })
+                .then(function(dbUser) {
+                    if (!dbUser) throw new Error('User data not found');
+                    currentUser = {
+                        isLoggedIn: true,
+                        role: dbUser.role || 'user',
+                        name: dbUser.name,
+                        email: dbUser.email,
+                        id: dbUser.id,
+                        likedBooks: dbUser.likedBooks || [],
+                        downloadedBooks: dbUser.downloadedBooks || [],
+                        reviewedBooks: dbUser.reviewedBooks || [],
+                        readingProgress: dbUser.readingProgress || {},
+                        accountStatus: dbUser.accountStatus || 'active',
+                        isVerified: true // Google users are auto-verified
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify({ email: currentUser.email,
+                        name: currentUser.name, role: currentUser.role, id: currentUser.id,
+                        isVerified: true }));
+                    updateUserInterface();
+                    updateNavigation();
+                    closeModal('loginModal');
+                    showAlert('🎉 Welcome, ' + currentUser.name + '!', 'success');
+                    navigateTo('home');
+                    setupRealtimeListeners();
+                    hideLoading();
+                })
+                .catch(function(err) {
+                    hideLoading();
+                    if (err.code === 'auth/popup-closed-by-user') {
+                        showAlert('Google sign-in was cancelled.', 'info');
+                    } else {
+                        showAlert('Google login failed: ' + err.message, 'error');
+                    }
+                });
+        }
+
+        // ============================================================
+        //  NEW: FORGOT PASSWORD (Firebase built-in)
+        // ============================================================
+        function openForgotPasswordModal() {
+            closeModal('loginModal');
+            document.getElementById('forgotPasswordModal').style.display = 'flex';
+            document.getElementById('resetEmail').value = document.getElementById('loginEmail').value || '';
+            document.getElementById('resetResult').innerHTML = '';
+        }
+
+        function handleForgotPassword(e) {
+            e.preventDefault();
+            var email = document.getElementById('resetEmail').value.trim();
+            if (!email) {
+                document.getElementById('resetResult').innerHTML =
+                    '<span style="color:#ff3860;">Please enter your email address.</span>';
+                return;
+            }
+            document.getElementById('resetResult').innerHTML =
+                '<span style="color:var(--neon-green);">Sending reset email...</span>';
+            auth.sendPasswordResetEmail(email)
+                .then(function() {
+                    document.getElementById('resetResult').innerHTML =
+                        '<span style="color:var(--neon-green);">✅ Password reset email sent. Check your inbox.</span>';
+                    document.getElementById('resetEmail').value = '';
+                    setTimeout(function() {
+                        closeModal('forgotPasswordModal');
+                        openLoginModal();
+                    }, 3000);
+                })
+                .catch(function(err) {
+                    var msg = err.message;
+                    if (err.code === 'auth/user-not-found') {
+                        msg = 'No account found with this email address.';
+                    } else if (err.code === 'auth/invalid-email') {
+                        msg = 'Invalid email address.';
+                    } else if (err.code === 'auth/too-many-requests') {
+                        msg = 'Too many requests. Please try again later.';
+                    }
+                    document.getElementById('resetResult').innerHTML = '<span style="color:#ff3860;">❌ ' + msg +
+                        '</span>';
+                });
+        }
+
+        // ============================================================
+        //  NEW: FEEDBACK / HELP SYSTEM
+        // ============================================================
+
+        /**
+         * Submit feedback via Cloud Function.
+         */
+        function submitFeedback(e) {
+            e.preventDefault();
+            var name = document.getElementById('feedbackName').value.trim();
+            var email = document.getElementById('feedbackEmail').value.trim();
+            var category = document.getElementById('feedbackCategory').value;
+            var message = document.getElementById('feedbackMessage').value.trim();
+            var resultDiv = document.getElementById('feedbackResult');
+            var submitBtn = document.getElementById('feedbackSubmitBtn');
+
+            if (!name || !email || !category || !message) {
+                resultDiv.innerHTML = '<span style="color:#ff3860;">Please fill in all fields.</span>';
+                return;
+            }
+            if (message.length < 10) {
+                resultDiv.innerHTML = '<span style="color:#ff3860;">Please provide more detail (at least 10 characters).</span>';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            resultDiv.innerHTML = '<span style="color:var(--neon-green);">Sending feedback...</span>';
+
+            var feedbackData = {
+                name: name,
+                email: email,
+                category: category,
+                message: message,
+                userId: currentUser.isLoggedIn ? currentUser.id : null,
+                timestamp: new Date().toISOString(),
+                status: 'new'
+            };
+
+            // Save to Firestore
+            db.collection('feedback').add(feedbackData)
+                .then(function(docRef) {
+                    // Call Cloud Function to send email
+                    var sendFeedbackEmail = functions.httpsCallable('sendFeedbackEmail');
+                    return sendFeedbackEmail({
+                        feedbackId: docRef.id,
+                        name: name,
+                        email: email,
+                        category: category,
+                        message: message,
+                        userId: currentUser.isLoggedIn ? currentUser.id : null
+                    });
+                })
+                .then(function(result) {
+                    resultDiv.innerHTML =
+                        '<span style="color:var(--neon-green);">✅ Thank you! Your feedback has been sent. We\'ll get back to you soon.</span>';
+                    document.getElementById('feedbackForm').reset();
+                    document.getElementById('feedbackCharCount').textContent = '0';
+                    if (currentUser.isLoggedIn) {
+                        document.getElementById('feedbackName').value = currentUser.name;
+                        document.getElementById('feedbackEmail').value = currentUser.email;
+                    }
+                    submitBtn.disabled = false;
+                    // Auto-clear success after 5s
+                    setTimeout(function() {
+                        resultDiv.innerHTML = '';
+                    }, 5000);
+                })
+                .catch(function(err) {
+                    console.error('Feedback error:', err);
+                    resultDiv.innerHTML = '<span style="color:#ff3860;">❌ Failed to send feedback: ' + err.message +
+                        '</span>';
+                    submitBtn.disabled = false;
+                });
+        }
+
+        /**
+         * Bind the feedback form with auto-fill for logged-in users.
+         */
+        function bindFeedbackForm() {
+            var nameField = document.getElementById('feedbackName');
+            var emailField = document.getElementById('feedbackEmail');
+            var msgField = document.getElementById('feedbackMessage');
+            var charCount = document.getElementById('feedbackCharCount');
+
+            if (currentUser.isLoggedIn && currentUser.isVerified) {
+                if (nameField && !nameField.value) nameField.value = currentUser.name;
+                if (emailField && !emailField.value) emailField.value = currentUser.email;
+            }
+
+            if (msgField && charCount) {
+                msgField.addEventListener('input', function() {
+                    charCount.textContent = this.value.length;
+                });
+            }
+        }
+
+        // ============================================================
+        //  USER AUTH (UPGRADED with OTP verification)
+        // ============================================================
+
         function demoLogin() {
             var demoEmail = 'demo@user.com';
             var demoPass = 'Demo123!';
@@ -3335,6 +4217,7 @@
                                 registrationDate: new Date().toISOString(),
                                 lastLogin: new Date().toISOString(),
                                 accountStatus: 'active',
+                                isVerified: true,
                                 preferences: { theme: 'dark', notifications: true, language: 'en' }
                             };
                             return saveUserDoc(userData).then(function() {
@@ -3356,16 +4239,23 @@
                         downloadedBooks: dbUser.downloadedBooks || [],
                         reviewedBooks: dbUser.reviewedBooks || [],
                         readingProgress: dbUser.readingProgress || {},
-                        accountStatus: dbUser.accountStatus || 'active'
+                        accountStatus: dbUser.accountStatus || 'active',
+                        isVerified: dbUser.isVerified !== false // default to true
                     };
                     localStorage.setItem('currentUser', JSON.stringify({ email: currentUser.email,
-                        name: currentUser.name, role: currentUser.role, id: currentUser.id }));
+                        name: currentUser.name, role: currentUser.role, id: currentUser.id,
+                        isVerified: currentUser.isVerified }));
                     updateUserInterface();
                     updateNavigation();
                     closeModal('loginModal');
-                    showAlert('🎉 Logged in as Demo User', 'success');
-                    navigateTo('home');
-                    setupRealtimeListeners();
+                    if (!currentUser.isVerified) {
+                        showAlert('⚠️ Please verify your email to access all features.', 'warning');
+                        openVerifyOTP(currentUser.email);
+                    } else {
+                        showAlert('🎉 Logged in as Demo User', 'success');
+                        navigateTo('home');
+                        setupRealtimeListeners();
+                    }
                     hideLoading();
                 })
                 .catch(function(err) {
@@ -3382,10 +4272,13 @@
             var confirm = document.getElementById('signupConfirmPassword').value;
             if (!name || !email || !pass || !confirm) { showAlert('Please fill all fields', 'error'); return; }
             if (pass !== confirm) { showAlert('Passwords do not match', 'error'); return; }
+            if (pass.length < 8) { showAlert('Password must be at least 8 characters', 'error'); return; }
+
             showLoading('Creating account...');
             auth.createUserWithEmailAndPassword(email, pass)
                 .then(function(cred) {
                     var user = cred.user;
+                    // Initially unverified
                     var userData = {
                         name: name,
                         email: email,
@@ -3393,38 +4286,50 @@
                         registrationDate: new Date().toISOString(),
                         lastLogin: new Date().toISOString(),
                         accountStatus: 'active',
+                        isVerified: false,
                         preferences: { theme: 'dark', notifications: true, language: 'en' }
                     };
                     return saveUserDoc(userData).then(function() {
-                        currentUser = {
-                            isLoggedIn: true,
-                            role: 'user',
-                            name: name,
-                            email: email,
-                            id: user.uid,
-                            likedBooks: [],
-                            downloadedBooks: [],
-                            reviewedBooks: [],
-                            readingProgress: {},
-                            accountStatus: 'active'
-                        };
-                        localStorage.setItem('currentUser', JSON.stringify({ email: currentUser.email,
-                            name: currentUser.name, role: currentUser.role, id: currentUser.id }));
-                        updateUserInterface();
-                        updateNavigation();
-                        closeModal('signupModal');
-                        showAlert('🎉 Welcome ' + name + '!', 'success');
-                        navigateTo('home');
-                        setupRealtimeListeners();
-                        hideLoading();
+                        return getUserByEmail(email);
                     });
+                })
+                .then(function(dbUser) {
+                    if (!dbUser) throw new Error('User data not found');
+                    currentUser = {
+                        isLoggedIn: true,
+                        role: dbUser.role || 'user',
+                        name: dbUser.name,
+                        email: dbUser.email,
+                        id: dbUser.id,
+                        likedBooks: dbUser.likedBooks || [],
+                        downloadedBooks: dbUser.downloadedBooks || [],
+                        reviewedBooks: dbUser.reviewedBooks || [],
+                        readingProgress: dbUser.readingProgress || {},
+                        accountStatus: dbUser.accountStatus || 'active',
+                        isVerified: false
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify({ email: currentUser.email,
+                        name: currentUser.name, role: currentUser.role, id: currentUser.id,
+                        isVerified: false }));
+                    updateUserInterface();
+                    updateNavigation();
+                    closeModal('signupModal');
+                    showAlert('📧 Verification code sent to ' + email + '. Please verify your email.', 'info');
+                    // Open OTP verification modal
+                    pendingVerificationEmail = email;
+                    pendingVerificationUserId = currentUser.id;
+                    window._otpSent = false;
+                    openVerifyOTP(email);
+                    hideLoading();
                 })
                 .catch(function(err) {
                     hideLoading();
                     var msg = err.message;
-                    if (err.code === 'auth/email-already-in-use') msg = 'Email already registered.';
+                    if (err.code === 'auth/email-already-in-use') msg = 'Email already registered. Please login.';
                     else if (err.code === 'auth/weak-password') msg = 'Password is too weak.';
                     else if (err.code === 'auth/invalid-email') msg = 'Invalid email address.';
+                    else if (err.code === 'auth/operation-not-allowed') msg =
+                    'Email/password accounts are not enabled.';
                     showAlert('Signup failed: ' + msg, 'error');
                 });
         }
@@ -3450,6 +4355,7 @@
                                 registrationDate: new Date().toISOString(),
                                 lastLogin: new Date().toISOString(),
                                 accountStatus: 'active',
+                                isVerified: false,
                                 preferences: { theme: 'dark', notifications: true, language: 'en' }
                             };
                             return saveUserDoc(userData).then(function() {
@@ -3462,12 +4368,23 @@
                                     return getUserByEmail(email);
                                 });
                             }
-                            return dbUser;
+                            // Update lastLogin
+                            dbUser.lastLogin = new Date().toISOString();
+                            return saveUserDoc(dbUser).then(function() {
+                                return getUserByEmail(email);
+                            });
                         }
                     });
                 })
                 .then(function(dbUser) {
                     if (!dbUser) throw new Error('User data not found');
+                    var isVerified = dbUser.isVerified === true;
+                    // For admin, auto-verify
+                    if (dbUser.role === 'admin') {
+                        isVerified = true;
+                        dbUser.isVerified = true;
+                        saveUserDoc(dbUser).catch(function() {});
+                    }
                     currentUser = {
                         isLoggedIn: true,
                         role: dbUser.role || 'user',
@@ -3478,16 +4395,26 @@
                         downloadedBooks: dbUser.downloadedBooks || [],
                         reviewedBooks: dbUser.reviewedBooks || [],
                         readingProgress: dbUser.readingProgress || {},
-                        accountStatus: dbUser.accountStatus || 'active'
+                        accountStatus: dbUser.accountStatus || 'active',
+                        isVerified: isVerified
                     };
                     localStorage.setItem('currentUser', JSON.stringify({ email: currentUser.email,
-                        name: currentUser.name, role: currentUser.role, id: currentUser.id }));
+                        name: currentUser.name, role: currentUser.role, id: currentUser.id,
+                        isVerified: currentUser.isVerified }));
                     updateUserInterface();
                     updateNavigation();
                     closeModal('loginModal');
-                    showAlert('Welcome back, ' + currentUser.name + '!', 'success');
-                    navigateTo('home');
-                    setupRealtimeListeners();
+                    if (!currentUser.isVerified) {
+                        showAlert('⚠️ Please verify your email to access all features.', 'warning');
+                        pendingVerificationEmail = currentUser.email;
+                        pendingVerificationUserId = currentUser.id;
+                        window._otpSent = false;
+                        openVerifyOTP(currentUser.email);
+                    } else {
+                        showAlert('Welcome back, ' + currentUser.name + '!', 'success');
+                        navigateTo('home');
+                        setupRealtimeListeners();
+                    }
                     hideLoading();
                 })
                 .catch(function(err) {
@@ -3498,11 +4425,23 @@
                     else if (err.code === 'auth/invalid-email') msg = 'Invalid email address.';
                     else if (err.code === 'auth/too-many-requests') msg =
                         'Too many failed attempts. Please try later.';
+                    else if (err.code === 'auth/user-disabled') msg = 'This account has been disabled.';
                     showAlert('Login failed: ' + msg, 'error');
                 });
         }
 
         function logout() {
+            // Clear OTP state
+            if (otpTimerInterval) {
+                clearInterval(otpTimerInterval);
+                otpTimerInterval = null;
+            }
+            if (otpResendTimer) {
+                clearInterval(otpResendTimer);
+                otpResendTimer = null;
+            }
+            window._otpSent = false;
+
             auth.signOut().then(function() {
                 currentUser = {
                     isLoggedIn: false,
@@ -3514,7 +4453,8 @@
                     downloadedBooks: [],
                     reviewedBooks: [],
                     readingProgress: {},
-                    accountStatus: 'active'
+                    accountStatus: 'active',
+                    isVerified: false
                 };
                 localStorage.removeItem('currentUser');
                 if (unsubBooks) { unsubBooks();
@@ -3542,6 +4482,11 @@
                     if (data.email) {
                         getUserByEmail(data.email).then(function(dbUser) {
                             if (dbUser) {
+                                var isVerified = dbUser.isVerified === true;
+                                // Admin auto-verify
+                                if (dbUser.role === 'admin') {
+                                    isVerified = true;
+                                }
                                 currentUser = {
                                     isLoggedIn: true,
                                     role: dbUser.role || 'user',
@@ -3552,15 +4497,23 @@
                                     downloadedBooks: dbUser.downloadedBooks || [],
                                     reviewedBooks: dbUser.reviewedBooks || [],
                                     readingProgress: dbUser.readingProgress || {},
-                                    accountStatus: dbUser.accountStatus || 'active'
+                                    accountStatus: dbUser.accountStatus || 'active',
+                                    isVerified: isVerified
                                 };
                                 updateUserInterface();
                                 updateNavigation();
+                                // If unverified, show verification prompt
+                                if (!currentUser.isVerified && currentPage !== 'home') {
+                                    // Don't force redirect, but show a notice
+                                    showAlert('⚠️ Please verify your email to access all features.', 'warning');
+                                }
                                 if (currentPage === 'home' || currentPage === 'library' || currentPage ===
                                     'profile' || currentPage === 'admin-dashboard') {
                                     loadPageContent(currentPage);
                                 }
-                                setupRealtimeListeners();
+                                if (currentUser.isVerified) {
+                                    setupRealtimeListeners();
+                                }
                             }
                         }).catch(function() {});
                     }
@@ -3568,23 +4521,126 @@
             } catch (e) { localStorage.removeItem('currentUser'); }
         }
 
+        // ============================================================
+        //  AUTH STATE HANDLER (UPGRADED)
+        // ============================================================
         auth.onAuthStateChanged(function(user) {
             if (user) {
-                if (!currentUser.isLoggedIn) {
-                    loadSavedUser();
+                // User is signed in, but we need to check verification status
+                var email = user.email;
+                if (email) {
+                    getUserByEmail(email).then(function(dbUser) {
+                        if (dbUser) {
+                            var isVerified = dbUser.isVerified === true;
+                            if (dbUser.role === 'admin') {
+                                isVerified = true;
+                            }
+                            // If the user was previously marked unverified but now has a verified email in Firebase
+                            if (user.emailVerified && !isVerified) {
+                                // Sync: update Firestore
+                                isVerified = true;
+                                dbUser.isVerified = true;
+                                saveUserDoc(dbUser).catch(function() {});
+                            }
+                            if (!currentUser.isLoggedIn || currentUser.id !== dbUser.id) {
+                                currentUser = {
+                                    isLoggedIn: true,
+                                    role: dbUser.role || 'user',
+                                    name: dbUser.name,
+                                    email: dbUser.email,
+                                    id: dbUser.id,
+                                    likedBooks: dbUser.likedBooks || [],
+                                    downloadedBooks: dbUser.downloadedBooks || [],
+                                    reviewedBooks: dbUser.reviewedBooks || [],
+                                    readingProgress: dbUser.readingProgress || {},
+                                    accountStatus: dbUser.accountStatus || 'active',
+                                    isVerified: isVerified
+                                };
+                                localStorage.setItem('currentUser', JSON.stringify({ email: currentUser
+                                        .email, name: currentUser.name, role: currentUser.role,
+                                        id: currentUser.id, isVerified: currentUser.isVerified }));
+                                updateUserInterface();
+                                updateNavigation();
+                                if (currentUser.isVerified) {
+                                    setupRealtimeListeners();
+                                }
+                                // If on a page that requires verification and not verified, show notice
+                                if (!currentUser.isVerified && currentPage !== 'home') {
+                                    showAlert('⚠️ Please verify your email to access all features.', 'warning');
+                                }
+                            }
+                        } else {
+                            // User in Auth but not in Firestore - create profile
+                            var userData = {
+                                name: email.split('@')[0] || 'User',
+                                email: email,
+                                role: 'user',
+                                registrationDate: new Date().toISOString(),
+                                lastLogin: new Date().toISOString(),
+                                accountStatus: 'active',
+                                isVerified: user.emailVerified || false,
+                                preferences: { theme: 'dark', notifications: true, language: 'en' }
+                            };
+                            saveUserDoc(userData).then(function() {
+                                return getUserByEmail(email);
+                            }).then(function(dbUser) {
+                                if (dbUser) {
+                                    currentUser = {
+                                        isLoggedIn: true,
+                                        role: dbUser.role || 'user',
+                                        name: dbUser.name,
+                                        email: dbUser.email,
+                                        id: dbUser.id,
+                                        likedBooks: dbUser.likedBooks || [],
+                                        downloadedBooks: dbUser.downloadedBooks || [],
+                                        reviewedBooks: dbUser.reviewedBooks || [],
+                                        readingProgress: dbUser.readingProgress || {},
+                                        accountStatus: dbUser.accountStatus || 'active',
+                                        isVerified: dbUser.isVerified === true
+                                    };
+                                    localStorage.setItem('currentUser', JSON.stringify({ email: currentUser
+                                            .email, name: currentUser.name, role: currentUser
+                                            .role, id: currentUser.id, isVerified: currentUser
+                                            .isVerified }));
+                                    updateUserInterface();
+                                    updateNavigation();
+                                }
+                            }).catch(function() {});
+                        }
+                    }).catch(function() {
+                        // If Firestore fails, still try to set basic user state
+                        if (!currentUser.isLoggedIn) {
+                            currentUser.isLoggedIn = true;
+                            currentUser.email = user.email;
+                            currentUser.name = user.displayName || user.email.split('@')[0];
+                            currentUser.isVerified = user.emailVerified || false;
+                            updateUserInterface();
+                            updateNavigation();
+                        }
+                    });
                 }
             } else {
+                // User is signed out
                 if (currentUser.isLoggedIn) {
                     currentUser.isLoggedIn = false;
+                    currentUser.isVerified = false;
                     localStorage.removeItem('currentUser');
                     updateUserInterface();
                     updateNavigation();
+                    if (unsubBooks) { unsubBooks();
+                        unsubBooks = null; }
+                    if (unsubReviews) { unsubReviews();
+                        unsubReviews = null; }
+                    if (unsubLikes) { unsubLikes();
+                        unsubLikes = null; }
+                    if (unsubProgress) { unsubProgress();
+                        unsubProgress = null; }
                 }
             }
         });
 
         // ============================================================
-        //  BOOK DETAILS
+        //  BOOK DETAILS (preserved)
         // ============================================================
         function openBookDetails(bookId) {
             showLoading('Loading book details...');
@@ -3595,7 +4651,7 @@
                 getBookReviews(bookId).then(function(rv) {
                     reviews = rv;
                     var hasReviewed = false;
-                    if (currentUser.isLoggedIn) {
+                    if (currentUser.isLoggedIn && currentUser.isVerified) {
                         hasUserReviewed(bookId, currentUser.id).then(function(hr) {
                             hasReviewed = hr;
                             renderBookDetails(book, reviews, hasReviewed);
@@ -3620,7 +4676,7 @@
 
         function renderBookDetails(book, reviews, hasReviewed) {
             var progress = 0;
-            if (currentUser.isLoggedIn) {
+            if (currentUser.isLoggedIn && currentUser.isVerified) {
                 getBookProgress(book.id, currentUser.id).then(function(p) {
                     progress = p;
                     renderBookDetailsFull(book, reviews, hasReviewed, progress);
@@ -3667,7 +4723,7 @@
               ${book.isUploaded ? `<p><strong>PDF:</strong> <span style="color:var(--neon-green);">✓ Uploaded</span> (${book.fileSize || 'unknown size'})</p>` : ''}
               ${revHTML}
               <div style="margin-top:1.5rem;display:flex;gap:10px;flex-wrap:wrap;">
-                ${currentUser.isLoggedIn ? `
+                ${currentUser.isLoggedIn && currentUser.isVerified ? `
                   <button class="btn btn-primary" onclick="openPdfViewer('${book.id}')"><i class="fas fa-book-open"></i> Read Now</button>
                   <button class="btn" onclick="toggleLike('${book.id}')" style="background:var(--electric-orange);color:#fff;"><i class="fas fa-heart"></i> Like</button>
                   ${!hasReviewed ? `<button class="btn" onclick="openReviewModal('${book.id}')" style="background:var(--spark-purple);color:#fff;"><i class="fas fa-star"></i> Add Review</button>` : ''}
@@ -3681,7 +4737,7 @@
         }
 
         // ============================================================
-        //  MODALS
+        //  MODALS (preserved + new)
         // ============================================================
         function openAddBookModal() {
             if (currentUser.role !== 'admin') { showAlert('Admin access required', 'error'); return; }
@@ -3691,9 +4747,17 @@
             document.getElementById('fileSizeDisplay').textContent = '';
         }
 
-        function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
+        function openLoginModal() {
+            closeModal('verifyOTPModal');
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('loginEmail').focus();
+        }
 
-        function openSignupModal() { document.getElementById('signupModal').style.display = 'flex'; }
+        function openSignupModal() {
+            closeModal('verifyOTPModal');
+            document.getElementById('signupModal').style.display = 'flex';
+            document.getElementById('signupName').focus();
+        }
 
         function openAdvancedSearch() { document.getElementById('advancedSearchModal').style.display = 'flex'; }
 
@@ -3711,10 +4775,13 @@
             handleSearchInput(query);
         }
 
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function closeModal(id) {
+            var el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        }
 
         // ============================================================
-        //  ADMIN UTILITIES
+        //  ADMIN UTILITIES (preserved)
         // ============================================================
         function showStorageStats() {
             if (currentUser.role !== 'admin') { showAlert('Admin access required', 'error'); return; }
@@ -3731,7 +4798,9 @@
             if (currentUser.role !== 'admin') { showAlert('Admin access required', 'error'); return; }
             getUsersList().then(function(users) {
                 var list = users.filter(u => u.role !== 'admin').map(function(u) {
-                    return '• ' + u.name + ' (' + u.email + ') - Joined: ' + formatDate(u.registrationDate);
+                    var v = u.isVerified ? '✅' : '⏳';
+                    return '• ' + u.name + ' (' + u.email + ') ' + v + ' - Joined: ' + formatDate(u
+                    .registrationDate);
                 }).join('<br>') || 'No regular users found.';
                 var msg =
                     `<strong>👥 User Management (${users.filter(u => u.role !== 'admin').length} regular users):</strong><br><br>${list}<br><br><small>👑 Admin users: 1 (admin@electrolass.com)</small>`;
@@ -3742,7 +4811,7 @@
         }
 
         // ============================================================
-        //  UI HELPERS
+        //  UI HELPERS (preserved)
         // ============================================================
         function showAlert(message, type) {
             var existing = document.querySelectorAll('.alert');
@@ -3788,8 +4857,11 @@
             var selected = document.getElementById(tabName + 'Tab');
             if (selected) selected.classList.add('active');
             if (btn) btn.classList.add('active');
-            if (tabName === 'dashboard' && currentUser.isLoggedIn) {
+            if (tabName === 'dashboard' && currentUser.isLoggedIn && currentUser.isVerified) {
                 setTimeout(updateUserDashboard, 100);
+            }
+            if (tabName === 'help') {
+                setTimeout(bindFeedbackForm, 100);
             }
         }
 
@@ -3809,8 +4881,11 @@
         //  INIT
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM ready – initializing Electro-LASS with Firebase + Supabase...');
+            console.log('DOM ready – initializing Electro-LASS with Firebase + Supabase + OTP...');
             showLoading('Connecting to Firebase...');
+
+            // Ensure OTP modal is closed initially
+            document.getElementById('verifyOTPModal').style.display = 'none';
 
             PDFStore.init().then(function() {
                 console.log('IndexedDB ready');
@@ -3827,6 +4902,8 @@
                 window.addEventListener('offline', function() { setSyncStatus(false);
                     showAlert('You are offline. Changes will sync when you reconnect.', 'warning'); });
                 setSyncStatus(navigator.onLine);
+                // Bind feedback form on help tab if visible
+                setTimeout(bindFeedbackForm, 600);
                 hideLoading();
             }).catch(function(err) {
                 console.error('IndexedDB init error:', err);
