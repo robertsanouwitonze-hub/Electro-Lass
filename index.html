@@ -2184,6 +2184,21 @@
           <div class="page-header">
             <h1><i class="fas fa-book-open"></i> Digital Library</h1>
             <p class="page-subtitle">Browse all books. Read, review, and discover new favorites!</p>
+             <p style="color:var(--text-gray); margin-bottom:15px;">
+        Welcome to Electro-LASS! You can explore our book collection,
+        but you need to log in or create a free account to access
+        and read books in our digital library.
+    </p>
+
+    <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="openLoginModal()">
+            <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+
+        <button class="btn" onclick="openSignupModal()"
+            style="background:var(--neon-green);color:var(--dark-bg);">
+            <i class="fas fa-user-plus"></i> Create Free Account
+        </button>
           </div>
           <div class="search-section">
             <div class="search-container">
